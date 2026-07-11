@@ -594,6 +594,28 @@ linear-gradient(
 
 );
 
+height:auto;
+
+min-height:420px;
+
+overflow:visible;
+
+}
+
+:deep(.pollution-card .el-card__body){
+
+overflow:visible;
+
+}
+
+.pollution-list{
+
+max-height:220px;
+
+overflow-y:auto;
+
+padding-right:5px;
+
 }
 
 .title{

@@ -79,12 +79,11 @@ type="success"
 <div class="table-wrapper">
 <div class="table-container">
 
-<Transition name="fade" mode="out-in">
 <el-table
 
-:key="tableVersion"
-
 :data="tableData"
+
+row-key="id"
 
 :row-class-name="rowClass"
 
@@ -94,7 +93,7 @@ height="600"
 
 stripe
 
-style="width:100%"
+style="min-width:1400px"
 
 >
 
@@ -306,7 +305,7 @@ getAnalysis(scope.row).suggestion
 
 label="操作"
 
-width="100"
+width="180"
 
 fixed="right"
 
@@ -366,7 +365,6 @@ size="small"
 
 
 </el-table>
-</Transition>
 
 </div>
 </div>
@@ -409,8 +407,6 @@ const pasteText = ref('')
 
 const tableData = ref([])
 
-const tableVersion = ref(0)
-
 
 const emit = defineEmits([
     'update-data'
@@ -444,8 +440,6 @@ const data = parsePasteData(
 tableData.value.push(
     ...data
 )
-
-tableVersion.value++
 
 emit(
 'update-data',
@@ -481,8 +475,6 @@ ignored:false
 
 })
 
-tableVersion.value++
-
 emit(
 'update-data',
 tableData.value
@@ -501,8 +493,6 @@ function clearData(){
 
 tableData.value=[]
 
-tableVersion.value++
-
 emit(
 'update-data',
 []
@@ -515,17 +505,36 @@ emit(
 function deleteRow(index){
 
 
+const id =
+tableData.value[index].id
+
+const row =
+document.querySelector(
+`tr[data-row-key="${id}"]`
+)
+
+if(row){
+
+row.style.transition="all .3s"
+row.style.opacity=0
+row.style.transform=
+"translateX(-30px)"
+
+}
+
+setTimeout(()=>{
+
 tableData.value.splice(
 index,
 1
 )
 
-tableVersion.value++
-
 emit(
 'update-data',
 tableData.value
 )
+
+},300)
 
 
 }
@@ -536,8 +545,6 @@ function toggleIgnore(row){
 
 row.ignored =
 !row.ignored
-
-tableVersion.value++
 
 emit(
 'update-data',
@@ -558,7 +565,7 @@ return "ignored-row"
 }
 
 
-return ""
+return "normal-row"
 
 
 }
@@ -666,7 +673,7 @@ overflow-x:auto;
 
 .table-wrapper .el-table{
 
-min-width:1200px;
+min-width:1400px;
 
 }
 
@@ -677,25 +684,119 @@ width:100%;
 }
 
 
-:deep(.ignored-row td){
+/* 行级动画 */
+.el-table__body tr{
 
-text-decoration:line-through;
-
-opacity:0.45;
-
-animation:
-ignoreAnimation .35s;
+transition:
+transform .35s ease,
+opacity .35s ease;
 
 }
 
-@keyframes ignoreAnimation{
+.table-row-move{
+
+transition:
+transform .35s ease;
+
+}
+
+
+/* 忽略行 - 渐变透明 + 左到右删除线 */
+:deep(.ignored-row td){
+
+position:relative;
+
+opacity:.45;
+
+animation:
+ignoreFade .4s;
+
+}
+
+:deep(.ignored-row td::after){
+
+content:"";
+
+position:absolute;
+
+left:0;
+
+top:50%;
+
+height:1px;
+
+background:
+currentColor;
+
+width:0;
+
+animation:
+lineThrough .5s forwards;
+
+}
+
+@keyframes lineThrough{
+
+from{
+width:0;
+}
+
+to{
+width:100%;
+}
+
+}
+
+@keyframes ignoreFade{
 
 from{
 opacity:1;
 }
 
 to{
-opacity:0.45;
+opacity:.45;
+}
+
+}
+
+
+/* 恢复行 - 删除线反向消失 */
+:deep(.normal-row td){
+
+position:relative;
+
+}
+
+:deep(.normal-row td::after){
+
+content:"";
+
+position:absolute;
+
+left:0;
+
+top:50%;
+
+height:1px;
+
+background:
+currentColor;
+
+width:0;
+
+animation:
+lineRemove .3s;
+
+}
+
+@keyframes lineRemove{
+
+from{
+width:100%;
+}
+
+to{
+width:0;
 }
 
 }

@@ -139,14 +139,58 @@ type:'bar',
 
 data:[
 
+
+{
+
+value:
 props.data?.蛋白或酚类污染||0,
 
+name:'蛋白/酚类污染',
+
+itemStyle:{
+
+color:'#e74c3c'
+
+}
+
+},
+
+
+
+{
+
+value:
 props.data?.盐类或试剂残留||0,
 
-props.data?.双重污染风险||0
+name:'盐类/试剂残留',
+
+itemStyle:{
+
+color:'#f39c12'
+
+}
+
+},
+
+
+
+{
+
+value:
+props.data?.双重污染风险||0,
+
+name:'双重污染风险',
+
+itemStyle:{
+
+color:'#8e44ad'
+
+}
+
+}
+
 
 ]
-
 
 }
 

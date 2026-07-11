@@ -16,28 +16,27 @@
 
 <el-button
 
-type="primary"
-
-@click="newExperiment"
-
->
-
-新建实验
-
-</el-button>
-
-
-
-
-<el-button
-
 type="danger"
 
 @click="clear"
 
 >
 
-清空数据
+清空实验
+
+</el-button>
+
+
+
+<el-button
+
+type="primary"
+
+@click="newExperiment"
+
+>
+
+新增样本
 
 </el-button>
 

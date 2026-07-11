@@ -1,333 +1,151 @@
 <template>
 
-<el-card class="summary-card gradient-summary">
+<div class="summary-container">
 
 
-<template #header>
+<!-- 第一层核心指标 -->
 
-<div class="title">
-
-本次实验总体分析
-
-</div>
-
-</template>
+<el-row
+:gutter="16"
+class="top-summary"
+>
 
 
-
-<el-row :gutter="15" class="summary-row">
-
-
-<el-col :xs="24" :sm="24" :md="12" :lg="8">
-
+<el-col
+:xs="24"
+:sm="12"
+:lg="6"
+>
 
 <el-card shadow="hover" class="info-card">
 
-
-<template #header>
-
+<div class="card-title">
 实验概况
+</div>
 
-</template>
+<div class="info">
 
-
-
-<div class="item">
-
+<p>
 总样本：
+<b>{{summary.totalCount || 0}}</b>
+</p>
 
-<b>
-{{summary.totalCount || 0}}
-</b>
+<p>
+有效样本：
+<b>{{summary.validCount || 0}}</b>
+</p>
 
-</div>
-
-
-
-
-<div class="item">
-
-有效分析：
-
-<b>
-{{summary.validCount || 0}}
-</b>
-
-</div>
-
-
-
-
-<div class="item">
-
+<p>
 忽略样本：
+<b>{{summary.ignoredCount || 0}}</b>
+</p>
 
-<b>
-{{summary.ignoredCount || 0}}
-</b>
-
-</div>
-
-
-
-
-<div class="item">
-
-待检测：
-
-<b>
-{{summary.pendingCount || 0}}
-</b>
+<p>
+平均浓度：
+<b>{{summary.avgConcentration || 0}} ng/μL</b>
+</p>
 
 </div>
-
-
-
-
-
-<div class="item">
-
-平均RNA浓度：
-
-<b>
-
-{{summary.avgConcentration || 0}}
-
-ng/μL
-
-</b>
-
-
-</div>
-
-
-
-
-
-<div class="item">
-
-浓度范围：
-
-<b>
-
-{{summary.minConcentration || 0}}
-
-~
-
-{{summary.maxConcentration || 0}}
-
-ng/μL
-
-</b>
-
-</div>
-
 
 </el-card>
-
-
-</el-col>
-
-
-<el-col :xs="24" :sm="24" :md="12" :lg="8">
-
-
-<el-card shadow="hover" class="application-card">
-
-
-<template #header>
-
-实验用途分析
-
-</template>
-
-
-<div class="application-info">
-
-<div class="app-name">
-
-当前用途：
-
-<el-tag :type="applicationType">
-
-{{summary.applicationSummary?.name || '未选择'}}
-
-</el-tag>
-
-</div>
-
-
-<div class="app-level">
-
-质量要求：
-
-{{summary.applicationSummary?.qualityLevel || '-'}}
-
-</div>
-
-
-<div class="app-stats">
-
-符合要求：
-
-<b>
-
-{{summary.applicationSummary?.goodCount || 0}}
-
-</b>
-
-个
-
-</div>
-
-
-<div class="app-stats warning">
-
-需关注：
-
-<b>
-
-{{summary.applicationSummary?.warningCount || 0}}
-
-</b>
-
-个
-
-</div>
-
-
-<div v-if="summary.applicationSummary?.qualityLevel === '严格'" class="app-note">
-
-<el-alert
-
-type="warning"
-
-title="注意"
-
-description="严格用途建议提高RNA纯度标准，必要时进行RNA cleanup。"
-
-show-icon
-
-:closable="false"
-
-/>
-
-</div>
-
-
-</div>
-
-
-</el-card>
-
 
 </el-col>
 
 
 
-
-
-<el-col :xs="24" :sm="24" :md="12" :lg="8">
-
+<el-col
+:xs="24"
+:sm="12"
+:lg="6"
+>
 
 <el-card shadow="hover" class="quality-card">
 
+<div class="card-title">
+RNA质量评级
+</div>
 
-<template #header>
+<div class="info">
 
-RNA质量分布
-
-</template>
-
-
-
-<div class="quality-title">
-
-
+<p>
 总体质量：
 
 <el-tag
-
-:type="qualityType"
-
+:type="qualityTag"
 >
-
-{{summary.quality || '暂无数据'}}
-
+{{summary.quality || '待检测'}}
 </el-tag>
 
-</div>
+</p>
 
-<QualityChart :data="summary.qualityCount" />
-
-<div class="quality-list">
-
-
-<div>
-
+<p>
 优秀：
+{{getQC('优秀')}} 个
+</p>
 
-{{getQualityCount('优秀')}}
-
-个
-
-</div>
-
-
-<div>
-
+<p>
 良好：
+{{getQC('良好')}} 个
+</p>
 
-{{getQualityCount('良好')}}
-
-个
-
-</div>
-
-
-
-<div>
-
-一般：
-
-{{getQualityCount('一般')}}
-
-个
-
-</div>
-
-
-
-
-<div>
-
+<p>
 较差：
-
-{{getQualityCount('较差')}}
-
-个
+{{getQC('较差')}} 个
+</p>
 
 </div>
-
-
-
-<div>
-
-待检测：
-
-{{getQualityCount('待检测')}}
-
-个
-
-</div>
-
-
-
-</div>
-
 
 </el-card>
 
+</el-col>
+
+
+
+
+<el-col
+:xs="24"
+:sm="12"
+:lg="6"
+>
+
+<el-card shadow="hover" class="application-card">
+
+<div class="card-title">
+实验用途分析
+</div>
+
+<div class="info">
+
+<p>
+当前用途：
+
+<el-tag
+:type="applicationType"
+size="small"
+>
+{{summary.applicationSummary?.name || '未选择'}}
+</el-tag>
+
+</p>
+
+<p>
+符合要求：
+
+<b>
+{{summary.applicationSummary?.goodCount || 0}}
+</b>
+个
+</p>
+
+<p class="warning">
+需关注：
+{{summary.applicationSummary?.warningCount || 0}}
+个
+</p>
+
+</div>
+
+</el-card>
 
 </el-col>
 
@@ -335,96 +153,39 @@ RNA质量分布
 
 
 
-<el-col :xs="24" :sm="24" :md="12" :lg="8">
-
-
-<el-card shadow="hover" class="pollution-card">
-
-
-<template #header>
-
-污染分析
-
-</template>
-
-
-
-<div class="pollution-summary">
-
-
-{{summary.pollution || '暂无数据'}}
-
-
-</div>
-
-<PollutionChart :data="summary.pollutionCount" />
-
-<div
-
-v-if="summary.pollutionSamples?.length"
-
-class="pollution-list"
-
+<el-col
+:xs="24"
+:sm="12"
+:lg="6"
 >
 
+<el-card shadow="hover" class="rt-card">
 
-<div>
+<div class="card-title">
+RT模板建议
+</div>
 
+<div class="info">
+
+<p>
+推荐RNA量：
 <b>
-异常样本：
+{{summary.rt?.recommendedRNA || 0}}
 </b>
+ng
+</p>
 
-</div>
-
-
-
-<div
-
-v-for="item in summary.pollutionSamples"
-
-:key="item.id"
-
-class="pollution-item"
-
->
-
-
+<p>
+模板体积：
 <b>
-
-{{item.id}}
-
+{{summary.rt?.minVolume || 0}} ~ {{summary.rt?.maxVolume || 0}}
 </b>
-
-
-：
-
-{{item.pollution}}
-
+μL
+</p>
 
 </div>
-
-
-
-</div>
-
-
-
-<div
-
-v-else
-
-class="normal"
-
->
-
-未发现明显污染风险
-
-</div>
-
-
 
 </el-card>
-
 
 </el-col>
 
@@ -433,94 +194,108 @@ class="normal"
 
 
 
+<!-- 质量分布 -->
 
-<el-card
-
-v-if="summary.rt"
-
-shadow="hover"
-
-class="rt-card rt-gradient"
-
+<el-row
+:gutter="16"
+class="chart-row"
 >
 
+<el-col
+:xs="24"
+>
 
-<template #header>
+<el-card shadow="hover" class="chart-card">
 
-反转录RNA模板推荐
-
-</template>
-
-
-
-
-<div>
-
-
-推荐RNA投入：
-
-<b>
-
-{{summary.rt.recommendedRNA || 0}}
-
-ng
-
-</b>
-
-
+<div class="card-title">
+RNA质量分布
 </div>
 
-
-
-
-<div>
-
-
-模板体积范围：
-
-<b>
-
-{{summary.rt.minVolume || 0}}
-
-~
-
-{{summary.rt.maxVolume || 0}}
-
-μL
-
-</b>
-
-
-</div>
-
-
-
-<div>
-
-
-建议：
-
-{{summary.rt.suggestion || ''}}
-
-</div>
-
-
+<QualityChart
+:data="summary.qualityCount"
+/>
 
 </el-card>
 
+</el-col>
 
+</el-row>
+
+
+
+
+<!-- 污染分析 -->
+
+<el-row
+:gutter="16"
+class="chart-row"
+>
+
+<el-col
+:xs="24"
+>
+
+<el-card shadow="hover" class="pollution-card">
+
+<div class="card-title">
+污染分析
+</div>
+
+<p class="analysis-text">
+{{summary.pollution || '暂无数据'}}
+</p>
+
+<PollutionChart
+:data="summary.pollutionCount"
+/>
+
+<div
+v-if="summary.pollutionSamples?.length"
+class="abnormal-list"
+>
+
+<h4>
+异常样本：
+</h4>
+
+<div
+v-for="item in summary.pollutionSamples"
+:key="item.id"
+class="sample-item"
+>
+
+<b>
+{{item.id}}
+</b>
+：
+{{item.pollution}}
+
+</div>
+
+</div>
+
+<div
+v-else
+class="normal"
+>
+未发现明显污染风险
+</div>
 
 </el-card>
 
+</el-col>
+
+</el-row>
+
+
+</div>
 
 </template>
-
 
 
 
 
 <script setup>
-
 
 import {computed} from 'vue'
 
@@ -528,95 +303,69 @@ import QualityChart from './QualityChart.vue'
 import PollutionChart from './PollutionChart.vue'
 
 
-
 const props =
 defineProps({
 
 summary:{
-
 type:Object,
-
-required:true
-
+default:()=>({})
 }
 
 })
 
 
-
-
-
-function getQualityCount(type){
-
-
-return (
-
-props.summary
-
-.qualityCount
-
-?.[type]
-
-||0
-
-)
-
-
+function getQC(type){
+    return (
+        props.summary
+        .qualityCount
+        ?.[type]
+        || 0
+    )
 }
 
 
-
-
-
-const qualityType = computed(()=>{
-
+const qualityTag =
+computed(()=>{
 
 switch(
-
 props.summary.quality
-
 ){
 
-
 case '优秀':
-
 return 'success'
 
-
-case '一般':
-
-return 'warning'
-
-
-case '较差':
-
-return 'danger'
-
-
-default:
-
+case '良好':
 return ''
 
-}
+case '一般':
+return 'warning'
 
+case '较差':
+return 'danger'
+
+default:
+return 'info'
+
+}
 
 })
 
 
-const applicationType = computed(()=>{
+const applicationType =
+computed(()=>{
 
-const level = props.summary.applicationSummary?.qualityLevel
+const level =
+props.summary
+.applicationSummary
+?.qualityLevel
 
 if(level === '严格'){
     return 'danger'
-} else if(level === '常规'){
-    return 'success'
 }
-return ''
+
+return 'success'
 
 })
-
-
 
 
 </script>
@@ -624,274 +373,105 @@ return ''
 
 
 
-
 <style scoped>
 
-
-.summary-card{
-
-width:100%;
-
+.summary-container{
+    width:100%;
 }
 
-.gradient-summary{
+.chart-row{
+    margin-top:16px;
+}
 
-background:
+.card-title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:15px;
+}
 
-linear-gradient(
-
-135deg,
-
-#f5faff,
-
-#eef7ff
-
-);
-
-border-radius:
-
-14px;
-
+.info p{
+    margin:8px 0;
+    font-size:14px;
+    line-height:1.6;
 }
 
 .info-card{
-
-background:
-
-linear-gradient(
-
-135deg,
-
-#ffffff,
-
-#f3f8ff
-
-);
-
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f3f8ff
+        );
 }
 
 .quality-card{
-
-background:
-
-linear-gradient(
-
-135deg,
-
-#ffffff,
-
-#f3fff7
-
-);
-
-}
-
-.pollution-card{
-
-background:
-
-linear-gradient(
-
-135deg,
-
-#ffffff,
-
-#fff7f3
-
-);
-
-height:auto;
-
-min-height:420px;
-
-overflow:visible;
-
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f3fff7
+        );
 }
 
 .application-card{
-
-background:
-
-linear-gradient(
-
-135deg,
-
-#ffffff,
-
-#f0f0ff
-
-);
-
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f0f0ff
+        );
 }
-
-:deep(.pollution-card .el-card__body){
-
-overflow:visible;
-
-}
-
-.pollution-list{
-
-max-height:220px;
-
-overflow-y:auto;
-
-padding-right:5px;
-
-}
-
-.title{
-
-font-size:18px;
-
-font-weight:bold;
-
-}
-
-
-
-
-
-.item{
-
-line-height:28px;
-
-}
-
-
-
-
-
-.quality-title{
-
-margin-bottom:15px;
-
-}
-
-
-
-
-
-.quality-list{
-
-line-height:30px;
-
-}
-
-
-
-
-
-.pollution-summary{
-
-line-height:22px;
-
-margin-bottom:15px;
-
-}
-
-
-
-
-
-.pollution-item{
-
-margin-top:8px;
-
-line-height:22px;
-
-}
-
-
-
-
-
-.normal{
-
-color:#67c23a;
-
-}
-
-.application-info{
-
-line-height:28px;
-
-}
-
-.app-name{
-
-margin-bottom:8px;
-
-}
-
-.app-level{
-
-margin-bottom:8px;
-
-}
-
-.app-stats{
-
-margin-bottom:8px;
-
-}
-
-.app-stats.warning{
-
-color:#e6a23c;
-
-}
-
-.app-note{
-
-margin-top:12px;
-
-}
-
-
-
-
 
 .rt-card{
-
-margin-top:15px;
-
-line-height:28px;
-
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #fff7d6
+        );
 }
 
-.rt-gradient{
-
-background:
-
-linear-gradient(
-
-135deg,
-
-#fffdf0,
-
-#fff7d6
-
-);
-
+.chart-card{
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f7fffc
+        );
 }
 
-.summary-card .el-card{
-
-height:auto;
-
-min-height:300px;
-
+.pollution-card{
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #fff7f3
+        );
+    overflow:visible;
 }
 
-@media (max-width:768px){
-
-.summary-card .el-card{
-
-min-height:250px;
-
+.warning{
+    color:#e6a23c;
 }
 
+.analysis-text{
+    line-height:1.8;
+    margin-bottom:20px;
+}
+
+.abnormal-list{
+    max-height:260px;
+    overflow-y:auto;
+    padding-right:5px;
+}
+
+.sample-item{
+    padding:8px 0;
+    border-bottom:1px solid #eee;
+}
+
+.normal{
+    color:#67c23a;
 }
 
 </style>

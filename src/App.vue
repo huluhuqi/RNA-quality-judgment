@@ -25,14 +25,6 @@
 
 
 
-<DataInput
-
-@add="addSamples"
-
-/>
-
-
-
 <ExperimentSummary
 :summary="summary"
 />
@@ -112,9 +104,7 @@ import ExperimentControl
 from './components/ExperimentControl.vue'
 
 
-import DataInput
 
-from './components/DataInput.vue'
 
 
 import {calculateBatch}
@@ -325,12 +315,6 @@ updateData([])
 
 }
 
-
-function addSamples(list){
-    if(rnaTableRef.value){
-        rnaTableRef.value.addSamples(list)
-    }
-}
 
 
 watch(

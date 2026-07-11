@@ -15,6 +15,16 @@
 
 
 
+<ExperimentControl
+
+@new="newExperiment"
+
+@clear="clearAll"
+
+/>
+
+
+
 <ExperimentSummary
 :summary="summary"
 />
@@ -57,6 +67,15 @@
 import {ref} from 'vue'
 
 
+import {
+
+watch,
+
+onMounted
+
+} from 'vue'
+
+
 import Header from './components/Header.vue'
 
 import RTParameter from './components/RTParameter.vue'
@@ -70,6 +89,11 @@ import ExportPanel
 from './components/ExportPanel.vue'
 
 
+import ExperimentControl
+
+from './components/ExperimentControl.vue'
+
+
 import {calculateBatch}
 
 from './core/BatchStatistics'
@@ -78,6 +102,19 @@ from './core/BatchStatistics'
 import {calculateRT}
 
 from './core/RTRecommendation'
+
+
+import {
+
+saveExperiment,
+
+loadExperiment,
+
+clearExperiment
+
+}
+
+from './utils/storage'
 
 
 
@@ -171,7 +208,6 @@ function updateRTConfig(config){
 rtConfig.value=config
 
 
-
 summary.value.rt =
 calculateRT(
 samples.value,
@@ -180,6 +216,106 @@ rtConfig.value
 
 
 }
+
+
+function newExperiment(){
+
+
+samples.value=[]
+
+
+summary.value={
+
+count:0,
+
+quality:"暂无数据"
+
+}
+
+
+}
+
+
+function clearAll(){
+
+
+samples.value=[]
+
+
+clearExperiment()
+
+
+updateData([])
+
+
+}
+
+
+watch(
+
+samples,
+
+(value)=>{
+
+
+saveExperiment({
+
+samples:value,
+
+rtConfig:rtConfig.value
+
+})
+
+
+},
+
+{
+
+deep:true
+
+}
+
+)
+
+
+onMounted(()=>{
+
+
+const saved =
+loadExperiment()
+
+
+
+if(saved){
+
+
+samples.value =
+saved.samples || []
+
+
+
+rtConfig.value =
+saved.rtConfig || {
+
+
+maxRNA:1000,
+
+minRNA:10,
+
+maxVolume:12
+
+}
+
+
+updateData(
+samples.value
+)
+
+
+}
+
+
+})
 
 
 

@@ -59,7 +59,7 @@ import {exportExcel}
 from '../utils/export'
 
 
-import {exportRNAReportPDF}
+import {exportPDF}
 
 from '../utils/export'
 
@@ -113,7 +113,7 @@ settings:props.settings
 function pdf(){
 
 
-exportRNAReportPDF(
+exportPDF(
 
 "pdf-report"
 

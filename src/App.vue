@@ -51,6 +51,8 @@ ref="rnaTableRef"
 
 :data="samples"
 
+:settings="rtConfig"
+
 />
 
 

@@ -54,9 +54,9 @@ type="primary"
 <script setup>
 
 
-import {exportExcel}
+import {exportRNAReport}
 
-from '../utils/excelExport'
+from '../utils/exportExcel'
 
 
 import {exportPDF}
@@ -66,13 +66,14 @@ from '../utils/pdfExport'
 
 
 
-
 const props =
 defineProps({
 
 summary:Object,
 
-data:Array
+data:Array,
+
+settings:Object
 
 })
 
@@ -83,11 +84,15 @@ data:Array
 function excel(){
 
 
-exportExcel(
+exportRNAReport({
 
-props.data
+samples:props.data,
 
-)
+summary:props.summary,
+
+settings:props.settings
+
+})
 
 
 }

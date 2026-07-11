@@ -16,7 +16,6 @@ class="chart"
 
 
 
-
 <script setup>
 
 
@@ -40,6 +39,11 @@ import * as echarts
 
 from 'echarts'
 
+import {
+getChartTheme,
+getChartTextColor
+}
+from '../theme/chartTheme'
 
 
 
@@ -61,14 +65,12 @@ let chart=null
 
 
 
-function getChartTextColor(){
-    return getComputedStyle(
-        document.documentElement
-    )
-    .getPropertyValue('--chart-text')
-    .trim()
-    ||
-    '#303133'
+/**
+ * 根据容器宽度计算字体大小，避免小屏文字遮挡
+ */
+function getFontSize(){
+    const width = chartRef.value?.clientWidth || 360
+    return width < 400 ? 10 : 14
 }
 
 
@@ -85,10 +87,11 @@ chartRef.value
 )
 
 const textColor = getChartTextColor()
+const fontSize = getFontSize()
 
 chart.setOption({
 
-backgroundColor:'transparent',
+...getChartTheme(),
 
 tooltip:{},
 
@@ -110,7 +113,8 @@ data:[
 ],
 
 axisLabel:{
-color:textColor
+color:textColor,
+fontSize
 }
 
 },
@@ -122,7 +126,8 @@ yAxis:{
 
 type:'value',
 axisLabel:{
-color:textColor
+color:textColor,
+fontSize
 }
 
 },
@@ -193,7 +198,6 @@ color:'#8e44ad'
 ]
 
 }
-
 ]
 
 })
@@ -203,38 +207,42 @@ color:'#8e44ad'
 
 
 
+/**
+ * 窗口缩放回调（具名，便于移除）
+ */
+function handleResize(){
+    chart?.resize()
+}
+
+
+/**
+ * 主题变更回调（具名，便于移除）
+ */
+function handleThemeChange(){
+    if(chart){
+        chart.dispose()
+        chart=null
+    }
+    render()
+}
+
+
+
 
 onMounted(()=>{
 
 render()
-
 window.addEventListener(
-
 'resize',
-
-()=>chart?.resize()
-
+handleResize
 )
 
 window.addEventListener(
-
 'theme-change',
-
-()=>{
-
-if(chart){
-chart.dispose()
-chart=null
-}
-
-render()
-
-}
-
+handleThemeChange
 )
 
 })
-
 
 
 
@@ -262,7 +270,8 @@ onBeforeUnmount(()=>{
 
 chart?.dispose()
 
-window.removeEventListener('theme-change', render)
+window.removeEventListener('resize', handleResize)
+window.removeEventListener('theme-change', handleThemeChange)
 
 })
 

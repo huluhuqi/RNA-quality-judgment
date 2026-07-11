@@ -82,6 +82,10 @@ type="success"
 
 border
 
+height="600"
+
+stripe
+
 style="width:100%"
 
 >
@@ -91,6 +95,7 @@ style="width:100%"
 
 <el-table-column
 label="模板ID"
+width="140"
 >
 
 <template #default="scope">
@@ -107,7 +112,15 @@ v-model="scope.row.id"
 
 
 <el-table-column
+
 label="RNA浓度"
+
+sortable
+
+prop="concentration"
+
+width="120"
+
 >
 
 <template #default="scope">
@@ -132,7 +145,15 @@ v-model="scope.row.concentration"
 
 
 <el-table-column
+
 label="A260/A280"
+
+sortable
+
+prop="a260280"
+
+width="130"
+
 >
 
 <template #default="scope">
@@ -157,7 +178,15 @@ v-model="scope.row.a260280"
 
 
 <el-table-column
+
 label="A260/A230"
+
+sortable
+
+prop="a260230"
+
+width="130"
+
 >
 
 <template #default="scope">
@@ -184,13 +213,26 @@ v-model="scope.row.a260230"
 
 <el-table-column
 label="RNA质量"
+width="100"
 >
 
 
 <template #default="scope">
 
 
+<el-tag
+
+:type="
+getTagType(
+getAnalysis(scope.row).quality
+)
+"
+
+>
+
 {{getAnalysis(scope.row).quality}}
+
+</el-tag>
 
 
 </template>
@@ -210,11 +252,13 @@ width="260"
 <template #default="scope">
 
 
-<div class="cell-text">
+<TextCell
 
-{{getAnalysis(scope.row).pollution}}
+:text="
+getAnalysis(scope.row).pollution
+"
 
-</div>
+/>
 
 
 </template>
@@ -234,11 +278,48 @@ width="300"
 <template #default="scope">
 
 
-<div class="cell-text">
+<TextCell
 
-{{getAnalysis(scope.row).suggestion}}
+:text="
+getAnalysis(scope.row).suggestion
+"
 
-</div>
+/>
+
+
+</template>
+
+
+</el-table-column>
+
+
+<el-table-column
+
+label="操作"
+
+width="100"
+
+fixed="right"
+
+>
+
+
+<template #default="scope">
+
+
+<el-button
+
+type="danger"
+
+size="small"
+
+@click="deleteRow(scope.$index)"
+
+>
+
+删除
+
+</el-button>
 
 
 </template>
@@ -275,6 +356,10 @@ from '../core/RNAQuality'
 import {parsePasteData}
 
 from '../utils/excelImport'
+
+
+import TextCell
+from './TextCell.vue'
 
 
 
@@ -377,6 +462,61 @@ emit(
 'update-data',
 []
 )
+
+
+}
+
+
+function deleteRow(index){
+
+
+tableData.value.splice(
+index,
+1
+)
+
+
+emit(
+'update-data',
+tableData.value
+)
+
+
+}
+
+
+function getTagType(value){
+
+
+switch(value){
+
+
+case '优秀':
+
+return 'success'
+
+
+case '良好':
+
+return ''
+
+
+case '一般':
+
+return 'warning'
+
+
+case '较差':
+
+return 'danger'
+
+
+default:
+
+return 'info'
+
+
+}
 
 
 }

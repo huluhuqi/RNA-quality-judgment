@@ -14,38 +14,133 @@
 
 
 
+
 <div class="summary">
 
 
 <p>
 样本数量：
-<span>
-0
-</span>
+
+<b>
+{{summary.count}}
+</b>
+
 </p>
 
 
+
 <p>
-RNA质量评级：
-<span>
-等待数据输入
-</span>
+
+RNA浓度：
+
+<b>
+
+平均
+{{summary.avgConcentration.toFixed(2)}}
+
+ng/μL
+
+</b>
+
 </p>
 
 
+
 <p>
+
+浓度范围：
+
+<b>
+
+{{summary.minConcentration.toFixed(2)}}
+
+-
+
+{{summary.maxConcentration.toFixed(2)}}
+
+ng/μL
+
+</b>
+
+</p>
+
+
+
+
+<p>
+
+平均A260/A280：
+
+<b>
+
+{{summary.avgA260280.toFixed(2)}}
+
+</b>
+
+</p>
+
+
+
+
+<p>
+
+平均A260/A230：
+
+<b>
+
+{{summary.avgA260230 ?
+summary.avgA260230.toFixed(2)
+:
+'无数据'}}
+
+</b>
+
+</p>
+
+
+
+
+<p>
+
+总体RNA质量：
+
+<b>
+
+{{summary.quality}}
+
+</b>
+
+</p>
+
+
+
+
+<p>
+
 污染分析：
-<span>
-暂无
-</span>
+
+<b>
+
+{{summary.pollution}}
+
+</b>
+
 </p>
 
 
+
 <p>
-RT推荐：
-<span>
-暂无
-</span>
+
+异常样本：
+
+<b>
+
+{{summary.abnormal}}
+
+个
+
+</b>
+
 </p>
 
 
@@ -60,10 +155,25 @@ RT推荐：
 
 
 
+
 <script setup>
 
 
+defineProps({
+
+summary:{
+
+type:Object,
+
+required:true
+
+}
+
+})
+
+
 </script>
+
 
 
 
@@ -74,17 +184,15 @@ RT推荐：
 
 line-height:2;
 
-font-size:16px;
-
-
 }
 
 
-span{
+b{
 
 font-weight:bold;
 
 }
+
 
 
 </style>

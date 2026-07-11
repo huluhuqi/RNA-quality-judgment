@@ -287,6 +287,11 @@ const pasteText = ref('')
 const tableData = ref([])
 
 
+const emit = defineEmits([
+    'update-data'
+])
+
+
 function getAnalysis(row){
 
     return analyzeRNA(row)
@@ -316,6 +321,12 @@ tableData.value.push(
 )
 
 
+emit(
+'update-data',
+tableData.value
+)
+
+
 pasteText.value=''
 
 
@@ -340,8 +351,13 @@ a260280:null,
 
 a260230:null
 
-
 })
+
+
+emit(
+'update-data',
+tableData.value
+)
 
 
 }
@@ -355,6 +371,12 @@ function clearData(){
 
 
 tableData.value=[]
+
+
+emit(
+'update-data',
+[]
+)
 
 
 }

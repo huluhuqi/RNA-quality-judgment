@@ -3,15 +3,26 @@
  *
  * RNA 质量分析只执行一次，结果写入 sample.result，
  * 所有组件（表格/总结/Excel/PDF）统一读取，避免重复计算。
+ *
+ * result 结构：
+ * {
+ *   quality, pollution, pollutionText, suggestion, pollutionType, diagnosis,
+ *   advice: {
+ *     pollution:    [{ type, level, text }],
+ *     extraction:   [{ type, level, title, cause, step, solution }],
+ *     concentration:[{ type, level, text, suggestion }]
+ *   }
+ * }
  */
-import { analyzeRNA } from "../quality";
+import { analyzeRNA } from "../quality"
+import { generateAdvice } from "../advice"
 
 
 /**
  * 单个样本分析
  *
  * @param {Object} sample  标准化样本
- * @param {Object} config  { method, application }
+ * @param {Object} config  { method, application, ...rtConfig }
  * @returns {Object} 带有 result 字段的样本
  */
 export function analyzeSample(sample, config = {}){
@@ -25,13 +36,25 @@ export function analyzeSample(sample, config = {}){
     }
 
 
+    const qualityResult = analyzeRNA(
+        sample,
+        config.method,
+        config.application
+    )
+
+    const advice = generateAdvice(
+        sample,
+        config.method,
+        config
+    )
+
+
     return {
         ...sample,
-        result: analyzeRNA(
-            sample,
-            config.method,
-            config.application
-        )
+        result: {
+            ...qualityResult,
+            advice
+        }
     };
 
 

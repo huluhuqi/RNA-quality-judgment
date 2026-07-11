@@ -1,28 +1,27 @@
 /**
  * RNA质量分析
- *
- * 输入：
- * {
- *  concentration,
- *  a260280,
- *  a260230
- * }
- *
- * 输出：
- * {
- *  quality,
- *  pollution,
- *  suggestion
- * }
  */
 
 
 export function analyzeRNA(sample){
 
 
-    const a280 = Number(sample.a260280)
+    const a280 =
+        parseFloat(sample.a260280)
 
-    const a230 = Number(sample.a260230)
+
+    const a230 =
+        parseFloat(sample.a260230)
+
+
+
+    const hasA280 =
+        !isNaN(a280)
+
+
+
+    const hasA230 =
+        !isNaN(a230)
 
 
 
@@ -34,30 +33,15 @@ export function analyzeRNA(sample){
 
 
 
-    /*
-        A260/A280判断
 
-        优秀：
-        1.9-2.1
-
-        良好：
-        1.8-2.2
-
-        一般：
-        1.7-2.3
-
-        较差：
-        其他
-    */
+    if(!hasA280){
 
 
-    if(!a280){
-
-
-        quality = '无法判断'
+        quality = '待检测'
 
 
     }
+
     else if(
         a280>=1.9 &&
         a280<=2.1
@@ -66,6 +50,7 @@ export function analyzeRNA(sample){
         quality='优秀'
 
     }
+
     else if(
         a280>=1.8 &&
         a280<=2.2
@@ -74,6 +59,7 @@ export function analyzeRNA(sample){
         quality='良好'
 
     }
+
     else if(
         a280>=1.7 &&
         a280<=2.3
@@ -82,8 +68,8 @@ export function analyzeRNA(sample){
         quality='一般'
 
     }
-    else{
 
+    else{
 
         quality='较差'
 
@@ -92,70 +78,99 @@ export function analyzeRNA(sample){
 
 
 
-    /*
-        污染判断
-    */
-
-
     let pollutionList=[]
 
 
 
-    if(a280 && a280<1.8){
 
-        pollutionList.push(
-            '蛋白质或酚类污染风险'
-        )
+    if(hasA280){
+
+
+        if(a280<1.8){
+
+            pollutionList.push(
+                'A260/A280偏低，提示蛋白质或酚类污染风险'
+            )
+
+        }
+
+
+        else if(a280>2.2){
+
+
+            pollutionList.push(
+                'A260/A280偏高，可能存在RNA降解或测定误差'
+            )
+
+        }
+
 
     }
 
 
 
-    if(a230){
 
 
-        if(a230<1){
+    if(hasA230){
+
+
+        if(a230<1.0){
 
 
             pollutionList.push(
-                '严重盐类、胍盐或试剂残留'
+                'A260/A230严重偏低，提示胍盐、盐类或提取试剂残留风险'
             )
 
 
         }
+
         else if(a230<1.5){
 
 
             pollutionList.push(
-                '盐离子、乙醇或提取试剂残留'
+                'A260/A230偏低，提示盐离子、乙醇或有机物残留风险'
             )
 
 
         }
-        else if(a230<2){
+
+        else if(a230<2.0){
 
 
             pollutionList.push(
-                '轻微有机物或盐类残留风险'
+                'A260/A230略低，存在轻微残留风险'
             )
+
 
         }
 
 
-
     }
 
 
 
-    if(
-        pollutionList.length===0
-    ){
 
-        pollution =
-        '未发现明显污染'
+
+    if(pollutionList.length===0){
+
+
+        if(hasA280 || hasA230){
+
+            pollution =
+            '未发现明显污染'
+
+        }
+
+        else{
+
+            pollution =
+            '暂无纯度数据'
+
+        }
 
 
     }
+
     else{
 
 
@@ -169,41 +184,59 @@ export function analyzeRNA(sample){
 
 
 
-    /*
-        建议
-    */
-
 
     if(
-        quality==='优秀' &&
-        pollution==='未发现明显污染'
+        quality==='待检测'
     ){
 
 
-        suggestion=
+        suggestion =
+        '请输入A260/A280数据后进行RNA质量评价'
+
+
+    }
+
+
+    else if(
+
+        quality==='优秀'
+        &&
+        pollution==='未发现明显污染'
+
+    ){
+
+
+        suggestion =
         'RNA质量良好，可直接用于反转录及RT-qPCR实验'
 
 
     }
+
+
     else if(
-        quality==='较差' ||
-        pollution.includes('严重')
+
+        quality==='较差'
+
     ){
 
 
-        suggestion=
-        '建议进一步纯化RNA，并重新检测纯度及完整性'
+        suggestion =
+        'RNA纯度异常，建议检查提取过程，必要时进行RNA纯化并重新检测'
 
 
     }
+
+
     else{
 
 
-        suggestion=
-        'RNA基本可使用，建议根据实验要求评估是否需要优化处理'
+        suggestion =
+        'RNA基本可使用，建议结合实验需求评估是否需要进一步纯化'
 
 
     }
+
+
 
 
 

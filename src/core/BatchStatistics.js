@@ -196,51 +196,62 @@ export function calculateBatch(samples){
 
     // 总体质量评级
 
-    const badRate=
-        qualityCount['较差'] /
-        validSamples.length
+    const hasQuality =
+        qualityCount['优秀']+
+        qualityCount['良好']+
+        qualityCount['一般']+
+        qualityCount['较差']
 
-    const goodRate=
-        (
-            qualityCount['优秀']+
-            qualityCount['良好']
-        )
-        /
-        validSamples.length
+    if(hasQuality===0){
 
-
-    let overall
-
-
-    if(
-        qualityCount['优秀']/validSamples.length>=0.8
-        &&
-        badRate<0.05
-    ){
-
-        overall="优秀"
+        overall="暂无数据"
 
     }
-
-    else if(
-        goodRate>=0.8
-    ){
-
-        overall="良好"
-
-    }
-
-    else if(
-        badRate>0.3
-    ){
-
-        overall="较差"
-
-    }
-
     else{
 
-        overall="一般"
+        const badRate=
+            qualityCount['较差'] /
+            hasQuality
+
+        const goodRate=
+            (
+                qualityCount['优秀']+
+                qualityCount['良好']
+            )
+            /
+            hasQuality
+
+        if(
+            qualityCount['优秀']/hasQuality>=0.8
+            &&
+            badRate<0.05
+        ){
+
+            overall="优秀"
+
+        }
+
+        else if(
+            goodRate>=0.8
+        ){
+
+            overall="良好"
+
+        }
+
+        else if(
+            badRate>0.3
+        ){
+
+            overall="较差"
+
+        }
+
+        else{
+
+            overall="一般"
+
+        }
 
     }
 
@@ -260,7 +271,11 @@ export function calculateBatch(samples){
 
         const p = r.analysis.pollution
 
-        if(p!=='未发现明显污染'){
+        if(
+            p!=='未发现明显污染'
+            &&
+            p!=='暂无纯度数据'
+        ){
 
             pollutionCount++
 

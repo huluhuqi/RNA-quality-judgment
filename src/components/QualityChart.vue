@@ -109,7 +109,7 @@ trigger:'item'
 legend:{
 
 
-bottom:'8%',
+bottom:0,
 textStyle:{
 color:textColor,
 fontSize
@@ -128,9 +128,11 @@ series:[
 type:'pie',
 
 radius:[
-'45%',
-'70%'
+'40%',
+'62%'
 ],
+
+center: ['50%', '42%'],
 
 
 

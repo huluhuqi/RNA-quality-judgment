@@ -283,43 +283,23 @@ export function calculateBatch(samples, extractionMethod, application){
 
     analysisResults.forEach(item=>{
 
+        const pType = item.result.pollutionType
 
-        if(
+        if(pType){
 
-            item.result.pollution
-            !==
-            '未发现明显污染'
-
-            &&
-
-            item.result.pollution
-            !==
-            '暂无纯度数据'
-
-        ){
-
-            const text =
-            item.result.pollution
-
-            const has280 =
-            text.includes('A260/A280')
-
-            const has230 =
-            text.includes('A260/A230')
-
-            if(has280 && has230){
+            if(pType === 'both'){
 
                 pollutionCount.双重污染风险++
 
             }
 
-            else if(has280){
+            else if(pType === 'protein'){
 
                 pollutionCount.蛋白或酚类污染++
 
             }
 
-            else if(has230){
+            else if(pType === 'salt'){
 
                 pollutionCount.盐类或试剂残留++
 
@@ -331,10 +311,11 @@ export function calculateBatch(samples, extractionMethod, application){
                 id:
                 item.sample.id,
 
-
                 pollution:
-                item.result.pollution
+                item.result.pollution,
 
+                suggestion:
+                item.result.suggestion
 
             })
 

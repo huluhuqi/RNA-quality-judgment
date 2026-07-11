@@ -6,6 +6,8 @@ import { extractionAdvice } from '../config/extractionAdvice'
 
 import { downstreamApplications } from '../config/downstreamApplication'
 
+import { getExtractionAdvice } from '../config/getExtractionDiagnosis'
+
 
 export function analyzeRNA(sample, extractionMethod, application){
 
@@ -36,7 +38,10 @@ export function analyzeRNA(sample, extractionMethod, application){
 
     const appConfig = downstreamApplications[application] || downstreamApplications.qPCR
 
-
+    let diagnosis = {
+        protein: null,
+        salt: null
+    }
 
 
     if(!hasA280){
@@ -91,9 +96,7 @@ export function analyzeRNA(sample, extractionMethod, application){
 
 
 
-
     let pollutionList=[]
-
 
 
 
@@ -108,6 +111,10 @@ export function analyzeRNA(sample, extractionMethod, application){
             )
 
             pollutionType = 'protein'
+
+            if(extractionMethod){
+                diagnosis.protein = getExtractionAdvice(extractionMethod, 'low280')
+            }
 
 
         }
@@ -129,7 +136,6 @@ export function analyzeRNA(sample, extractionMethod, application){
 
 
 
-
     if(hasA230){
 
 
@@ -141,6 +147,10 @@ export function analyzeRNA(sample, extractionMethod, application){
             )
 
             pollutionType = pollutionType ? 'both' : 'salt'
+
+            if(extractionMethod){
+                diagnosis.salt = getExtractionAdvice(extractionMethod, 'low230')
+            }
 
 
         }
@@ -155,6 +165,10 @@ export function analyzeRNA(sample, extractionMethod, application){
 
             pollutionType = pollutionType ? 'both' : 'salt'
 
+            if(extractionMethod){
+                diagnosis.salt = getExtractionAdvice(extractionMethod, 'low230')
+            }
+
 
         }
 
@@ -168,12 +182,15 @@ export function analyzeRNA(sample, extractionMethod, application){
 
             pollutionType = pollutionType ? 'both' : 'salt'
 
+            if(extractionMethod){
+                diagnosis.salt = getExtractionAdvice(extractionMethod, 'low230')
+            }
+
 
         }
 
 
     }
-
 
 
 
@@ -209,9 +226,6 @@ export function analyzeRNA(sample, extractionMethod, application){
 
 
 
-
-
-
     if(
         quality==='待检测'
     ){
@@ -225,7 +239,6 @@ export function analyzeRNA(sample, extractionMethod, application){
 
 
     else if(
-
         quality==='优秀'
         &&
         pollution==='未发现明显污染'
@@ -234,21 +247,19 @@ export function analyzeRNA(sample, extractionMethod, application){
 
 
         suggestion =
-        'RNA质量良好，可直接用于反转录及RT-qPCR实验'
+        'RNA质量良好，可直接用于反转录及RT-qPCR实验。' + (appConfig.advice || '')
 
 
     }
 
 
     else if(
-
         quality==='较差'
 
     ){
 
 
-        suggestion =
-        'RNA纯度异常，建议检查提取过程，必要时进行RNA纯化并重新检测'
+        suggestion = buildFullSuggestion(diagnosis, appConfig, extractionMethod)
 
 
     }
@@ -257,27 +268,8 @@ export function analyzeRNA(sample, extractionMethod, application){
     else if(pollutionType && extractionMethod){
 
 
-        const advice = extractionAdvice[extractionMethod]
+        suggestion = buildFullSuggestion(diagnosis, appConfig, extractionMethod)
 
-        let finalAdvice = appConfig.advice || ''
-
-        if(advice){
-
-            if(pollutionType === 'protein' || pollutionType === 'both'){
-
-                finalAdvice += (finalAdvice ? '；' : '') + (advice.protein || '')
-
-            }
-
-            if(pollutionType === 'salt' || pollutionType === 'both'){
-
-                finalAdvice += (finalAdvice ? '；' : '') + (advice.salt || '')
-
-            }
-
-        }
-
-        suggestion = finalAdvice || suggestion
 
     }
 
@@ -290,23 +282,53 @@ export function analyzeRNA(sample, extractionMethod, application){
 
 
 
-
     return {
 
 
         quality,
 
-
         pollution,
-
 
         suggestion,
 
+        pollutionType,
 
-        pollutionType
+        diagnosis
 
 
     }
 
 
+}
+
+
+function buildFullSuggestion(diagnosis, appConfig, extractionMethod){
+
+    let parts = []
+
+    if(diagnosis.protein){
+        parts.push(
+            `【蛋白/酚类污染】\n` +
+            `可能原因：${diagnosis.protein.reason.join('；')}\n` +
+            `问题步骤：${diagnosis.protein.step.join('；')}\n` +
+            `优化建议：${diagnosis.protein.optimization.join('；')}`
+        )
+    }
+
+    if(diagnosis.salt){
+        parts.push(
+            `【盐类/试剂残留】\n` +
+            `可能原因：${diagnosis.salt.reason.join('；')}\n` +
+            `问题步骤：${diagnosis.salt.step.join('；')}\n` +
+            `优化建议：${diagnosis.salt.optimization.join('；')}`
+        )
+    }
+
+    if(appConfig?.advice){
+        parts.push(
+            `【下游实验建议】\n${appConfig.advice}`
+        )
+    }
+
+    return parts.join('\n\n')
 }

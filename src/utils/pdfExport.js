@@ -1,140 +1,103 @@
-import jsPDF from 'jspdf'
-
-import 'jspdf-autotable'
-
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 
-export function exportPDF(
-summary,
-data
+/**
+ * RNA质量检测PDF报告
+ *
+ * 通过 html2canvas 截取指定DOM区域，分页写入 A4 PDF。
+ * 保留网页主题颜色与 ECharts 图表。
+ *
+ * @param {string} elementId 需要截图的DOM根元素id
+ * @param {string} fileName 输出文件名
+ */
+export async function exportRNAReportPDF(
+    elementId,
+    fileName = "RNA质量检测实验报告.pdf"
 ){
 
 
-const doc =
-new jsPDF()
+const element =
+document.getElementById(elementId);
 
 
+if(!element){
+console.error("未找到PDF导出区域");
+return;
+}
 
-doc.setFontSize(16)
 
+// 截图（scale:2 提升清晰度）
+const canvas =
+await html2canvas(element, {
+scale:2,
+useCORS:true,
+backgroundColor:"#ffffff",
+logging:false
+});
 
-doc.text(
 
-"RNA Quality Judgment Report",
+const imgData =
+canvas.toDataURL("image/png");
 
-10,
 
-15
+// A4 纵向
+const pdf =
+new jsPDF({
+orientation:"portrait",
+unit:"mm",
+format:"a4"
+});
 
-)
 
+const pageWidth =
+pdf.internal.pageSize.width;
 
+const pageHeight =
+pdf.internal.pageSize.height;
 
 
-doc.setFontSize(11)
+// 按页宽等比缩放
+const imgWidth = pageWidth;
 
+const imgHeight =
+canvas.height * pageWidth / canvas.width;
 
-doc.text(
 
-`样本数量:${summary.count}`,
+let heightLeft = imgHeight;
+let position = 0;
 
-10,
 
-30
+// 首页
+pdf.addImage(
+imgData,
+"PNG",
+0,
+position,
+imgWidth,
+imgHeight
+);
 
-)
+heightLeft -= pageHeight;
 
 
+// 后续页
+while(heightLeft > 0){
+position = heightLeft - imgHeight;
+pdf.addPage();
+pdf.addImage(
+imgData,
+"PNG",
+0,
+position,
+imgWidth,
+imgHeight
+);
+heightLeft -= pageHeight;
+}
 
-doc.text(
 
-`RNA质量:${summary.quality}`,
-
-10,
-
-40
-
-)
-
-
-
-doc.text(
-
-`污染分析:${summary.pollution}`,
-
-10,
-
-50
-
-)
-
-
-
-doc.text(
-
-`RT推荐:${summary.rt.recommendedRNA} ng`,
-
-10,
-
-60
-
-)
-
-
-
-
-
-
-const tableData = data.map(
-
-item=>[
-
-item.id,
-
-item.concentration,
-
-item.a260280,
-
-item.a260230
-
-]
-
-)
-
-
-
-
-
-doc.autoTable({
-
-startY:70,
-
-head:[
-
-[
-"模板ID",
-"浓度",
-"A260/A280",
-"A260/A230"
-
-]
-
-],
-
-
-body:tableData
-
-
-})
-
-
-
-
-doc.save(
-
-"RNA_quality_report.pdf"
-
-)
+pdf.save(fileName);
 
 
 }

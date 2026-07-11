@@ -1,13 +1,28 @@
 <template>
 
-<div class="summary-container">
+<div id="pdf-report" class="summary-container">
+
+
+<!-- PDF封面标题 -->
+
+<div class="pdf-title">
+
+<h1>
+RNA质量检测实验报告
+</h1>
+
+<p>
+RNA Quality Judgment
+</p>
+
+</div>
 
 
 <!-- 第一层核心指标 -->
 
 <el-row
 :gutter="16"
-class="top-summary"
+class="top-summary pdf-section"
 >
 
 
@@ -227,7 +242,7 @@ show-icon
 
 <el-row
 :gutter="16"
-class="chart-row"
+class="chart-row pdf-section"
 >
 
 <el-col
@@ -258,7 +273,7 @@ ref="qualityChartRef"
 
 <el-row
 :gutter="16"
-class="chart-row"
+class="chart-row pdf-section"
 >
 
 <el-col
@@ -557,6 +572,52 @@ await pollutionChartRef.value?.getImage()
 
 .normal{
     color:#67c23a;
+}
+
+
+/* PDF封面标题 */
+.pdf-title{
+    text-align:center;
+    padding:30px;
+    margin-bottom:20px;
+    background:
+        linear-gradient(
+            135deg,
+            #f0f7ff,
+            #ffffff
+        );
+    border-radius:8px;
+}
+
+.pdf-title h1{
+    font-size:28px;
+    font-weight:bold;
+    color:#303133;
+    margin-bottom:8px;
+}
+
+.pdf-title p{
+    font-size:14px;
+    color:#909399;
+    letter-spacing:1px;
+}
+
+
+/* PDF分页：避免模块被截断 */
+.pdf-section{
+    page-break-inside:avoid;
+    margin-bottom:20px;
+}
+
+
+/* 打印优化 */
+@media print{
+    .summary-container{
+        background:#ffffff !important;
+    }
+    .pdf-section{
+        break-inside:avoid;
+    }
 }
 
 </style>

@@ -271,6 +271,10 @@ defineExpose({
 
 async getImage(){
 
+if(chart){
+chart.resize()
+}
+
 const canvas =
 chartRef.value
 ?.querySelector("canvas")

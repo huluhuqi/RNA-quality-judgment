@@ -264,6 +264,10 @@ async getImage(){
 return new Promise(
 resolve=>{
 
+if(chart){
+chart.resize()
+}
+
 const canvas =
 chartRef.value
 ?.querySelector("canvas")
@@ -280,6 +284,7 @@ canvas.toDataURL(
 )
 
 }
+
 )
 }
 

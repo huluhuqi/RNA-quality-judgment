@@ -270,6 +270,15 @@ export function calculateBatch(samples){
 
     const pollutionSamples=[]
 
+    const pollutionCount={
+
+        蛋白或酚类污染:0,
+
+        盐类或试剂残留:0,
+
+        双重污染风险:0
+
+    }
 
 
     analysisResults.forEach(item=>{
@@ -288,6 +297,33 @@ export function calculateBatch(samples){
             '暂无纯度数据'
 
         ){
+
+            const text =
+            item.result.pollution
+
+            const has280 =
+            text.includes('A260/A280')
+
+            const has230 =
+            text.includes('A260/A230')
+
+            if(has280 && has230){
+
+                pollutionCount.双重污染风险++
+
+            }
+
+            else if(has280){
+
+                pollutionCount.蛋白或酚类污染++
+
+            }
+
+            else if(has230){
+
+                pollutionCount.盐类或试剂残留++
+
+            }
 
 
             pollutionSamples.push({
@@ -422,8 +458,9 @@ export function calculateBatch(samples){
         pollutionSummary,
 
 
-        pollutionSamples
+        pollutionSamples,
 
+        pollutionCount
 
 
     }

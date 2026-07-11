@@ -163,12 +163,9 @@ RNA质量分布
 
 </el-tag>
 
-
 </div>
 
-
-
-
+<QualityChart :data="summary.qualityCount" />
 
 <div class="quality-list">
 
@@ -267,8 +264,7 @@ RNA质量分布
 
 </div>
 
-
-
+<PollutionChart :data="summary.pollutionCount" />
 
 <div
 
@@ -434,6 +430,9 @@ ng
 
 
 import {computed} from 'vue'
+
+import QualityChart from './QualityChart.vue'
+import PollutionChart from './PollutionChart.vue'
 
 
 

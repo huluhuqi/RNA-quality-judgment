@@ -34,6 +34,15 @@
     --chart-text:#303133;
     --chart-grid:#ebeef5;
 
+    /* 标签 & 按钮 */
+    --label-color:#303133;
+    --button-text:#ffffff;
+    --tag-bg:#f4f4f5;
+    --tag-text:#303133;
+
+    /* 卡片阴影 */
+    --card-shadow:0 2px 12px rgba(0,0,0,.08);
+
     /* 卡片渐变 - 各卡片不同色调 */
     --card-quality-from:#ffffff;
     --card-quality-to:#f0f9ff;
@@ -96,6 +105,12 @@
     --card-chart-to:#f0fff4;
     --card-extraction-from:#ffffff;
     --card-extraction-to:#f5eeff;
+
+    --label-color:#1d3557;
+    --button-text:#ffffff;
+    --tag-bg:#e8f2ff;
+    --tag-text:#1d3557;
+    --card-shadow:0 2px 12px rgba(29,53,87,.1);
 }
 
 /* ===================== 生命绿 ===================== */
@@ -143,6 +158,12 @@
     --card-chart-to:#f0fff4;
     --card-extraction-from:#ffffff;
     --card-extraction-to:#f8f0ff;
+
+    --label-color:#1b4332;
+    --button-text:#ffffff;
+    --tag-bg:#e8f8ec;
+    --tag-text:#1b4332;
+    --card-shadow:0 2px 12px rgba(27,67,50,.1);
 }
 
 /* ===================== 活力橙 ===================== */
@@ -190,6 +211,12 @@
     --card-chart-to:#f0fff4;
     --card-extraction-from:#ffffff;
     --card-extraction-to:#faf5ff;
+
+    --label-color:#7c2d12;
+    --button-text:#ffffff;
+    --tag-bg:#fff5eb;
+    --tag-text:#7c2d12;
+    --card-shadow:0 2px 12px rgba(124,45,18,.1);
 }
 
 /* ===================== 实验紫 ===================== */
@@ -237,6 +264,12 @@
     --card-chart-to:#f0fff4;
     --card-extraction-from:#ffffff;
     --card-extraction-to:#faf5ff;
+
+    --label-color:#3b0764;
+    --button-text:#ffffff;
+    --tag-bg:#f3e8ff;
+    --tag-text:#3b0764;
+    --card-shadow:0 2px 12px rgba(59,7,100,.1);
 }
 
 /* ===================== 暗夜黑 ===================== */
@@ -251,7 +284,7 @@
     --border:#434343;
 
     --input-bg:#262626;
-    --input-border:#434343;
+    --input-border:#555555;
 
     --table-bg:#1f1f1f;
     --table-text:#ffffff;
@@ -269,6 +302,12 @@
     --chart-bg:#1f1f1f;
     --chart-text:#ffffff;
     --chart-grid:#434343;
+
+    --label-color:#ffffff;
+    --button-text:#ffffff;
+    --tag-bg:#303030;
+    --tag-text:#ffffff;
+    --card-shadow:0 2px 12px rgba(0,0,0,.5);
 
     --card-quality-from:#1f1f1f;
     --card-quality-to:#262626;
@@ -295,19 +334,6 @@ body{
     transition: background .3s, color .3s;
 }
 
-/* ===================== 卡片 ===================== */
-.el-card{
-    background: var(--card-bg)!important;
-    color: var(--text-color);
-    border-color: var(--border-color)!important;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.el-card__header{
-    color: var(--text-color);
-}
-
 /* ===================== 普通文字 ===================== */
 body,
 span,
@@ -321,23 +347,31 @@ p{
     color: var(--text-secondary);
 }
 
-/* ===================== 表格 ===================== */
-.el-table{
-    background: var(--table-bg)!important;
-    color: var(--table-text);
+/* ===================== 卡片 ===================== */
+.el-card{
+    background: var(--card-bg)!important;
+    color: var(--text-color)!important;
+    border-color: var(--border-color)!important;
+    box-shadow: var(--card-shadow);
+    min-width: 0;
+    overflow: hidden;
 }
 
-.el-table th{
-    background: var(--table-header-bg)!important;
+.el-card__header{
     color: var(--text-color)!important;
 }
 
-.el-table td{
-    color: var(--table-text)!important;
+.el-card__body{
+    color: var(--text-color)!important;
 }
 
-.el-table__row:hover > td{
-    background: var(--table-row-hover)!important;
+/* ===================== 表单 ===================== */
+.el-form-item__label{
+    color: var(--label-color)!important;
+}
+
+.el-form-item__content{
+    color: var(--text-color)!important;
 }
 
 /* ===================== 输入框 ===================== */
@@ -350,13 +384,31 @@ p{
     color: var(--text-color)!important;
 }
 
+.el-input__inner::placeholder{
+    color: var(--text-secondary)!important;
+}
+
 .el-textarea__inner{
     background: var(--input-bg)!important;
     color: var(--text-color)!important;
     border-color: var(--input-border)!important;
 }
 
-/* ===================== 下拉菜单 ===================== */
+.el-textarea__inner::placeholder{
+    color: var(--text-secondary)!important;
+}
+
+/* ===================== 数字输入框 ===================== */
+.el-input-number{
+    color: var(--text-color)!important;
+}
+
+/* ===================== 下拉选择器 ===================== */
+.el-select__selected-item,
+.el-select__placeholder{
+    color: var(--text-color)!important;
+}
+
 .el-select-dropdown{
     background: var(--card-bg)!important;
     border-color: var(--border-color)!important;
@@ -366,23 +418,109 @@ p{
     color: var(--text-color)!important;
 }
 
+.el-select-dropdown__item.hover,
 .el-select-dropdown__item:hover{
     background: var(--table-row-hover)!important;
 }
 
-/* ===================== 按钮跟随主题 ===================== */
+.el-select-dropdown__item.selected{
+    color: var(--primary-color)!important;
+}
+
+/* ===================== 表格 ===================== */
+.el-table{
+    background: var(--table-bg)!important;
+    color: var(--table-text)!important;
+}
+
+.el-table th{
+    background: var(--table-header-bg)!important;
+    color: var(--text-color)!important;
+}
+
+.el-table td{
+    color: var(--table-text)!important;
+    background: var(--table-bg)!important;
+}
+
+.el-table__row:hover > td{
+    background: var(--table-row-hover)!important;
+}
+
+.el-table__empty-text{
+    color: var(--text-secondary)!important;
+}
+
+.el-table .el-table__inner-wrapper::before,
+.el-table .el-table__border-left-patch{
+    background-color: var(--border-color)!important;
+}
+
+.el-table--border,
+.el-table--border th,
+.el-table--border td{
+    border-color: var(--border-color)!important;
+}
+
+/* ===================== 按钮 ===================== */
+.el-button{
+    color: var(--text-color);
+    border-color: var(--border-color);
+    background: var(--card-bg);
+}
+
+.el-button:hover{
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
 .el-button--primary{
     background: var(--button-color)!important;
     border-color: var(--button-color)!important;
+    color: var(--button-text)!important;
+}
+
+.el-button--danger{
+    color: #ffffff!important;
+}
+
+.el-button--success{
+    color: #ffffff!important;
+}
+
+.el-button--warning{
+    color: #ffffff!important;
+}
+
+/* ===================== 标签 ===================== */
+.el-tag{
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border-color: var(--border-color);
+}
+
+/* ===================== Radio / Checkbox ===================== */
+.el-radio__label,
+.el-checkbox__label{
+    color: var(--text-color)!important;
+}
+
+.el-radio__input.is-checked + .el-radio__label,
+.el-checkbox__input.is-checked + .el-checkbox__label{
+    color: var(--primary-color)!important;
 }
 
 /* ===================== 弹窗 ===================== */
 .el-dialog{
     background: var(--card-bg)!important;
-    color: var(--text-color);
+    color: var(--text-color)!important;
 }
 
 .el-dialog__title{
+    color: var(--text-color)!important;
+}
+
+.el-dialog__body{
     color: var(--text-color)!important;
 }
 
@@ -397,6 +535,42 @@ p{
 
 .el-message-box__message p{
     color: var(--text-secondary)!important;
+}
+
+/* ===================== 分页 ===================== */
+.el-pagination{
+    color: var(--text-color)!important;
+}
+
+.el-pagination button{
+    color: var(--text-color)!important;
+    background: var(--card-bg)!important;
+}
+
+.el-pagination .el-pager li{
+    color: var(--text-color)!important;
+    background: var(--card-bg)!important;
+}
+
+/* ===================== 描述列表 ===================== */
+.el-descriptions__label{
+    color: var(--label-color)!important;
+    background: var(--table-header-bg)!important;
+}
+
+.el-descriptions__content{
+    color: var(--text-color)!important;
+    background: var(--card-bg)!important;
+}
+
+/* ===================== 空状态 ===================== */
+.el-empty__description p{
+    color: var(--text-secondary)!important;
+}
+
+/* ===================== Alert ===================== */
+.el-alert{
+    background: var(--card-bg)!important;
 }
 
 /* ===================== 主题切换动画 ===================== */

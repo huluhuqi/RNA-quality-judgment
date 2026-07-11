@@ -25,6 +25,14 @@
 
 
 
+<DataInput
+
+@add="addSamples"
+
+/>
+
+
+
 <ExperimentSummary
 :summary="summary"
 />
@@ -36,6 +44,7 @@
 
 
 <RNADataTable
+ref="rnaTableRef"
 @update-data="updateData"
 />
 
@@ -101,6 +110,11 @@ from './components/ExportPanel.vue'
 import ExperimentControl
 
 from './components/ExperimentControl.vue'
+
+
+import DataInput
+
+from './components/DataInput.vue'
 
 
 import {calculateBatch}
@@ -182,6 +196,9 @@ suggestion:''
 
 const samples =
 ref([])
+
+
+const rnaTableRef = ref(null)
 
 
 
@@ -283,7 +300,6 @@ qualityCount:{
 
 }
 
-
 }
 
 
@@ -299,6 +315,13 @@ clearExperiment()
 updateData([])
 
 
+}
+
+
+function addSamples(list){
+    if(rnaTableRef.value){
+        rnaTableRef.value.addSamples(list)
+    }
 }
 
 

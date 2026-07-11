@@ -110,6 +110,7 @@ width="140"
 
 <el-input
 v-model="scope.row.id"
+@change="onCellChange(scope.row)"
 />
 
 </template>
@@ -138,6 +139,8 @@ width="120"
 v-model="scope.row.concentration"
 
 :controls="false"
+
+@change="onCellChange(scope.row)"
 
 />
 
@@ -172,6 +175,8 @@ v-model="scope.row.a260280"
 
 :controls="false"
 
+@change="onCellChange(scope.row)"
+
 />
 
 
@@ -205,6 +210,8 @@ width="130"
 v-model="scope.row.a260230"
 
 :controls="false"
+
+@change="onCellChange(scope.row)"
 
 />
 
@@ -395,9 +402,19 @@ import {parsePasteData}
 from '../utils/excelImport'
 
 
+import {
+saveHistory,
+undo,
+canUndo,
+clearHistory
+} from '../utils/historyManager'
+
+
 import TextCell
 from './TextCell.vue'
 
+
+import {ElMessage} from 'element-plus'
 
 
 
@@ -426,7 +443,18 @@ function handlePaste(e){
 }
 
 
+function saveSnapshot(){
+    saveHistory(tableData.value)
+}
 
+
+function onCellChange(row){
+    saveSnapshot()
+    emit(
+        'update-data',
+        tableData.value
+    )
+}
 
 
 function importData(){
@@ -436,6 +464,12 @@ const data = parsePasteData(
     pasteText.value
 )
 
+if(data.length === 0){
+    ElMessage.warning('未识别到有效数据')
+    return
+}
+
+saveSnapshot()
 
 tableData.value.push(
     ...data
@@ -449,17 +483,16 @@ tableData.value
 
 pasteText.value=''
 
+ElMessage.success(`成功导入${data.length}个样本`)
 
 
 }
 
 
 
-
-
-
 function addRow(){
 
+saveSnapshot()
 
 tableData.value.push({
 
@@ -485,11 +518,11 @@ tableData.value
 
 
 
-
-
-
 function clearData(){
 
+if(tableData.value.length === 0) return
+
+saveSnapshot()
 
 tableData.value=[]
 
@@ -498,9 +531,10 @@ emit(
 []
 )
 
+ElMessage.success('已清空数据')
+
 
 }
-
 
 function deleteRow(index){
 
@@ -522,6 +556,8 @@ row.style.transform=
 
 }
 
+saveSnapshot()
+
 setTimeout(()=>{
 
 tableData.value.splice(
@@ -542,6 +578,7 @@ tableData.value
 
 function toggleIgnore(row){
 
+saveSnapshot()
 
 row.ignored =
 !row.ignored
@@ -553,6 +590,69 @@ tableData.value
 
 
 }
+
+
+function addSamples(list){
+    if(!list || list.length === 0) return
+
+    const duplicates = list.filter(item =>
+        tableData.value.some(old => old.id === item.id)
+    )
+
+    if(duplicates.length > 0){
+        ElMessage.warning(`${duplicates.length}个样本ID重复，已跳过`)
+    }
+
+    const unique = list.filter(item =>
+        !tableData.value.some(old => old.id === item.id)
+    )
+
+    if(unique.length === 0){
+        ElMessage.warning('所有样本ID均重复')
+        return
+    }
+
+    saveSnapshot()
+
+    tableData.value.push(...unique)
+
+    emit('update-data', tableData.value)
+
+    ElMessage.success(`成功导入${unique.length}个样本`)
+}
+
+
+function handleUndo(){
+    if(canUndo()){
+        const old = undo()
+        if(old){
+            tableData.value = old
+            emit('update-data', tableData.value)
+            ElMessage.success('已撤销')
+        }
+    } else {
+        ElMessage.info('没有可撤销的操作')
+    }
+}
+
+
+function onKeydown(e){
+    if(e.ctrlKey && e.key === 'z'){
+        e.preventDefault()
+        handleUndo()
+    }
+}
+
+if(typeof window !== 'undefined'){
+    window.addEventListener('keydown', onKeydown)
+}
+
+
+defineExpose({
+    addSamples,
+    handleUndo,
+    clearHistory
+})
 
 
 function rowClass({row}){

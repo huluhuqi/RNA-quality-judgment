@@ -17,7 +17,7 @@
 
       </div>
 
-      <ThemeSwitch/>
+      <ThemeSelector/>
 
     </div>
 
@@ -28,7 +28,7 @@
 
 <script setup>
 
-import ThemeSwitch from './ThemeSwitch.vue'
+import ThemeSelector from './ThemeSelector.vue'
 
 </script>
 

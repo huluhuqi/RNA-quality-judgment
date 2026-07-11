@@ -1,44 +1,98 @@
+/* ===================== 默认 ===================== */
 :root{
-    --bg-color:#f5f8fc;
+    --bg-color:#f5f9ff;
     --card-color:#ffffff;
     --text-color:#303133;
     --border-color:#dcdfe6;
     --primary-color:#409eff;
+    --button-color:#409eff;
 }
 
+/* ===================== 科研蓝 ===================== */
+[data-theme="blue"]{
+    --bg-color:#f3f8ff;
+    --card-color:#ffffff;
+    --text-color:#303133;
+    --border-color:#dcdfe6;
+    --primary-color:#409eff;
+    --button-color:#409eff;
+}
+
+/* ===================== 生命绿 ===================== */
+[data-theme="green"]{
+    --bg-color:#f2fff6;
+    --card-color:#ffffff;
+    --text-color:#303133;
+    --border-color:#dcdfe6;
+    --primary-color:#67c23a;
+    --button-color:#67c23a;
+}
+
+/* ===================== 活力橙 ===================== */
+[data-theme="orange"]{
+    --bg-color:#fff8ef;
+    --card-color:#ffffff;
+    --text-color:#303133;
+    --border-color:#dcdfe6;
+    --primary-color:#e6a23c;
+    --button-color:#e6a23c;
+}
+
+/* ===================== 实验紫 ===================== */
+[data-theme="purple"]{
+    --bg-color:#faf5ff;
+    --card-color:#ffffff;
+    --text-color:#303133;
+    --border-color:#dcdfe6;
+    --primary-color:#9c27b0;
+    --button-color:#9c27b0;
+}
+
+/* ===================== 暗夜黑 ===================== */
 [data-theme="dark"]{
     --bg-color:#141414;
     --card-color:#1f1f1f;
     --text-color:#eeeeee;
     --border-color:#444;
     --primary-color:#66b1ff;
+    --button-color:#409eff;
 }
 
+/* ===================== 全局背景 ===================== */
 body{
-    background:
-    var(--bg-color);
-    color:
-    var(--text-color);
-    transition:
-    background .3s,
-    color .3s;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background .3s, color .3s;
 }
 
+/* ===================== 卡片跟随主题 ===================== */
 .el-card{
-    background:
-    var(--card-color)!important;
-    border-color:
-    var(--border-color)!important;
+    background: var(--card-color)!important;
+    color: var(--text-color);
+    border-color: var(--border-color)!important;
 }
 
 .el-card__header{
-    color:
-    var(--text-color);
+    color: var(--text-color);
 }
 
+/* ===================== 表格跟随主题 ===================== */
 .el-table{
-    background:
-    var(--card-color)!important;
-    color:
-    var(--text-color);
+    background: var(--card-color)!important;
+    color: var(--text-color);
+}
+
+/* ===================== 按钮跟随主题 ===================== */
+.el-button--primary{
+    background: var(--button-color)!important;
+    border-color: var(--button-color)!important;
+}
+
+/* ===================== 主题切换动画 ===================== */
+.theme-transition *{
+    transition:
+        background-color .5s ease,
+        color .5s ease,
+        border-color .5s ease,
+        box-shadow .5s ease;
 }

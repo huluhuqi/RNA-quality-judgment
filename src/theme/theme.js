@@ -1,10 +1,19 @@
-const KEY =
-"RNA_QC_THEME"
+const KEY = "RNA_QC_THEME"
+
+export const themes = {
+    blue: "科研蓝",
+    green: "生命绿",
+    orange: "活力橙",
+    purple: "实验紫",
+    dark: "暗夜黑"
+}
 
 export function getTheme(){
-    return localStorage.getItem(KEY)
-    ||
-    "light"
+    return (
+        localStorage.getItem(KEY)
+        ||
+        "blue"
+    )
 }
 
 export function setTheme(theme){
@@ -12,16 +21,40 @@ export function setTheme(theme){
         KEY,
         theme
     )
+
     document.documentElement
     .setAttribute(
         "data-theme",
         theme
     )
+
+    // 添加切换动画
+    document.documentElement
+    .classList.add(
+        "theme-transition"
+    )
+
+    setTimeout(()=>{
+        document.documentElement
+        .classList.remove(
+            "theme-transition"
+        )
+    }, 500)
+
+    // 页面轻微淡化动画
+    document.body.animate(
+        [
+            { opacity: 0.7 },
+            { opacity: 1 }
+        ],
+        {
+            duration: 400
+        }
+    )
 }
 
 export function initTheme(){
-    const theme =
-    getTheme()
+    const theme = getTheme()
     document.documentElement
     .setAttribute(
         "data-theme",

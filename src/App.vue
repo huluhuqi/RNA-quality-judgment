@@ -1,62 +1,70 @@
 <template>
 
-  <div class="app">
 
-    <h1>
-      RNA Quality Judgment
-    </h1>
+<div class="app">
 
 
-    <el-card class="card">
-
-      <h2>
-        RNA质量分析工具
-      </h2>
+<Header/>
 
 
-      <p>
-        RNA质量检测、污染分析及反转录模板推荐工具
-      </p>
+<RTParameter/>
 
 
-    </el-card>
+<div class="space"></div>
 
 
-  </div>
+<ExperimentSummary/>
+
+
+<div class="space"></div>
+
+
+<RNADataTable/>
+
+
+</div>
 
 
 </template>
 
 
+
 <script setup>
+
+
+import Header from './components/Header.vue'
+
+import RTParameter from './components/RTParameter.vue'
+
+import ExperimentSummary from './components/ExperimentSummary.vue'
+
+import RNADataTable from './components/RNADataTable.vue'
 
 
 </script>
 
 
+
 <style scoped>
+
 
 .app{
 
-  width:90%;
-  margin:30px auto;
+width:90%;
+
+max-width:1600px;
+
+margin:30px auto;
+
 
 }
 
 
-h1{
+.space{
 
-  text-align:center;
-
-  margin-bottom:30px;
+height:20px;
 
 }
 
-
-.card{
-
-  text-align:center;
-
-}
 
 </style>

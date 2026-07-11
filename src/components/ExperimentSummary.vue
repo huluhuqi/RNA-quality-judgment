@@ -1,261 +1,341 @@
 <template>
 
-
-<el-card>
+<el-card class="summary-card">
 
 
 <template #header>
 
-<span>
+<div class="title">
+
 本次实验总体分析
-</span>
+
+</div>
 
 </template>
+
 
 
 <el-row :gutter="15">
 
 
-<el-col :span="8">
+<el-col :xs="24" :sm="8">
 
-<el-card class="inner-card" shadow="never">
+
+<el-card shadow="hover">
+
 
 <template #header>
 
-<span class="card-title">实验概况</span>
+实验概况
 
 </template>
 
-<div class="stat-item">
 
-<span class="label">样本总数：</span>
 
-<span class="value">{{summary.totalCount}}</span>
+<div class="item">
 
-</div>
+总样本：
 
-<div class="stat-item">
-
-<span class="label">有效分析：</span>
-
-<span class="value">{{summary.validCount}}</span>
+<b>
+{{summary.totalCount || 0}}
+</b>
 
 </div>
 
-<div class="stat-item">
 
-<span class="label">忽略样本：</span>
 
-<span class="value">{{summary.ignoredCount}}</span>
 
-</div>
+<div class="item">
 
-<div class="stat-item">
+有效分析：
 
-<span class="label">待检测：</span>
-
-<span class="value">{{summary.pendingCount}}</span>
+<b>
+{{summary.validCount || 0}}
+</b>
 
 </div>
 
-<div class="divider"></div>
 
-<div class="stat-item">
 
-<span class="label">浓度范围：</span>
 
-<span class="value">
+<div class="item">
 
-{{summary.minConcentration.toFixed(2)}}
+忽略样本：
 
--
+<b>
+{{summary.ignoredCount || 0}}
+</b>
 
-{{summary.maxConcentration.toFixed(2)}}
+</div>
+
+
+
+
+<div class="item">
+
+待检测：
+
+<b>
+{{summary.pendingCount || 0}}
+</b>
+
+</div>
+
+
+
+
+
+<div class="item">
+
+平均RNA浓度：
+
+<b>
+
+{{summary.avgConcentration || 0}}
 
 ng/μL
 
-</span>
+</b>
+
 
 </div>
 
-<div class="stat-item">
 
-<span class="label">平均浓度：</span>
 
-<span class="value">
 
-{{summary.avgConcentration.toFixed(2)}}
+
+<div class="item">
+
+浓度范围：
+
+<b>
+
+{{summary.minConcentration || 0}}
+
+~
+
+{{summary.maxConcentration || 0}}
 
 ng/μL
 
-</span>
+</b>
+
 
 </div>
 
-<div class="divider"></div>
 
-<div class="stat-item">
-
-<span class="label">平均A260/A280：</span>
-
-<span class="value">{{summary.avgA260280.toFixed(2)}}</span>
-
-</div>
-
-<div class="stat-item">
-
-<span class="label">平均A260/A230：</span>
-
-<span class="value">
-
-{{summary.avgA260230 ?
-summary.avgA260230.toFixed(2)
-:
-'无数据'}}
-
-</span>
-
-</div>
 
 </el-card>
+
 
 </el-col>
 
 
-<el-col :span="8">
 
-<el-card class="inner-card" shadow="never">
+
+
+<el-col :xs="24" :sm="8">
+
+
+<el-card shadow="hover">
+
 
 <template #header>
 
-<span class="card-title">RNA质量</span>
+RNA质量分布
 
 </template>
 
-<div class="quality-overall">
 
-<span class="label">总体：</span>
+
+<div class="quality-title">
+
+
+总体质量：
 
 <el-tag
 
-:type="getQualityTagType(summary.quality)"
-
-size="large"
+:type="qualityType"
 
 >
 
-{{summary.quality}}
+{{summary.quality || '暂无数据'}}
 
 </el-tag>
 
-</div>
-
-<div class="divider"></div>
-
-<div class="quality-detail">
-
-<div class="quality-item">
-
-<el-tag type="success">优秀</el-tag>
-
-<span class="q-count">{{summary.qualityCount['优秀'] || 0}}</span>
 
 </div>
 
-<div class="quality-item">
 
-<el-tag>良好</el-tag>
 
-<span class="q-count">{{summary.qualityCount['良好'] || 0}}</span>
 
-</div>
 
-<div class="quality-item">
+<div class="quality-list">
 
-<el-tag type="warning">一般</el-tag>
 
-<span class="q-count">{{summary.qualityCount['一般'] || 0}}</span>
+<div>
 
-</div>
+优秀：
 
-<div class="quality-item">
+{{getQualityCount('优秀')}}
 
-<el-tag type="danger">较差</el-tag>
-
-<span class="q-count">{{summary.qualityCount['较差'] || 0}}</span>
+个
 
 </div>
 
-<div class="quality-item">
 
-<el-tag type="info">待检测</el-tag>
+<div>
 
-<span class="q-count">{{summary.qualityCount['待检测'] || 0}}</span>
+良好：
+
+{{getQualityCount('良好')}}
+
+个
 
 </div>
 
+
+
+<div>
+
+一般：
+
+{{getQualityCount('一般')}}
+
+个
+
 </div>
+
+
+
+
+<div>
+
+较差：
+
+{{getQualityCount('较差')}}
+
+个
+
+</div>
+
+
+
+<div>
+
+待检测：
+
+{{getQualityCount('待检测')}}
+
+个
+
+</div>
+
+
+
+</div>
+
 
 </el-card>
+
 
 </el-col>
 
 
-<el-col :span="8">
 
-<el-card class="inner-card" shadow="never">
+
+
+<el-col :xs="24" :sm="8">
+
+
+<el-card shadow="hover">
+
 
 <template #header>
 
-<span class="card-title">污染分析</span>
+污染分析
 
 </template>
+
+
 
 <div class="pollution-summary">
 
-{{summary.pollution}}
+
+{{summary.pollution || '暂无数据'}}
+
 
 </div>
 
-<div v-if="summary.pollutionSamples && summary.pollutionSamples.length > 0" class="divider"></div>
+
+
 
 <div
-v-if="summary.pollutionSamples && summary.pollutionSamples.length > 0"
+
+v-if="summary.pollutionSamples?.length"
+
 class="pollution-list"
+
 >
+
+
+<div>
+
+<b>
+异常样本：
+</b>
+
+</div>
+
+
 
 <div
-v-for="(item, index) in summary.pollutionSamples.slice(0, 5)"
-:key="index"
+
+v-for="item in summary.pollutionSamples"
+
+:key="item.id"
+
 class="pollution-item"
+
 >
 
-<div class="pollution-id">
 
-<el-tag type="warning" size="small">
+<b>
 
 {{item.id}}
 
-</el-tag>
+</b>
+
+
+：
+
+{{item.pollution}}
+
 
 </div>
 
-<div class="pollution-reason">{{item.pollution}}</div>
+
 
 </div>
+
+
 
 <div
-v-if="summary.pollutionSamples.length > 5"
-class="pollution-more"
+
+v-else
+
+class="normal"
+
 >
 
-还有 {{summary.pollutionSamples.length - 5}} 个样本...
+未发现明显污染风险
 
 </div>
 
-</div>
+
 
 </el-card>
+
 
 </el-col>
 
@@ -263,70 +343,101 @@ class="pollution-more"
 </el-row>
 
 
-<div class="rt-section">
 
-<el-card class="inner-card" shadow="never">
+
+<el-card
+
+v-if="summary.rt"
+
+shadow="hover"
+
+class="rt-card"
+
+>
+
 
 <template #header>
 
-<span class="card-title">反转录推荐方案</span>
+反转录RNA模板推荐
 
 </template>
 
-<el-row :gutter="20">
 
-<el-col :span="6">
 
-<div class="rt-item">
 
-<span class="label">推荐RNA投入：</span>
+<div>
 
-<span class="value">{{summary.rt.recommendedRNA}} ng</span>
 
-</div>
+推荐RNA投入：
 
-</el-col>
+<b>
 
-<el-col :span="6">
+{{summary.rt.recommendedRNA || 0}}
 
-<div class="rt-item">
+ng
 
-<span class="label">模板体积范围：</span>
+</b>
 
-<span class="value">{{summary.rt.minVolume}} - {{summary.rt.maxVolume}} μL</span>
 
 </div>
 
-</el-col>
 
-<el-col :span="12">
 
-<div class="rt-item">
 
-<span class="label">RT建议：</span>
+<div>
 
-<span class="value">{{summary.rt.suggestion}}</span>
+
+模板体积范围：
+
+<b>
+
+{{summary.rt.minVolume || 0}}
+
+~
+
+{{summary.rt.maxVolume || 0}}
+
+μL
+
+</b>
+
 
 </div>
 
-</el-col>
 
-</el-row>
+
+<div>
+
+
+建议：
+
+{{summary.rt.suggestion || ''}}
+
+</div>
+
+
 
 </el-card>
 
-</div>
 
 
 </el-card>
 
 
 </template>
+
+
+
 
 
 <script setup>
 
 
+import {computed} from 'vue'
+
+
+
+const props =
 defineProps({
 
 summary:{
@@ -340,235 +451,159 @@ required:true
 })
 
 
-function getQualityTagType(value){
 
-switch(value){
+
+
+function getQualityCount(type){
+
+
+return (
+
+props.summary
+
+.qualityCount
+
+?.[type]
+
+||0
+
+)
+
+
+}
+
+
+
+
+
+const qualityType = computed(()=>{
+
+
+switch(
+
+props.summary.quality
+
+){
+
 
 case '优秀':
 
 return 'success'
 
-case '良好':
-
-return ''
 
 case '一般':
 
 return 'warning'
 
+
 case '较差':
 
 return 'danger'
 
+
 default:
 
-return 'info'
+return ''
 
 }
 
-}
+
+
+})
+
+
 
 
 </script>
 
 
+
+
+
 <style scoped>
 
 
-.inner-card{
+.summary-card{
+
+width:100%;
+
+}
+
+
+
+.title{
+
+font-size:18px;
+
+font-weight:bold;
+
+}
+
+
+
+
+.item{
+
+line-height:28px;
+
+}
+
+
+
+
+.quality-title{
 
 margin-bottom:15px;
 
 }
 
 
-.card-title{
 
-font-weight:bold;
+.quality-list{
 
-font-size:15px;
-
-}
-
-
-.stat-item{
-
-line-height:2;
-
-font-size:14px;
+line-height:30px;
 
 }
 
-
-.label{
-
-color:#666;
-
-}
-
-
-.value{
-
-font-weight:bold;
-
-}
-
-
-.divider{
-
-height:1px;
-
-background:#eee;
-
-margin:10px 0;
-
-}
-
-
-.quality-overall{
-
-text-align:center;
-
-padding:10px 0;
-
-}
-
-
-.quality-overall .label{
-
-margin-right:10px;
-
-font-size:16px;
-
-}
-
-
-.quality-detail{
-
-display:flex;
-
-flex-direction:column;
-
-gap:10px;
-
-}
-
-
-.quality-item{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:4px 8px;
-
-background:#fafafa;
-
-border-radius:4px;
-
-}
-
-
-.q-count{
-
-font-weight:bold;
-
-font-size:16px;
-
-}
 
 
 .pollution-summary{
 
-line-height:1.8;
+line-height:22px;
 
-color:#333;
-
-font-size:14px;
+margin-bottom:15px;
 
 }
 
-
-.pollution-list{
-
-max-height:240px;
-
-overflow-y:auto;
-
-}
 
 
 .pollution-item{
 
-margin-bottom:8px;
+margin-top:8px;
 
-padding:8px;
-
-background:#fdf6ec;
-
-border-radius:4px;
-
-border-left:3px solid #e6a23c;
+line-height:22px;
 
 }
 
 
-.pollution-id{
 
-margin-bottom:4px;
+.normal{
 
-}
-
-
-.pollution-detail{
-
-font-size:12px;
-
-color:#906700;
-
-margin-bottom:4px;
+color:#67c23a;
 
 }
 
 
-.pollution-reason{
-
-font-size:13px;
-
-color:#604000;
-
-}
 
 
-.pollution-more{
+.rt-card{
 
-text-align:center;
+margin-top:15px;
 
-color:#999;
-
-font-size:13px;
-
-padding-top:5px;
+line-height:28px;
 
 }
 
-
-.rt-section{
-
-margin-top:5px;
-
-}
-
-
-.rt-item{
-
-line-height:2;
-
-font-size:14px;
-
-}
 
 
 </style>

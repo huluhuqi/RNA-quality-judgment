@@ -109,8 +109,8 @@ defineExpose({
     background:
         linear-gradient(
             135deg,
-            #ffffff,
-            #f3f0ff
+            var(--card-extraction-from),
+            var(--card-extraction-to)
         );
     overflow: visible;
 }
@@ -147,7 +147,7 @@ defineExpose({
 }
 
 .normal{
-    color: #67c23a;
+    color: var(--success-color);
 }
 
 </style>

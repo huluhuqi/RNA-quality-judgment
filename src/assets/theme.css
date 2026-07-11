@@ -1,117 +1,311 @@
-/* ===================== 默认 ===================== */
+/* ===================== 默认（浅色） ===================== */
 :root{
-    --page-bg:#f4f8ff;
+    /* 页面 */
+    --bg-color:#f5f7fa;
+    --page-bg:#f5f7fa;
     --card-bg:#ffffff;
+    --text-color:#303133;
     --text-main:#303133;
     --text-secondary:#606266;
+    --border-color:#dcdfe6;
     --border:#dcdfe6;
-    --primary:#409eff;
-    --button-color:#409eff;
-    --chart-bg:#ffffff;
-    --chart-text:#303133;
+
+    /* 输入框 */
+    --input-bg:#ffffff;
+    --input-border:#dcdfe6;
+
+    /* 表格 */
     --table-bg:#ffffff;
     --table-text:#303133;
+    --table-header-bg:#f5f7fa;
     --header-bg:#eaf3ff;
+    --table-row-hover:#ecf5ff;
+
+    /* 主题色 */
+    --primary-color:#409eff;
+    --primary:#409eff;
+    --button-color:#409eff;
+    --success-color:#67c23a;
+    --warning-color:#e6a23c;
+    --danger-color:#f56c6c;
+
+    /* 图表 */
+    --chart-bg:#ffffff;
+    --chart-text:#303133;
+    --chart-grid:#ebeef5;
+
+    /* 卡片渐变 - 各卡片不同色调 */
+    --card-quality-from:#ffffff;
+    --card-quality-to:#f0f9ff;
+    --card-pollution-from:#ffffff;
+    --card-pollution-to:#fff7f3;
+    --card-rt-from:#ffffff;
+    --card-rt-to:#fff7d6;
+    --card-app-from:#ffffff;
+    --card-app-to:#f0f9ff;
+    --card-overview-from:#ffffff;
+    --card-overview-to:#f7fffc;
+    --card-chart-from:#ffffff;
+    --card-chart-to:#f7fffc;
+    --card-extraction-from:#ffffff;
+    --card-extraction-to:#faf5ff;
 }
 
 /* ===================== 科研蓝 ===================== */
 [data-theme="blue"]{
-    --page-bg:#f4f8ff;
+    --bg-color:#eef5ff;
+    --page-bg:#eef5ff;
     --card-bg:#ffffff;
-    --text-main:#303133;
-    --text-secondary:#606266;
-    --border:#dcdfe6;
+    --text-color:#1d3557;
+    --text-main:#1d3557;
+    --text-secondary:#457b9d;
+    --border-color:#bcd2f0;
+    --border:#bcd2f0;
+
+    --input-bg:#ffffff;
+    --input-border:#bcd2f0;
+
+    --table-bg:#ffffff;
+    --table-text:#1d3557;
+    --table-header-bg:#eef5ff;
+    --header-bg:#eaf3ff;
+    --table-row-hover:#e0edff;
+
+    --primary-color:#409eff;
     --primary:#409eff;
     --button-color:#409eff;
+    --success-color:#67c23a;
+    --warning-color:#e6a23c;
+    --danger-color:#f56c6c;
+
     --chart-bg:#ffffff;
-    --chart-text:#303133;
-    --table-bg:#ffffff;
-    --table-text:#303133;
-    --header-bg:#eaf3ff;
+    --chart-text:#1d3557;
+    --chart-grid:#d8e6fa;
+
+    --card-quality-from:#ffffff;
+    --card-quality-to:#eef5ff;
+    --card-pollution-from:#ffffff;
+    --card-pollution-to:#fff0f0;
+    --card-rt-from:#ffffff;
+    --card-rt-to:#fff8e6;
+    --card-app-from:#ffffff;
+    --card-app-to:#eef5ff;
+    --card-overview-from:#ffffff;
+    --card-overview-to:#f0fff4;
+    --card-chart-from:#ffffff;
+    --card-chart-to:#f0fff4;
+    --card-extraction-from:#ffffff;
+    --card-extraction-to:#f5eeff;
 }
 
 /* ===================== 生命绿 ===================== */
 [data-theme="green"]{
-    --page-bg:#f2fff6;
+    --bg-color:#f1f8f3;
+    --page-bg:#f1f8f3;
     --card-bg:#ffffff;
-    --text-main:#303133;
-    --text-secondary:#606266;
-    --border:#d9ecff;
+    --text-color:#1b4332;
+    --text-main:#1b4332;
+    --text-secondary:#40916c;
+    --border-color:#b7dfc4;
+    --border:#b7dfc4;
+
+    --input-bg:#ffffff;
+    --input-border:#b7dfc4;
+
+    --table-bg:#ffffff;
+    --table-text:#1b4332;
+    --table-header-bg:#f1f8f3;
+    --header-bg:#eaffef;
+    --table-row-hover:#e6f7eb;
+
+    --primary-color:#67c23a;
     --primary:#67c23a;
     --button-color:#67c23a;
+    --success-color:#67c23a;
+    --warning-color:#e6a23c;
+    --danger-color:#f56c6c;
+
     --chart-bg:#ffffff;
-    --chart-text:#303133;
-    --table-bg:#ffffff;
-    --table-text:#303133;
-    --header-bg:#eaffef;
+    --chart-text:#1b4332;
+    --chart-grid:#d8f3dc;
+
+    --card-quality-from:#ffffff;
+    --card-quality-to:#f0fff4;
+    --card-pollution-from:#ffffff;
+    --card-pollution-to:#fff5f0;
+    --card-rt-from:#ffffff;
+    --card-rt-to:#fffbe6;
+    --card-app-from:#ffffff;
+    --card-app-to:#f0fff4;
+    --card-overview-from:#ffffff;
+    --card-overview-to:#f0fff4;
+    --card-chart-from:#ffffff;
+    --card-chart-to:#f0fff4;
+    --card-extraction-from:#ffffff;
+    --card-extraction-to:#f8f0ff;
 }
 
 /* ===================== 活力橙 ===================== */
 [data-theme="orange"]{
+    --bg-color:#fff8ed;
     --page-bg:#fff8ed;
     --card-bg:#ffffff;
-    --text-main:#303133;
-    --text-secondary:#606266;
+    --text-color:#7c2d12;
+    --text-main:#7c2d12;
+    --text-secondary:#c2410c;
+    --border-color:#f5dab1;
     --border:#f5dab1;
+
+    --input-bg:#ffffff;
+    --input-border:#f5dab1;
+
+    --table-bg:#ffffff;
+    --table-text:#7c2d12;
+    --table-header-bg:#fff8ed;
+    --header-bg:#fff0d6;
+    --table-row-hover:#ffedd5;
+
+    --primary-color:#e6a23c;
     --primary:#e6a23c;
     --button-color:#e6a23c;
+    --success-color:#67c23a;
+    --warning-color:#e6a23c;
+    --danger-color:#f56c6c;
+
     --chart-bg:#ffffff;
-    --chart-text:#303133;
-    --table-bg:#ffffff;
-    --table-text:#303133;
-    --header-bg:#fff0d6;
+    --chart-text:#7c2d12;
+    --chart-grid:#fed7aa;
+
+    --card-quality-from:#ffffff;
+    --card-quality-to:#fff7ed;
+    --card-pollution-from:#ffffff;
+    --card-pollution-to:#fff1f0;
+    --card-rt-from:#ffffff;
+    --card-rt-to:#fffbe6;
+    --card-app-from:#ffffff;
+    --card-app-to:#fff7ed;
+    --card-overview-from:#ffffff;
+    --card-overview-to:#f0fff4;
+    --card-chart-from:#ffffff;
+    --card-chart-to:#f0fff4;
+    --card-extraction-from:#ffffff;
+    --card-extraction-to:#faf5ff;
 }
 
 /* ===================== 实验紫 ===================== */
 [data-theme="purple"]{
+    --bg-color:#faf5ff;
     --page-bg:#faf5ff;
     --card-bg:#ffffff;
-    --text-main:#303133;
-    --text-secondary:#606266;
+    --text-color:#3b0764;
+    --text-main:#3b0764;
+    --text-secondary:#7c3aed;
+    --border-color:#e1c8ff;
     --border:#e1c8ff;
+
+    --input-bg:#ffffff;
+    --input-border:#e1c8ff;
+
+    --table-bg:#ffffff;
+    --table-text:#3b0764;
+    --table-header-bg:#faf5ff;
+    --header-bg:#f3e5ff;
+    --table-row-hover:#f3e8ff;
+
+    --primary-color:#9c27b0;
     --primary:#9c27b0;
     --button-color:#9c27b0;
+    --success-color:#67c23a;
+    --warning-color:#e6a23c;
+    --danger-color:#f56c6c;
+
     --chart-bg:#ffffff;
-    --chart-text:#303133;
-    --table-bg:#ffffff;
-    --table-text:#303133;
-    --header-bg:#f3e5ff;
+    --chart-text:#3b0764;
+    --chart-grid:#e9d5ff;
+
+    --card-quality-from:#ffffff;
+    --card-quality-to:#faf5ff;
+    --card-pollution-from:#ffffff;
+    --card-pollution-to:#fff1f0;
+    --card-rt-from:#ffffff;
+    --card-rt-to:#fffbe6;
+    --card-app-from:#ffffff;
+    --card-app-to:#faf5ff;
+    --card-overview-from:#ffffff;
+    --card-overview-to:#f0fff4;
+    --card-chart-from:#ffffff;
+    --card-chart-to:#f0fff4;
+    --card-extraction-from:#ffffff;
+    --card-extraction-to:#faf5ff;
 }
 
 /* ===================== 暗夜黑 ===================== */
 [data-theme="dark"]{
-    --page-bg:#121212;
-    --card-bg:#1e1e1e;
+    --bg-color:#141414;
+    --page-bg:#141414;
+    --card-bg:#1f1f1f;
+    --text-color:#ffffff;
     --text-main:#ffffff;
-    --text-secondary:#cccccc;
-    --border:#444444;
+    --text-secondary:#bfbfbf;
+    --border-color:#434343;
+    --border:#434343;
+
+    --input-bg:#262626;
+    --input-border:#434343;
+
+    --table-bg:#1f1f1f;
+    --table-text:#ffffff;
+    --table-header-bg:#262626;
+    --header-bg:#242424;
+    --table-row-hover:#333333;
+
+    --primary-color:#66b1ff;
     --primary:#66b1ff;
     --button-color:#409eff;
-    --chart-bg:#1e1e1e;
+    --success-color:#67c23a;
+    --warning-color:#e6a23c;
+    --danger-color:#f56c6c;
+
+    --chart-bg:#1f1f1f;
     --chart-text:#ffffff;
-    --table-bg:#1e1e1e;
-    --table-text:#ffffff;
-    --header-bg:#242424;
+    --chart-grid:#434343;
+
+    --card-quality-from:#1f1f1f;
+    --card-quality-to:#262626;
+    --card-pollution-from:#1f1f1f;
+    --card-pollution-to:#2a2020;
+    --card-rt-from:#1f1f1f;
+    --card-rt-to:#2a2620;
+    --card-app-from:#1f1f1f;
+    --card-app-to:#20262a;
+    --card-overview-from:#1f1f1f;
+    --card-overview-to:#202a24;
+    --card-chart-from:#1f1f1f;
+    --card-chart-to:#202a24;
+    --card-extraction-from:#1f1f1f;
+    --card-extraction-to:#26202a;
 }
 
-/* ===================== 页面背景 ===================== */
+/* ===================== 全局基础样式 ===================== */
 body{
-    background: var(--page-bg);
-    color: var(--text-main);
+    margin: 0;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: "Microsoft YaHei", Arial, sans-serif;
     transition: background .3s, color .3s;
 }
 
 /* ===================== 卡片 ===================== */
 .el-card{
     background: var(--card-bg)!important;
-    color: var(--text-main);
-    border-color: var(--border)!important;
+    color: var(--text-color);
+    border-color: var(--border-color)!important;
     min-width: 0;
     overflow: hidden;
 }
 
 .el-card__header{
-    color: var(--text-main);
+    color: var(--text-color);
 }
 
 /* ===================== 普通文字 ===================== */
@@ -119,7 +313,7 @@ body,
 span,
 div,
 p{
-    color: var(--text-main);
+    color: var(--text-color);
 }
 
 /* ===================== 次级文字 ===================== */
@@ -134,18 +328,75 @@ p{
 }
 
 .el-table th{
-    background: var(--header-bg)!important;
-    color: var(--text-main)!important;
+    background: var(--table-header-bg)!important;
+    color: var(--text-color)!important;
 }
 
 .el-table td{
     color: var(--table-text)!important;
 }
 
+.el-table__row:hover > td{
+    background: var(--table-row-hover)!important;
+}
+
+/* ===================== 输入框 ===================== */
+.el-input__wrapper{
+    background: var(--input-bg)!important;
+    box-shadow: 0 0 0 1px var(--input-border) inset!important;
+}
+
+.el-input__inner{
+    color: var(--text-color)!important;
+}
+
+.el-textarea__inner{
+    background: var(--input-bg)!important;
+    color: var(--text-color)!important;
+    border-color: var(--input-border)!important;
+}
+
+/* ===================== 下拉菜单 ===================== */
+.el-select-dropdown{
+    background: var(--card-bg)!important;
+    border-color: var(--border-color)!important;
+}
+
+.el-select-dropdown__item{
+    color: var(--text-color)!important;
+}
+
+.el-select-dropdown__item:hover{
+    background: var(--table-row-hover)!important;
+}
+
 /* ===================== 按钮跟随主题 ===================== */
 .el-button--primary{
     background: var(--button-color)!important;
     border-color: var(--button-color)!important;
+}
+
+/* ===================== 弹窗 ===================== */
+.el-dialog{
+    background: var(--card-bg)!important;
+    color: var(--text-color);
+}
+
+.el-dialog__title{
+    color: var(--text-color)!important;
+}
+
+.el-message-box{
+    background: var(--card-bg)!important;
+    border-color: var(--border-color)!important;
+}
+
+.el-message-box__title{
+    color: var(--text-color)!important;
+}
+
+.el-message-box__message p{
+    color: var(--text-secondary)!important;
 }
 
 /* ===================== 主题切换动画 ===================== */

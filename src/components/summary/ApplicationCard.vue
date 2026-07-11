@@ -84,13 +84,13 @@ const applicationType = computed(()=>{
     background:
         linear-gradient(
             135deg,
-            #ffffff,
-            #f0f0ff
+            var(--card-app-from),
+            var(--card-app-to)
         );
 }
 
 .warning{
-    color:#e6a23c;
+    color:var(--warning-color);
 }
 
 </style>

@@ -92,8 +92,8 @@ const qualityTag = computed(()=>{
     background:
         linear-gradient(
             135deg,
-            #ffffff,
-            #f3fff7
+            var(--card-quality-from),
+            var(--card-quality-to)
         );
 }
 

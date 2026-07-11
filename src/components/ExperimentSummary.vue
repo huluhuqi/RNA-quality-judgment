@@ -203,8 +203,8 @@ defineExpose({
 .rt-warning{
     margin-top: 10px;
     padding: 10px;
-    background: #fef0f0;
-    color: #f56c6c;
+    background: rgba(245, 108, 108, 0.1);
+    color: var(--danger-color);
     border-radius: 4px;
     line-height: 1.6;
     font-size: 13px;

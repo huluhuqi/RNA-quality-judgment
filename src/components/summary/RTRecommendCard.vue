@@ -105,8 +105,8 @@ const rtLevelType = computed(()=>{
     background:
         linear-gradient(
             135deg,
-            #ffffff,
-            #fff7d6
+            var(--card-rt-from),
+            var(--card-rt-to)
         );
 }
 

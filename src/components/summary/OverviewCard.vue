@@ -63,8 +63,8 @@ defineProps({
     background:
         linear-gradient(
             135deg,
-            #ffffff,
-            #f3f8ff
+            var(--card-overview-from),
+            var(--card-overview-to)
         );
 }
 

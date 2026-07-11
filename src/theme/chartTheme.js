@@ -41,6 +41,16 @@ export function getChartBgColor(){
 
 
 /**
+ * 获取图表网格线颜色
+ *
+ * @returns {string}
+ */
+export function getChartGridColor(){
+    return readVar('--chart-grid', '#ebeef5');
+}
+
+
+/**
  * 获取 ECharts 主题配置片段
  *
  * 用于合并到 setOption 中：
@@ -50,7 +60,7 @@ export function getChartBgColor(){
  */
 export function getChartTheme(){
     return {
-        backgroundColor: 'transparent',
+        backgroundColor: getChartBgColor(),
         textStyle: {
             color: getChartTextColor()
         }

@@ -32,7 +32,8 @@ echarts.use([
 
 import {
 getChartTheme,
-getChartTextColor
+getChartTextColor,
+getChartGridColor
 }
 from '../theme/chartTheme'
 
@@ -103,6 +104,11 @@ function render(){
             axisLabel: {
                 color: textColor,
                 fontSize
+            },
+            splitLine: {
+                lineStyle: {
+                    color: getChartGridColor()
+                }
             }
         },
 

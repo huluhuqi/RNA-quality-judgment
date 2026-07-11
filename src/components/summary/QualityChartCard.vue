@@ -49,8 +49,8 @@ defineExpose({
     background:
         linear-gradient(
             135deg,
-            #ffffff,
-            #f7fffc
+            var(--card-chart-from),
+            var(--card-chart-to)
         );
 }
 

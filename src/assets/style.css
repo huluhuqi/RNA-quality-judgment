@@ -1,19 +1,83 @@
-body{
-
-    margin:0;
-
-    background:#f5f7fa;
-
-    font-family:
-    "Microsoft YaHei",
-    Arial,
-    sans-serif;
-
+.el-button{
+    transition:
+    all .25s ease;
+    position:relative;
+    overflow:hidden;
 }
 
+.el-button:hover{
+    transform:
+    translateY(-2px)
+    scale(1.03);
+}
 
-*{
+.el-button:active{
+    transform:
+    scale(0.96);
+}
 
-    box-sizing:border-box;
+.el-button::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:0;
+    height:0;
+    background:
+    rgba(255,255,255,.35);
+    border-radius:50%;
+    transform:
+    translate(-50%,-50%);
+    transition:
+    all .4s;
+}
 
+.el-button:hover::after{
+    width:180px;
+    height:180px;
+}
+
+.el-card{
+    transition:
+    all .35s ease;
+}
+
+.el-card:hover{
+    transform:
+    translateY(-3px);
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.12);
+}
+
+.fade-enter-active,
+.fade-leave-active{
+    transition:
+    all .35s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to{
+    opacity:0;
+    transform:
+    translateY(15px);
+}
+
+.el-table__row{
+    transition:
+    all .3s ease;
+}
+
+.el-table__row:hover{
+    background:
+    rgba(64,158,255,.08);
+}
+
+.el-tag{
+    transition:
+    all .3s;
+}
+
+.el-tag:hover{
+    transform:
+    scale(1.08);
 }

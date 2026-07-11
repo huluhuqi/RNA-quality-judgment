@@ -1,7 +1,7 @@
 <template>
 
 
-<el-card>
+<el-card class="export-card">
 
 
 <template #header>
@@ -112,3 +112,24 @@ props.data
 
 
 </script>
+
+
+<style scoped>
+
+.export-card{
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#f7fff5,
+
+#ffffff
+
+);
+
+}
+
+</style>

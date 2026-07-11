@@ -63,6 +63,7 @@
 
 <script setup>
 
+import './assets/style.css'
 
 import {ref} from 'vue'
 

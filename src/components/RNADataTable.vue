@@ -78,7 +78,10 @@ type="success"
 
 <div class="table-container">
 
+<Transition name="fade" mode="out-in">
 <el-table
+
+:key="tableVersion"
 
 :data="tableData"
 
@@ -362,6 +365,7 @@ size="small"
 
 
 </el-table>
+</Transition>
 
 </div>
 
@@ -401,8 +405,9 @@ from './TextCell.vue'
 const pasteText = ref('')
 
 
-
 const tableData = ref([])
+
+const tableVersion = ref(0)
 
 
 const emit = defineEmits([
@@ -438,6 +443,7 @@ tableData.value.push(
     ...data
 )
 
+tableVersion.value++
 
 emit(
 'update-data',
@@ -473,6 +479,7 @@ ignored:false
 
 })
 
+tableVersion.value++
 
 emit(
 'update-data',
@@ -492,6 +499,7 @@ function clearData(){
 
 tableData.value=[]
 
+tableVersion.value++
 
 emit(
 'update-data',
@@ -510,6 +518,7 @@ index,
 1
 )
 
+tableVersion.value++
 
 emit(
 'update-data',
@@ -526,6 +535,7 @@ function toggleIgnore(row){
 row.ignored =
 !row.ignored
 
+tableVersion.value++
 
 emit(
 'update-data',
@@ -648,6 +658,21 @@ overflow-x:auto;
 text-decoration:line-through;
 
 opacity:0.45;
+
+animation:
+ignoreAnimation .35s;
+
+}
+
+@keyframes ignoreAnimation{
+
+from{
+opacity:1;
+}
+
+to{
+opacity:0.45;
+}
 
 }
 

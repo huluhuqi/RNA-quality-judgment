@@ -1,7 +1,7 @@
 <template>
 
 
-<el-card>
+<el-card class="control-card">
 
 
 <template #header>
@@ -86,3 +86,24 @@ emit("clear")
 
 
 </script>
+
+
+<style scoped>
+
+.control-card{
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#f0f9ff,
+
+#ffffff
+
+);
+
+}
+
+</style>

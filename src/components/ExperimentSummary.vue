@@ -1,6 +1,6 @@
 <template>
 
-<el-card class="summary-card">
+<el-card class="summary-card gradient-summary">
 
 
 <template #header>
@@ -21,7 +21,7 @@
 <el-col :xs="24" :sm="8">
 
 
-<el-card shadow="hover">
+<el-card shadow="hover" class="info-card">
 
 
 <template #header>
@@ -137,7 +137,7 @@ ng/μL
 <el-col :xs="24" :sm="8">
 
 
-<el-card shadow="hover">
+<el-card shadow="hover" class="quality-card">
 
 
 <template #header>
@@ -245,7 +245,7 @@ RNA质量分布
 <el-col :xs="24" :sm="8">
 
 
-<el-card shadow="hover">
+<el-card shadow="hover" class="pollution-card">
 
 
 <template #header>
@@ -347,7 +347,7 @@ v-if="summary.rt"
 
 shadow="hover"
 
-class="rt-card"
+class="rt-card rt-gradient"
 
 >
 
@@ -528,7 +528,73 @@ width:100%;
 
 }
 
+.gradient-summary{
 
+background:
+
+linear-gradient(
+
+135deg,
+
+#f5faff,
+
+#eef7ff
+
+);
+
+border-radius:
+
+14px;
+
+}
+
+.info-card{
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#ffffff,
+
+#f3f8ff
+
+);
+
+}
+
+.quality-card{
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#ffffff,
+
+#f3fff7
+
+);
+
+}
+
+.pollution-card{
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#ffffff,
+
+#fff7f3
+
+);
+
+}
 
 .title{
 
@@ -537,6 +603,7 @@ font-size:18px;
 font-weight:bold;
 
 }
+
 
 
 
@@ -550,6 +617,7 @@ line-height:28px;
 
 
 
+
 .quality-title{
 
 margin-bottom:15px;
@@ -558,11 +626,15 @@ margin-bottom:15px;
 
 
 
+
+
 .quality-list{
 
 line-height:30px;
 
 }
+
+
 
 
 
@@ -576,6 +648,8 @@ margin-bottom:15px;
 
 
 
+
+
 .pollution-item{
 
 margin-top:8px;
@@ -583,6 +657,8 @@ margin-top:8px;
 line-height:22px;
 
 }
+
+
 
 
 
@@ -595,6 +671,7 @@ color:#67c23a;
 
 
 
+
 .rt-card{
 
 margin-top:15px;
@@ -602,6 +679,23 @@ margin-top:15px;
 line-height:28px;
 
 }
+
+.rt-gradient{
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#fffdf0,
+
+#fff7d6
+
+);
+
+}
+
 
 
 

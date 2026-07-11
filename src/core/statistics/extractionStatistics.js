@@ -12,6 +12,7 @@
  * @param {Array} samples  样本数组（含 result.advice.extraction）
  * @returns {Object} { "问题标题": 数量, ... }
  */
+import { isPoorQuality } from "../../config/qualityLevel";
 
 
 /**
@@ -42,7 +43,7 @@ export function getExtractionStatistics(samples = []){
             }
 
             // 2. 若无提取建议但样本异常，按指标推断风险
-            const isQualityBad = quality === "较差" || quality === "不合格";
+            const isQualityBad = isPoorQuality(quality);
             const hasPollution = pollution.length > 0;
 
             if(isQualityBad || hasPollution){

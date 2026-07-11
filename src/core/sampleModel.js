@@ -6,12 +6,29 @@
  *
  * 兼容旧字段：a280/a230/A260_280/A260_230
  */
+import { normalizeQuality } from "../config/qualityLevel";
 
 
 /**
  * 创建标准化样本对象
  */
 export function createSample(data = {}){
+
+
+    const result = data.result
+        ? {
+            ...data.result,
+            quality: data.result.quality ? normalizeQuality(data.result.quality) : ""
+        }
+        : {
+            quality: "",
+            pollution: {
+                protein: false,
+                salt: false
+            },
+            pollutionText: "",
+            suggestion: ""
+        };
 
 
     return {
@@ -67,17 +84,7 @@ export function createSample(data = {}){
         =================
         */
 
-        result:
-            data.result
-            ?? {
-                quality: "",
-                pollution: {
-                    protein: false,
-                    salt: false
-                },
-                pollutionText: "",
-                suggestion: ""
-            }
+        result
 
 
     }

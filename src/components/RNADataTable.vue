@@ -250,10 +250,9 @@ getTagType(
 scope.row.result?.quality
 )
 "
-
 >
 
-{{scope.row.result?.quality || '无法判断'}}
+{{getQualityLabel(scope.row.result?.quality) || '无法判断'}}
 
 </el-tag>
 
@@ -412,6 +411,12 @@ import {
 createSample,
 normalizeSamples
 } from '../core/sampleModel'
+
+import {
+QUALITY_LEVEL,
+PENDING,
+getQualityLabel
+} from '../config/qualityLevel'
 
 
 import {
@@ -675,22 +680,27 @@ function getTagType(value){
 switch(value){
 
 
-case '优秀':
+case QUALITY_LEVEL.EXCELLENT.value:
 
 return 'success'
 
 
-case '良好':
+case QUALITY_LEVEL.GOOD.value:
 
 return ''
 
 
-case '一般':
+case QUALITY_LEVEL.WARNING.value:
 
 return 'warning'
 
 
-case '较差':
+case QUALITY_LEVEL.POOR.value:
+
+return 'danger'
+
+
+case QUALITY_LEVEL.FAIL.value:
 
 return 'danger'
 

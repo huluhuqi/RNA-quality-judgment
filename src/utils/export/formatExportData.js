@@ -6,6 +6,7 @@
  *
  * 第9.11.3步：新增提取方法、污染详情、提取过程问题分析字段。
  */
+import { QUALITY_LEVEL, PENDING, getQualityLabel } from "../../config/qualityLevel";
 
 
 /**
@@ -47,7 +48,7 @@ export function formatSamples(samples = [], extractionMethod = ""){
                 concentration: item.concentration ?? "",
                 a260280: item.a260280 ?? "",
                 a260230: item.a260230 ?? "",
-                quality: item.result?.quality || "无法判断",
+                quality: item.result?.quality ? getQualityLabel(item.result.quality) : "无法判断",
                 pollution: pollutionText,
                 extractionProblem: extractionProblemText,
                 suggestion: item.result?.suggestion || ""
@@ -64,11 +65,23 @@ export function formatSamples(samples = [], extractionMethod = ""){
  * summary 已是结构化对象，此处仅做字段补全与透传，
  * 保留 createSummarySheet 所需的全部字段。
  *
+ * qualityCount 转换为中文 key 用于导出显示。
+ *
  * @param {Object} summary 批量统计结果
  * @returns {Object} 导出用总结对象
  */
 export function formatSummary(summary = {}){
 
+    const qualityCount = summary.qualityCount || {};
+
+    const displayQualityCount = {
+        "优秀": qualityCount[QUALITY_LEVEL.EXCELLENT.value] || 0,
+        "良好": qualityCount[QUALITY_LEVEL.GOOD.value] || 0,
+        "一般": qualityCount[QUALITY_LEVEL.WARNING.value] || 0,
+        "较差": qualityCount[QUALITY_LEVEL.POOR.value] || 0,
+        "不合格": qualityCount[QUALITY_LEVEL.FAIL.value] || 0,
+        "待检测": qualityCount[PENDING.value] || 0
+    };
 
     return {
         ...summary,
@@ -76,8 +89,8 @@ export function formatSummary(summary = {}){
         validCount: summary.validCount || 0,
         ignoredCount: summary.ignoredCount || 0,
         avgConcentration: summary.avgConcentration || 0,
-        quality: summary.quality || "待检测",
-        qualityCount: summary.qualityCount || {},
+        quality: summary.quality ? getQualityLabel(summary.quality) : "待检测",
+        qualityCount: displayQualityCount,
         pollution: summary.pollution || "暂无数据",
         pollutionCount: summary.pollutionCount || {},
         pollutionSamples: summary.pollutionSamples || [],

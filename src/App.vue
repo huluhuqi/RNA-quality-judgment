@@ -132,6 +132,8 @@ import {
 
 from './core/RTRecommendation'
 
+import { QUALITY_LEVEL, PENDING } from './config/qualityLevel'
+
 
 import {
 
@@ -169,15 +171,17 @@ quality:'暂无数据',
 
 qualityCount:{
 
-'优秀':0,
+[QUALITY_LEVEL.EXCELLENT.value]:0,
 
-'良好':0,
+[QUALITY_LEVEL.GOOD.value]:0,
 
-'一般':0,
+[QUALITY_LEVEL.WARNING.value]:0,
 
-'较差':0,
+[QUALITY_LEVEL.POOR.value]:0,
 
-'待检测':0
+[QUALITY_LEVEL.FAIL.value]:0,
+
+[PENDING.value]:0
 
 },
 
@@ -310,15 +314,17 @@ quality:"暂无数据",
 
 qualityCount:{
 
-'优秀':0,
+[QUALITY_LEVEL.EXCELLENT.value]:0,
 
-'良好':0,
+[QUALITY_LEVEL.GOOD.value]:0,
 
-'一般':0,
+[QUALITY_LEVEL.WARNING.value]:0,
 
-'较差':0,
+[QUALITY_LEVEL.POOR.value]:0,
 
-'待检测':0
+[QUALITY_LEVEL.FAIL.value]:0,
+
+[PENDING.value]:0
 
 }
 

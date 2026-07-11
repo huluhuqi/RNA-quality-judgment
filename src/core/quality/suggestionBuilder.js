@@ -8,6 +8,7 @@
  *   - 其它 → 下游应用通用建议
  */
 import { downstreamApplications } from "../../config/downstreamApplication";
+import { QUALITY_LEVEL, PENDING, isPoorQuality } from "../../config/qualityLevel";
 
 
 export function buildSuggestion(quality, pollution, application, extractionMethod){
@@ -19,19 +20,19 @@ export function buildSuggestion(quality, pollution, application, extractionMetho
 
 
     // 待检测
-    if(quality === "待检测"){
+    if(quality === PENDING.value){
         return "请输入A260/A280数据后进行RNA质量评价";
     }
 
 
     // 优秀且无污染
-    if(quality === "优秀" && pollution.pollutionText === "未发现明显污染"){
+    if(quality === QUALITY_LEVEL.EXCELLENT.value && pollution.pollutionText === "未发现明显污染"){
         return "RNA质量良好，可直接用于反转录及RT-qPCR实验。" + (appConfig.advice || "");
     }
 
 
     // 较差
-    if(quality === "较差"){
+    if(isPoorQuality(quality)){
         return buildFullSuggestion(diagnosis, appConfig, extractionMethod);
     }
 

@@ -14,24 +14,24 @@ RNA质量评级
 <el-tag
 :type="qualityTag"
 >
-{{summary.quality || '待检测'}}
+{{getQualityLabel(summary.quality) || '待检测'}}
 </el-tag>
 
 </p>
 
 <p>
 优秀：
-{{getQC('优秀')}} 个
+{{getQC(QUALITY_LEVEL.EXCELLENT.value)}} 个
 </p>
 
 <p>
 良好：
-{{getQC('良好')}} 个
+{{getQC(QUALITY_LEVEL.GOOD.value)}} 个
 </p>
 
 <p>
 较差：
-{{getQC('较差')}} 个
+{{getQC(QUALITY_LEVEL.POOR.value) + getQC(QUALITY_LEVEL.FAIL.value)}} 个
 </p>
 
 </div>
@@ -43,6 +43,7 @@ RNA质量评级
 <script setup>
 
 import {computed} from 'vue';
+import { QUALITY_LEVEL, getQualityLabel } from '../../config/qualityLevel';
 
 const props = defineProps({
     summary:{
@@ -62,10 +63,11 @@ function getQC(type){
 
 const qualityTag = computed(()=>{
     switch(props.summary.quality){
-        case '优秀': return 'success';
-        case '良好': return '';
-        case '一般': return 'warning';
-        case '较差': return 'danger';
+        case QUALITY_LEVEL.EXCELLENT.value: return 'success';
+        case QUALITY_LEVEL.GOOD.value: return '';
+        case QUALITY_LEVEL.WARNING.value: return 'warning';
+        case QUALITY_LEVEL.POOR.value: return 'danger';
+        case QUALITY_LEVEL.FAIL.value: return 'danger';
         default: return 'info';
     }
 });

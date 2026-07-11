@@ -39,6 +39,12 @@ getChartTextColor
 }
 from '../theme/chartTheme'
 
+import {
+QUALITY_LEVEL,
+PENDING
+}
+from '../config/qualityLevel'
+
 
 
 const props = defineProps({
@@ -147,19 +153,9 @@ data:[
 {
 
 value:
-props.data.优秀||0,
+props.data[QUALITY_LEVEL.EXCELLENT.value]||0,
 
-name:'优秀'
-
-},
-
-
-{
-
-value:
-props.data.良好||0,
-
-name:'良好'
+name: QUALITY_LEVEL.EXCELLENT.label
 
 },
 
@@ -167,19 +163,9 @@ name:'良好'
 {
 
 value:
-props.data.一般||0,
+props.data[QUALITY_LEVEL.GOOD.value]||0,
 
-name:'一般'
-
-},
-
-
-{
-
-value:
-props.data.较差||0,
-
-name:'较差'
+name: QUALITY_LEVEL.GOOD.label
 
 },
 
@@ -187,9 +173,29 @@ name:'较差'
 {
 
 value:
-props.data.待检测||0,
+props.data[QUALITY_LEVEL.WARNING.value]||0,
 
-name:'待检测'
+name: QUALITY_LEVEL.WARNING.label
+
+},
+
+
+{
+
+value:
+props.data[QUALITY_LEVEL.POOR.value]||0,
+
+name: QUALITY_LEVEL.POOR.label
+
+},
+
+
+{
+
+value:
+props.data[PENDING.value]||0,
+
+name: PENDING.label
 
 }
 

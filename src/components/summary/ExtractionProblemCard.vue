@@ -58,6 +58,7 @@ class="normal"
 import { ref, computed, defineExpose } from 'vue'
 import ExtractionProblemChart from '../ExtractionProblemChart.vue'
 import { generateBatchExtractionSummary } from '../../core/advice/batchExtractionSummary'
+import { QUALITY_LEVEL } from '../../config/qualityLevel'
 
 
 const props = defineProps({
@@ -78,8 +79,9 @@ const problemList = computed(() => {
 })
 
 const summaryText = computed(() => {
-    const badCount = (props.summary.qualityCount?.较差 || 0) +
-                     (props.summary.qualityCount?.不合格 || 0);
+    const qc = props.summary.qualityCount || {};
+    const badCount = (qc[QUALITY_LEVEL.POOR.value] || 0) +
+                     (qc[QUALITY_LEVEL.FAIL.value] || 0);
     return generateBatchExtractionSummary(
         props.summary.extractionCount || {},
         props.summary.validCount || 0,

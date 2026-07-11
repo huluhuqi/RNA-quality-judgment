@@ -6,6 +6,7 @@
  *   - 下游应用分析（applicationSummary）
  */
 import { downstreamApplications } from "../../config/downstreamApplication";
+import { QUALITY_LEVEL, getQualityLabel } from "../../config/qualityLevel";
 
 
 export function buildSummary(sampleStat, application){
@@ -19,21 +20,27 @@ export function buildSummary(sampleStat, application){
 
     if(qualitySampleCount > 0){
 
-        const goodRate = (qualityCount.优秀 + qualityCount.良好) / qualitySampleCount;
-        const excellentRate = qualityCount.优秀 / qualitySampleCount;
-        const badRate = qualityCount.较差 / qualitySampleCount;
+        const excellentCount = qualityCount[QUALITY_LEVEL.EXCELLENT.value] || 0;
+        const goodCount = qualityCount[QUALITY_LEVEL.GOOD.value] || 0;
+        const poorCount = qualityCount[QUALITY_LEVEL.POOR.value] || 0;
+        const failCount = qualityCount[QUALITY_LEVEL.FAIL.value] || 0;
+        const warningCount = qualityCount[QUALITY_LEVEL.WARNING.value] || 0;
+
+        const goodRate = (excellentCount + goodCount) / qualitySampleCount;
+        const excellentRate = excellentCount / qualitySampleCount;
+        const badRate = (poorCount + failCount) / qualitySampleCount;
 
         if(excellentRate >= 0.8 && badRate <= 0.05){
-            overallQuality = "优秀";
+            overallQuality = QUALITY_LEVEL.EXCELLENT.value;
         }
         else if(goodRate >= 0.8){
-            overallQuality = "良好";
+            overallQuality = QUALITY_LEVEL.GOOD.value;
         }
         else if(badRate >= 0.3){
-            overallQuality = "较差";
+            overallQuality = QUALITY_LEVEL.POOR.value;
         }
         else{
-            overallQuality = "一般";
+            overallQuality = QUALITY_LEVEL.WARNING.value;
         }
 
     }
@@ -46,8 +53,8 @@ export function buildSummary(sampleStat, application){
         name: appConfig.name,
         qualityLevel: appConfig.qualityLevel,
         requirements: appConfig.requirements,
-        goodCount: qualityCount.优秀 + qualityCount.良好,
-        warningCount: qualityCount.一般 + qualityCount.较差,
+        goodCount: (qualityCount[QUALITY_LEVEL.EXCELLENT.value] || 0) + (qualityCount[QUALITY_LEVEL.GOOD.value] || 0),
+        warningCount: (qualityCount[QUALITY_LEVEL.WARNING.value] || 0) + (qualityCount[QUALITY_LEVEL.POOR.value] || 0) + (qualityCount[QUALITY_LEVEL.FAIL.value] || 0),
         total: qualitySampleCount
     };
 

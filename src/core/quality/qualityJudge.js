@@ -7,6 +7,7 @@
  */
 import { QUALITY_STANDARD } from "./constants";
 import { downstreamApplications } from "../../config/downstreamApplication";
+import { QUALITY_LEVEL, PENDING } from "../../config/qualityLevel";
 
 
 export function judgeQuality(sample, application){
@@ -20,7 +21,7 @@ export function judgeQuality(sample, application){
 
     // 无浓度比值
     if(!hasA280){
-        return "待检测";
+        return PENDING.value;
     }
 
 
@@ -55,15 +56,15 @@ export function judgeQuality(sample, application){
     const ratio = score / total;
 
     if(ratio >= 1){
-        return "优秀";
+        return QUALITY_LEVEL.EXCELLENT.value;
     }
     if(ratio >= 0.75){
-        return "良好";
+        return QUALITY_LEVEL.GOOD.value;
     }
     if(ratio >= 0.5){
-        return "一般";
+        return QUALITY_LEVEL.WARNING.value;
     }
-    return "较差";
+    return QUALITY_LEVEL.POOR.value;
 
 
 }

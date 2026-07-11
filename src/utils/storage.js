@@ -1,5 +1,7 @@
 const KEY = "RNA_QC_EXPERIMENT"
 
+import { normalizeSamples } from '../core/sampleModel'
+
 
 
 /**
@@ -42,7 +44,16 @@ export function loadExperiment(){
     }
 
 
-    return JSON.parse(data)
+    const parsed = JSON.parse(data)
+
+
+    // 兼容旧数据：统一 sample 字段结构
+    if(parsed && Array.isArray(parsed.samples)){
+        parsed.samples = normalizeSamples(parsed.samples)
+    }
+
+
+    return parsed
 
 
 }

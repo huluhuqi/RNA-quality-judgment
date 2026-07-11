@@ -138,13 +138,13 @@ width:18
 
 {
 header:"A260/280",
-key:"a280",
+key:"a260280",
 width:15
 },
 
 {
 header:"A260/230",
-key:"a230",
+key:"a260230",
 width:15
 },
 
@@ -188,9 +188,9 @@ id:item.id,
 
 concentration:item.concentration ?? '',
 
-a280:item.a260280 ?? '',
+a260280:item.a260280 ?? '',
 
-a230:item.a260230 ?? '',
+a260230:item.a260230 ?? '',
 
 quality:result.quality,
 

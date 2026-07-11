@@ -396,10 +396,15 @@ import {ref} from 'vue'
 import {analyzeRNA}
 from '../core/RNAQuality'
 
-
 import {parsePasteData}
 
 from '../utils/excelImport'
+
+
+import {
+createSample,
+normalizeSamples
+} from '../core/sampleModel'
 
 
 import {
@@ -472,7 +477,7 @@ if(data.length === 0){
 saveSnapshot()
 
 tableData.value.push(
-    ...data
+    ...normalizeSamples(data)
 )
 
 emit(
@@ -494,19 +499,9 @@ function addRow(){
 
 saveSnapshot()
 
-tableData.value.push({
-
-id:'',
-
-concentration:null,
-
-a260280:null,
-
-a260230:null,
-
-ignored:false
-
-})
+tableData.value.push(
+    createSample({})
+)
 
 emit(
 'update-data',

@@ -6,21 +6,23 @@
  * - 可能原因（cause）
  * - 可能出问题的步骤（step）
  * - 优化建议（solution）
+ *
+ * 自动处理方法名 → 内部ID映射，支持中文名和ID两种输入。
  */
 
-import { extractionDatabase } from "../extraction"
+import { getExtractionDatabase } from "../extraction"
 
 
 /**
  * 获取提取过程建议
  *
- * @param {string} method     提取方法名（如 "硅胶膜柱提法"）
+ * @param {string} method     提取方法名（中文名或内部ID）
  * @param {Array}  pollutions 污染类型数组 [{ type, level, text }]
- * @returns {Array} 建议列表 [{ title, cause, step, solution }]
+ * @returns {Array} 建议列表 [{ type, level, title, cause, step, solution }]
  */
 export function getExtractionAdvice(method, pollutions = []){
 
-    const database = extractionDatabase[method];
+    const database = getExtractionDatabase(method);
 
     if(!database) return [];
 

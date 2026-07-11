@@ -5,15 +5,16 @@
  * 新代码请直接使用 extractionDatabase。
  */
 
-import { extractionDatabase } from "../core/extraction"
+import { extractionDatabase, getExtractionMethodName } from "../core/extraction"
 
 
 /**
  * 将 extractionDatabase 转换为旧格式（low280/low230 → protein/guanidine）
  */
 function toLegacyFormat(db){
-    const result = {}
-    Object.entries(db).forEach(([methodName, methodData]) => {
+    const result = {};
+    Object.entries(db).forEach(([methodId, methodData]) => {
+        const methodName = getExtractionMethodName(methodId) || methodId;
         result[methodName] = {
             low280: {
                 title: methodData.pollution.protein.title,

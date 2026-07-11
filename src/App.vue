@@ -31,6 +31,19 @@
 
 
 
+<div class="space"></div>
+
+
+<ExportPanel
+
+:summary="summary"
+
+:data="samples"
+
+/>
+
+
+
 </div>
 
 
@@ -51,6 +64,10 @@ import RTParameter from './components/RTParameter.vue'
 import ExperimentSummary from './components/ExperimentSummary.vue'
 
 import RNADataTable from './components/RNADataTable.vue'
+
+
+import ExportPanel
+from './components/ExportPanel.vue'
 
 
 import {calculateBatch}

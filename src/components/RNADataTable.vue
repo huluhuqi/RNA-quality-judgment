@@ -184,21 +184,67 @@ v-model="scope.row.a260230"
 
 <el-table-column
 label="RNA质量"
-/>
+>
+
+
+<template #default="scope">
+
+
+{{getAnalysis(scope.row).quality}}
+
+
+</template>
+
+
+</el-table-column>
 
 
 
 
 <el-table-column
 label="污染分析"
-/>
+width="260"
+>
+
+
+<template #default="scope">
+
+
+<div class="cell-text">
+
+{{getAnalysis(scope.row).pollution}}
+
+</div>
+
+
+</template>
+
+
+</el-table-column>
 
 
 
 
 <el-table-column
 label="建议"
-/>
+width="300"
+>
+
+
+<template #default="scope">
+
+
+<div class="cell-text">
+
+{{getAnalysis(scope.row).suggestion}}
+
+</div>
+
+
+</template>
+
+
+</el-table-column>
 
 
 
@@ -222,6 +268,9 @@ label="建议"
 
 import {ref} from 'vue'
 
+import {analyzeRNA}
+from '../core/RNAQuality'
+
 
 import {parsePasteData}
 
@@ -238,7 +287,11 @@ const pasteText = ref('')
 const tableData = ref([])
 
 
+function getAnalysis(row){
 
+    return analyzeRNA(row)
+
+}
 
 
 function handlePaste(e){
@@ -336,6 +389,18 @@ align-items:center;
 .btn-area{
 
 margin:15px 0;
+
+}
+
+
+
+.cell-text{
+
+white-space:normal;
+
+word-break:break-word;
+
+line-height:1.5;
 
 }
 

@@ -73,7 +73,9 @@ summary:Object,
 
 data:Array,
 
-settings:Object
+settings:Object,
+
+summaryRef:Object
 
 })
 
@@ -81,10 +83,17 @@ settings:Object
 
 
 
-function excel(){
+async function excel(){
 
 
-exportRNAReport({
+let charts = {quality:null, pollution:null}
+
+if(props.summaryRef?.getCharts){
+    charts = await props.summaryRef.getCharts()
+}
+
+
+await exportRNAReport({
 
 samples:props.data,
 
@@ -92,7 +101,7 @@ summary:props.summary,
 
 settings:props.settings
 
-})
+}, charts)
 
 
 }

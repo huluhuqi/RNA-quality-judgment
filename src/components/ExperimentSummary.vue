@@ -241,6 +241,7 @@ RNA质量分布
 </div>
 
 <QualityChart
+ref="qualityChartRef"
 :data="summary.qualityCount"
 />
 
@@ -275,6 +276,7 @@ class="chart-row"
 </p>
 
 <PollutionChart
+ref="pollutionChartRef"
 :data="summary.pollutionCount"
 />
 
@@ -326,10 +328,15 @@ class="normal"
 
 <script setup>
 
-import {computed} from 'vue'
+import {computed, ref, defineExpose} from 'vue'
 
 import QualityChart from './QualityChart.vue'
 import PollutionChart from './PollutionChart.vue'
+
+
+const qualityChartRef = ref(null)
+
+const pollutionChartRef = ref(null)
 
 
 const props =
@@ -421,6 +428,25 @@ return 'danger'
 
 default:
 return 'info'
+
+}
+
+})
+
+
+defineExpose({
+
+async getCharts(){
+
+return {
+
+quality:
+await qualityChartRef.value?.getImage(),
+
+pollution:
+await pollutionChartRef.value?.getImage()
+
+}
 
 }
 

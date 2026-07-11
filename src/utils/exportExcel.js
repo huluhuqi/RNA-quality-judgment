@@ -20,7 +20,7 @@ import { downstreamApplications } from "../config/downstreamApplication";
  */
 
 
-export async function exportRNAReport(data){
+export async function exportRNAReport(data, charts){
 
 
 const {
@@ -996,6 +996,63 @@ if(summary?.rtWarning){
 
     ])
 
+}
+
+
+
+
+/*
+=========================
+图表插入
+=========================
+*/
+
+// RNA质量分布图
+sheet2.addRow([]);
+
+const chartRow1 = sheet2.rowCount + 1
+sheet2.mergeCells(`A${chartRow1}:D${chartRow1}`)
+const chartTitle1 = sheet2.getCell(`A${chartRow1}`)
+chartTitle1.value = "RNA质量分布"
+chartTitle1.font = {bold:true, size:14}
+sheet2.getRow(chartRow1).height = 24
+
+if(charts?.quality){
+    const qualityBase64 = charts.quality.replace(/^data:image\/png;base64,/, '')
+    const imageId1 = workbook.addImage({
+        base64: qualityBase64,
+        extension: "png"
+    })
+    sheet2.addImage(imageId1, {
+        tl: {col:0, row:chartRow1},
+        ext: {width:500, height:300}
+    })
+    // 预留图片空间（15行）
+    for(let i = 0; i < 15; i++){
+        sheet2.addRow([])
+    }
+}
+
+// 污染类型分析图
+sheet2.addRow([]);
+
+const chartRow2 = sheet2.rowCount + 1
+sheet2.mergeCells(`A${chartRow2}:D${chartRow2}`)
+const chartTitle2 = sheet2.getCell(`A${chartRow2}`)
+chartTitle2.value = "污染类型分析"
+chartTitle2.font = {bold:true, size:14}
+sheet2.getRow(chartRow2).height = 24
+
+if(charts?.pollution){
+    const pollutionBase64 = charts.pollution.replace(/^data:image\/png;base64,/, '')
+    const imageId2 = workbook.addImage({
+        base64: pollutionBase64,
+        extension: "png"
+    })
+    sheet2.addImage(imageId2, {
+        tl: {col:0, row:chartRow2},
+        ext: {width:500, height:300}
+    })
 }
 
 

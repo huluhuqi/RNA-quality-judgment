@@ -267,6 +267,25 @@ window.removeEventListener('theme-change', render)
 })
 
 
+defineExpose({
+
+async getImage(){
+
+const canvas =
+chartRef.value
+?.querySelector("canvas")
+
+if(!canvas)
+return null
+
+return canvas.toDataURL(
+"image/png"
+)
+
+}
+
+})
+
 
 </script>
 

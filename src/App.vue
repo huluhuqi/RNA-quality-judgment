@@ -26,7 +26,11 @@
 
 
 <ExperimentSummary
+
+ref="summaryRef"
+
 :summary="summary"
+
 />
 
 
@@ -52,6 +56,8 @@ ref="rnaTableRef"
 :data="samples"
 
 :settings="rtConfig"
+
+:summaryRef="summaryRef"
 
 />
 
@@ -194,6 +200,8 @@ ref([])
 
 
 const rnaTableRef = ref(null)
+
+const summaryRef = ref(null)
 
 
 

@@ -183,6 +183,35 @@ ng
 μL
 </p>
 
+<p>
+状态：
+<el-tag
+:type="rtLevelType"
+size="small"
+>
+{{summary.rt?.level || '无法判断'}}
+</el-tag>
+</p>
+
+<p
+v-if="summary.rtWarning"
+class="rt-warning"
+>
+<el-alert
+
+type="warning"
+
+:title="'浓度差异警告'"
+
+:description="summary.rtWarning"
+
+show-icon
+
+:closable="false"
+
+/>
+</p>
+
 </div>
 
 </el-card>
@@ -364,6 +393,36 @@ if(level === '严格'){
 }
 
 return 'success'
+
+})
+
+
+const rtLevelType =
+computed(()=>{
+
+const level =
+props.summary
+.rt
+?.level
+
+switch(level){
+
+case '浓度充足':
+return 'success'
+
+case '浓度一般':
+return ''
+
+case '浓度偏低':
+return 'warning'
+
+case '浓度不足':
+return 'danger'
+
+default:
+return 'info'
+
+}
 
 })
 

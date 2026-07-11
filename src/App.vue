@@ -112,7 +112,10 @@ import {calculateBatch}
 from './core/BatchStatistics'
 
 
-import {calculateRT}
+import {
+    calculateRT,
+    checkConcentrationDistribution
+}
 
 from './core/RTRecommendation'
 
@@ -228,6 +231,11 @@ validSamples,
 rtConfig.value
 )
 
+batch.rtWarning =
+checkConcentrationDistribution(
+validSamples
+)
+
 
 summary.value=batch
 
@@ -255,6 +263,11 @@ batch.rt =
 calculateRT(
 validSamples,
 config
+)
+
+batch.rtWarning =
+checkConcentrationDistribution(
+validSamples
 )
 
 

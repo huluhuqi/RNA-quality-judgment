@@ -158,7 +158,10 @@ data:[
 value:
 props.data[QUALITY_LEVEL.EXCELLENT.value]||0,
 
-name: QUALITY_LEVEL.EXCELLENT.label
+name: QUALITY_LEVEL.EXCELLENT.label,
+label:{
+show: (props.data[QUALITY_LEVEL.EXCELLENT.value]||0) > 0
+}
 
 },
 
@@ -168,7 +171,10 @@ name: QUALITY_LEVEL.EXCELLENT.label
 value:
 props.data[QUALITY_LEVEL.GOOD.value]||0,
 
-name: QUALITY_LEVEL.GOOD.label
+name: QUALITY_LEVEL.GOOD.label,
+label:{
+show: (props.data[QUALITY_LEVEL.GOOD.value]||0) > 0
+}
 
 },
 
@@ -178,7 +184,10 @@ name: QUALITY_LEVEL.GOOD.label
 value:
 props.data[QUALITY_LEVEL.WARNING.value]||0,
 
-name: QUALITY_LEVEL.WARNING.label
+name: QUALITY_LEVEL.WARNING.label,
+label:{
+show: (props.data[QUALITY_LEVEL.WARNING.value]||0) > 0
+}
 
 },
 
@@ -188,7 +197,10 @@ name: QUALITY_LEVEL.WARNING.label
 value:
 props.data[QUALITY_LEVEL.POOR.value]||0,
 
-name: QUALITY_LEVEL.POOR.label
+name: QUALITY_LEVEL.POOR.label,
+label:{
+show: (props.data[QUALITY_LEVEL.POOR.value]||0) > 0
+}
 
 },
 
@@ -198,7 +210,10 @@ name: QUALITY_LEVEL.POOR.label
 value:
 props.data[PENDING.value]||0,
 
-name: PENDING.label
+name: PENDING.label,
+label:{
+show: (props.data[PENDING.value]||0) > 0
+}
 
 }
 

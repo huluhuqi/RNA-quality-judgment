@@ -128,19 +128,17 @@ validCount:0,
 
 ignoredCount:0,
 
+pendingCount:0,
+
 avgConcentration:0,
 
 minConcentration:0,
 
 maxConcentration:0,
 
-avgA260280:0,
-
-avgA260230:0,
-
 quality:'暂无数据',
 
-qualityDetail:{
+qualityCount:{
 
 '优秀':0,
 
@@ -148,17 +146,15 @@ qualityDetail:{
 
 '一般':0,
 
-'较差':0
+'较差':0,
+
+'待检测':0
 
 },
 
 pollution:'暂无数据',
 
-pollutionSummary:'暂无数据',
-
 pollutionSamples:[],
-
-abnormal:0,
 
 rt:{
 
@@ -258,9 +254,11 @@ validCount:0,
 
 ignoredCount:0,
 
+pendingCount:0,
+
 quality:"暂无数据",
 
-qualityDetail:{
+qualityCount:{
 
 '优秀':0,
 
@@ -268,13 +266,11 @@ qualityDetail:{
 
 '一般':0,
 
-'较差':0
+'较差':0,
 
-},
+'待检测':0
 
-pollutionSummary:'暂无数据',
-
-pollutionSamples:[]
+}
 
 }
 

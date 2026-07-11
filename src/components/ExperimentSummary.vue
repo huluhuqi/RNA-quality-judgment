@@ -36,7 +36,7 @@
 
 <div class="stat-item">
 
-<span class="label">有效样本：</span>
+<span class="label">有效分析：</span>
 
 <span class="value">{{summary.validCount}}</span>
 
@@ -47,6 +47,14 @@
 <span class="label">忽略样本：</span>
 
 <span class="value">{{summary.ignoredCount}}</span>
+
+</div>
+
+<div class="stat-item">
+
+<span class="label">待检测：</span>
+
+<span class="value">{{summary.pendingCount}}</span>
 
 </div>
 
@@ -150,7 +158,7 @@ size="large"
 
 <el-tag type="success">优秀</el-tag>
 
-<span class="q-count">{{summary.qualityDetail['优秀'] || 0}}</span>
+<span class="q-count">{{summary.qualityCount['优秀'] || 0}}</span>
 
 </div>
 
@@ -158,7 +166,7 @@ size="large"
 
 <el-tag>良好</el-tag>
 
-<span class="q-count">{{summary.qualityDetail['良好'] || 0}}</span>
+<span class="q-count">{{summary.qualityCount['良好'] || 0}}</span>
 
 </div>
 
@@ -166,7 +174,7 @@ size="large"
 
 <el-tag type="warning">一般</el-tag>
 
-<span class="q-count">{{summary.qualityDetail['一般'] || 0}}</span>
+<span class="q-count">{{summary.qualityCount['一般'] || 0}}</span>
 
 </div>
 
@@ -174,7 +182,15 @@ size="large"
 
 <el-tag type="danger">较差</el-tag>
 
-<span class="q-count">{{summary.qualityDetail['较差'] || 0}}</span>
+<span class="q-count">{{summary.qualityCount['较差'] || 0}}</span>
+
+</div>
+
+<div class="quality-item">
+
+<el-tag type="info">待检测</el-tag>
+
+<span class="q-count">{{summary.qualityCount['待检测'] || 0}}</span>
 
 </div>
 
@@ -197,7 +213,7 @@ size="large"
 
 <div class="pollution-summary">
 
-{{summary.pollutionSummary}}
+{{summary.pollution}}
 
 </div>
 
@@ -224,17 +240,7 @@ class="pollution-item"
 
 </div>
 
-<div class="pollution-detail">
-
-<span v-if="item.a260230">A260/A230={{item.a260230}}</span>
-
-<span v-if="item.a260280 && item.a260230"> / </span>
-
-<span v-if="item.a260280 < 1.8">A260/A280={{item.a260280}}</span>
-
-</div>
-
-<div class="pollution-reason">{{item.reason}}</div>
+<div class="pollution-reason">{{item.pollution}}</div>
 
 </div>
 

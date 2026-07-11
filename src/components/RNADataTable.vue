@@ -76,9 +76,13 @@ type="success"
 
 
 
+<div class="table-container">
+
 <el-table
 
 :data="tableData"
+
+:row-class-name="rowClass"
 
 border
 
@@ -95,6 +99,7 @@ style="width:100%"
 
 <el-table-column
 label="模板ID"
+fixed="left"
 width="140"
 >
 
@@ -306,6 +311,31 @@ fixed="right"
 
 <template #default="scope">
 
+<el-button-group>
+
+<el-button
+
+size="small"
+
+@click="toggleIgnore(scope.row)"
+
+>
+
+{{
+
+scope.row.ignored
+
+?
+
+"恢复"
+
+:
+
+"忽略"
+
+}}
+
+</el-button>
 
 <el-button
 
@@ -321,6 +351,7 @@ size="small"
 
 </el-button>
 
+</el-button-group>
 
 </template>
 
@@ -331,6 +362,8 @@ size="small"
 
 
 </el-table>
+
+</div>
 
 
 
@@ -434,7 +467,9 @@ concentration:null,
 
 a260280:null,
 
-a260230:null
+a260230:null,
+
+ignored:false
 
 })
 
@@ -480,6 +515,38 @@ emit(
 'update-data',
 tableData.value
 )
+
+
+}
+
+
+function toggleIgnore(row){
+
+
+row.ignored =
+!row.ignored
+
+
+emit(
+'update-data',
+tableData.value
+)
+
+
+}
+
+
+function rowClass({row}){
+
+
+if(row.ignored){
+
+return "ignored-row"
+
+}
+
+
+return ""
 
 
 }
@@ -563,6 +630,24 @@ white-space:normal;
 word-break:break-word;
 
 line-height:1.5;
+
+}
+
+
+.table-container{
+
+width:100%;
+
+overflow-x:auto;
+
+}
+
+
+:deep(.ignored-row td){
+
+text-decoration:line-through;
+
+opacity:0.45;
 
 }
 

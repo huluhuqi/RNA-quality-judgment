@@ -122,7 +122,11 @@ from './utils/storage'
 
 const summary = ref({
 
-count:0,
+totalCount:0,
+
+validCount:0,
+
+ignoredCount:0,
 
 avgConcentration:0,
 
@@ -136,7 +140,23 @@ avgA260230:0,
 
 quality:'暂无数据',
 
+qualityDetail:{
+
+'优秀':0,
+
+'良好':0,
+
+'一般':0,
+
+'较差':0
+
+},
+
 pollution:'暂无数据',
+
+pollutionSummary:'暂无数据',
+
+pollutionSamples:[],
 
 abnormal:0,
 
@@ -184,13 +204,15 @@ const batch =
 calculateBatch(data)
 
 
+const validSamples =
+data.filter(s=>!s.ignored)
+
 
 batch.rt =
 calculateRT(
-data,
+validSamples,
 rtConfig.value
 )
-
 
 
 summary.value=batch
@@ -208,9 +230,13 @@ function updateRTConfig(config){
 rtConfig.value=config
 
 
+const validSamples =
+samples.value.filter(s=>!s.ignored)
+
+
 summary.value.rt =
 calculateRT(
-samples.value,
+validSamples,
 rtConfig.value
 )
 
@@ -226,9 +252,29 @@ samples.value=[]
 
 summary.value={
 
-count:0,
+totalCount:0,
 
-quality:"暂无数据"
+validCount:0,
+
+ignoredCount:0,
+
+quality:"暂无数据",
+
+qualityDetail:{
+
+'优秀':0,
+
+'良好':0,
+
+'一般':0,
+
+'较差':0
+
+},
+
+pollutionSummary:'暂无数据',
+
+pollutionSamples:[]
 
 }
 

@@ -8,7 +8,11 @@ export function calculateBatch(samples){
 
         return {
 
-            count:0,
+            totalCount:0,
+
+            validCount:0,
+
+            ignoredCount:0,
 
             avgConcentration:0,
 
@@ -22,7 +26,23 @@ export function calculateBatch(samples){
 
             quality:'暂无数据',
 
+            qualityDetail:{
+
+                '优秀':0,
+
+                '良好':0,
+
+                '一般':0,
+
+                '较差':0
+
+            },
+
             pollution:'暂无数据',
+
+            pollutionSummary:'暂无数据',
+
+            pollutionSamples:[],
 
             abnormal:0
 
@@ -31,34 +51,85 @@ export function calculateBatch(samples){
     }
 
 
+    const totalCount = samples.length
+
+    const validSamples =
+        samples.filter(
+            item=>!item.ignored
+        )
+
+    const ignoredCount = totalCount - validSamples.length
+
+
+    if(validSamples.length===0){
+
+        return {
+
+            totalCount,
+
+            validCount:0,
+
+            ignoredCount,
+
+            avgConcentration:0,
+
+            minConcentration:0,
+
+            maxConcentration:0,
+
+            avgA260280:0,
+
+            avgA260230:0,
+
+            quality:'暂无数据',
+
+            qualityDetail:{
+
+                '优秀':0,
+
+                '良好':0,
+
+                '一般':0,
+
+                '较差':0
+
+            },
+
+            pollution:'暂无数据',
+
+            pollutionSummary:'暂无数据',
+
+            pollutionSamples:[],
+
+            abnormal:0
+
+        }
+
+    }
+
 
     // 浓度
 
     const concentrations =
-        samples
+        validSamples
         .map(i=>Number(i.concentration))
         .filter(i=>!isNaN(i))
-
 
 
     // A260/A280
 
     const a280 =
-        samples
+        validSamples
         .map(i=>Number(i.a260280))
         .filter(i=>!isNaN(i))
-
 
 
     // A260/A230
 
     const a230 =
-        samples
+        validSamples
         .map(i=>Number(i.a260230))
         .filter(i=>!isNaN(i))
-
-
-
 
 
     function average(arr){
@@ -68,7 +139,6 @@ export function calculateBatch(samples){
             return 0
 
         }
-
 
         return (
             arr.reduce(
@@ -82,134 +152,232 @@ export function calculateBatch(samples){
     }
 
 
-
-
-
     const results =
-        samples.map(i=>analyzeRNA(i))
+        validSamples.map((s,i)=>{
 
+            return {
 
+                sample:s,
 
+                analysis:analyzeRNA(s)
+
+            }
+
+        })
 
 
     // 质量统计
 
-    let excellent=0
+    let qualityCount={
 
-    let good=0
+        '优秀':0,
 
-    let normal=0
+        '良好':0,
 
-    let bad=0
+        '一般':0,
 
+        '较差':0
+
+    }
 
 
     results.forEach(r=>{
 
+        const q = r.analysis.quality
 
-        if(r.quality==='优秀')
-            excellent++
+        if(qualityCount[q] !== undefined){
 
-
-        else if(r.quality==='良好')
-            good++
-
-
-        else if(r.quality==='一般')
-            normal++
-
-
-        else if(r.quality==='较差')
-            bad++
-
-
-    })
-
-
-
-
-
-    let quality=''
-
-
-    if(bad>samples.length*0.3){
-
-        quality='较差'
-
-    }
-    else if(
-        excellent+good
-        >
-        samples.length*0.8
-    ){
-
-        quality='良好'
-
-    }
-    else{
-
-        quality='一般'
-
-    }
-
-
-
-
-
-
-    // 污染统计
-
-
-    let pollutionCount=0
-
-
-    results.forEach(r=>{
-
-
-        if(
-            r.pollution!=='未发现明显污染'
-        ){
-
-            pollutionCount++
+            qualityCount[q]++
 
         }
 
     })
 
 
+    // 总体质量评级
+
+    const badRate=
+        qualityCount['较差'] /
+        validSamples.length
+
+    const goodRate=
+        (
+            qualityCount['优秀']+
+            qualityCount['良好']
+        )
+        /
+        validSamples.length
+
+
+    let overall
+
+
+    if(
+        qualityCount['优秀']/validSamples.length>=0.8
+        &&
+        badRate<0.05
+    ){
+
+        overall="优秀"
+
+    }
+
+    else if(
+        goodRate>=0.8
+    ){
+
+        overall="良好"
+
+    }
+
+    else if(
+        badRate>0.3
+    ){
+
+        overall="较差"
+
+    }
+
+    else{
+
+        overall="一般"
+
+    }
+
+
+    // 污染统计
+
+    let pollutionCount=0
+
+    let proteinCount=0
+
+    let saltCount=0
+
+    let pollutionSamples=[]
+
+
+    results.forEach(r=>{
+
+        const p = r.analysis.pollution
+
+        if(p!=='未发现明显污染'){
+
+            pollutionCount++
+
+            const reasons=[]
+
+
+            if(p.includes('蛋白质')||p.includes('酚类')){
+
+                proteinCount++
+
+                reasons.push('蛋白/酚类污染风险')
+
+            }
+
+            if(p.includes('严重盐类')||p.includes('胍盐')){
+
+                saltCount++
+
+                reasons.push('严重盐类/胍盐残留')
+
+            }
+            else if(p.includes('盐离子')||p.includes('乙醇')||p.includes('提取试剂')){
+
+                saltCount++
+
+                reasons.push('盐离子/试剂残留')
+
+            }
+            else if(p.includes('轻微有机物')||p.includes('盐类')){
+
+                reasons.push('轻微有机物/盐类残留')
+
+            }
+
+
+            pollutionSamples.push({
+
+                id:r.sample.id,
+
+                a260280:r.sample.a260280,
+
+                a260230:r.sample.a260230,
+
+                reason:reasons.join('；')
+
+            })
+
+        }
+
+    })
+
+
+    // 污染总结
+
+    let pollutionSummary=''
+
+    const summaryParts=[]
+
+
+    if(saltCount>0){
+
+        summaryParts.push(
+            `A260/A230偏低样本${saltCount}个，提示盐类、胍盐或有机试剂残留风险`
+        )
+
+    }
+
+    if(proteinCount>0){
+
+        summaryParts.push(
+            `A260/A280异常样本${proteinCount}个，提示蛋白或酚类污染可能`
+        )
+
+    }
+
+
+    if(summaryParts.length===0){
+
+        pollutionSummary='多数样本纯度良好，未发现明显污染'
+
+    }
+    else{
+
+        pollutionSummary =
+            '本批次主要存在' +
+            summaryParts.join('；') +
+            '。'
+
+    }
+
 
     return {
 
+        totalCount,
 
-        count:samples.length,
+        validCount:validSamples.length,
 
+        ignoredCount,
 
         avgConcentration:
             average(concentrations),
 
-
         minConcentration:
             Math.min(...concentrations),
-
 
         maxConcentration:
             Math.max(...concentrations),
 
-
-
         avgA260280:
             average(a280),
-
-
 
         avgA260230:
             average(a230),
 
+        quality:overall,
 
-
-        quality,
-
-
+        qualityDetail:qualityCount,
 
         pollution:
 
@@ -223,15 +391,14 @@ export function calculateBatch(samples){
 
         `发现${pollutionCount}个样本存在污染风险`,
 
+        pollutionSummary,
 
+        pollutionSamples,
 
         abnormal:
 
-            bad
-
-
+            qualityCount['较差']
 
     }
-
 
 }

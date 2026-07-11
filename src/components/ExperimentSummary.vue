@@ -18,7 +18,7 @@
 <el-row :gutter="15">
 
 
-<el-col :xs="24" :sm="8">
+<el-col :xs="24" :sm="12" :lg="8">
 
 
 <el-card shadow="hover" class="info-card">
@@ -134,7 +134,7 @@ ng/μL
 
 
 
-<el-col :xs="24" :sm="8">
+<el-col :xs="24" :sm="12" :lg="8">
 
 
 <el-card shadow="hover" class="quality-card">
@@ -242,7 +242,7 @@ RNA质量分布
 
 
 
-<el-col :xs="24" :sm="8">
+<el-col :xs="24" :sm="12" :lg="8">
 
 
 <el-card shadow="hover" class="pollution-card">
@@ -696,7 +696,22 @@ linear-gradient(
 
 }
 
+.summary-card .el-card{
 
+height:auto;
 
+min-height:300px;
+
+}
+
+@media (max-width:768px){
+
+.summary-card .el-card{
+
+min-height:250px;
+
+}
+
+}
 
 </style>

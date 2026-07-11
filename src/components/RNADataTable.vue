@@ -52,7 +52,7 @@ placeholder="
 
 
 
-<div class="btn-area">
+<div class="btn-area button-group">
 
 
 <el-button
@@ -76,6 +76,7 @@ type="success"
 
 
 
+<div class="table-wrapper">
 <div class="table-container">
 
 <Transition name="fade" mode="out-in">
@@ -368,6 +369,7 @@ size="small"
 </Transition>
 
 </div>
+</div>
 
 
 
@@ -631,6 +633,16 @@ margin:15px 0;
 
 }
 
+.button-group{
+
+display:flex;
+
+gap:10px;
+
+flex-wrap:wrap;
+
+}
+
 
 
 .cell-text{
@@ -644,11 +656,23 @@ line-height:1.5;
 }
 
 
-.table-container{
+.table-wrapper{
 
 width:100%;
 
 overflow-x:auto;
+
+}
+
+.table-wrapper .el-table{
+
+min-width:1200px;
+
+}
+
+.table-container{
+
+width:100%;
 
 }
 

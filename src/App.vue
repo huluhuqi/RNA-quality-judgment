@@ -1,7 +1,7 @@
 <template>
 
 
-<div class="app">
+<div class="app-container">
 
 
 <Header/>
@@ -64,6 +64,14 @@
 <script setup>
 
 import './assets/style.css'
+import './assets/theme.css'
+
+import {
+initTheme
+}
+from './theme/theme'
+
+initTheme()
 
 import {ref} from 'vue'
 
@@ -370,15 +378,35 @@ samples.value
 <style scoped>
 
 
-.app{
+.app-container{
+
+min-height:100vh;
+
+background:
+
+var(--bg-color);
+
+padding:
+
+20px;
+
+transition:
+
+all .3s;
 
 width:90%;
 
 max-width:1600px;
 
-margin:30px auto;
+margin:0 auto;
 
+}
 
+@media (max-width:768px){
+    .app-container{
+        padding:10px;
+        width:100%;
+    }
 }
 
 

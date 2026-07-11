@@ -23,6 +23,11 @@ from 'vue'
 
 import * as echarts from 'echarts'
 
+import {
+getTheme
+}
+from '../theme/theme'
+
 
 
 const props = defineProps({
@@ -50,16 +55,19 @@ let chart=null
 
 function render(){
 
-
-if(!chart){
-
-
-chart=
-echarts.init(
-chartRef.value
-)
-
+if(chart){
+    chart.dispose()
 }
+
+chart =
+echarts.init(
+chartRef.value,
+getTheme()==='dark'
+?
+'dark'
+:
+null
+)
 
 
 
@@ -215,6 +223,13 @@ render()
 deep:true
 }
 
+)
+
+watch(
+    ()=>getTheme(),
+    ()=>{
+        render()
+    }
 )
 
 

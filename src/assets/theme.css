@@ -1,0 +1,44 @@
+:root{
+    --bg-color:#f5f8fc;
+    --card-color:#ffffff;
+    --text-color:#303133;
+    --border-color:#dcdfe6;
+    --primary-color:#409eff;
+}
+
+[data-theme="dark"]{
+    --bg-color:#141414;
+    --card-color:#1f1f1f;
+    --text-color:#eeeeee;
+    --border-color:#444;
+    --primary-color:#66b1ff;
+}
+
+body{
+    background:
+    var(--bg-color);
+    color:
+    var(--text-color);
+    transition:
+    background .3s,
+    color .3s;
+}
+
+.el-card{
+    background:
+    var(--card-color)!important;
+    border-color:
+    var(--border-color)!important;
+}
+
+.el-card__header{
+    color:
+    var(--text-color);
+}
+
+.el-table{
+    background:
+    var(--card-color)!important;
+    color:
+    var(--text-color);
+}

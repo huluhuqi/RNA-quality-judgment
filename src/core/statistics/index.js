@@ -13,6 +13,7 @@
 import { getSampleStatistics } from "./sampleStatistics";
 import { getPollutionStatistics } from "./pollutionStatistics";
 import { buildSummary } from "./summaryBuilder";
+import { getExtractionStatistics, toExtractionChartData } from "./extractionStatistics";
 
 
 export function calculateBatch(samples, extractionMethod, application){
@@ -48,7 +49,10 @@ export function calculateBatch(samples, extractionMethod, application){
         pollutionSamples: pollutionStat.pollutionSamples,
         pollutionCount: pollutionStat.pollutionCount,
 
-        applicationSummary: summary.applicationSummary
+        applicationSummary: summary.applicationSummary,
+
+        extractionCount: getExtractionStatistics(samples),
+        extractionChartData: toExtractionChartData(getExtractionStatistics(samples))
     };
 
 

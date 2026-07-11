@@ -43,41 +43,50 @@ class="top-summary pdf-section"
 
 </el-row>
 
-<!-- 质量分布 -->
+<!-- 分析图表 2x2 网格 -->
 
-<el-row
-:gutter="16"
-class="chart-row pdf-section"
->
+<div class="chart-grid pdf-section">
 
-<el-col
-:xs="24"
->
 <QualityChartCard
 ref="qualityChartRef"
 :summary="summary"
 />
-</el-col>
 
-</el-row>
-
-<!-- 污染分析 -->
-
-<el-row
-:gutter="16"
-class="chart-row pdf-section"
->
-
-<el-col
-:xs="24"
->
 <PollutionCard
 ref="pollutionChartRef"
 :summary="summary"
 />
-</el-col>
 
-</el-row>
+<ExtractionProblemCard
+ref="extractionChartRef"
+:summary="summary"
+/>
+
+<el-card shadow="hover" class="rt-detail-card">
+<div class="card-title">RT 模板建议</div>
+<div class="rt-content">
+<div class="rt-item">
+<span class="rt-label">推荐投入量</span>
+<span class="rt-value">{{ summary.rt?.recommendedRNA || 0 }} ng</span>
+</div>
+<div class="rt-item">
+<span class="rt-label">模板体积范围</span>
+<span class="rt-value">{{ summary.rt?.minVolume || 0 }} ~ {{ summary.rt?.maxVolume || 0 }} μL</span>
+</div>
+<div class="rt-item">
+<span class="rt-label">浓度状态</span>
+<span class="rt-value">{{ summary.rt?.level || '无法判断' }}</span>
+</div>
+<p v-if="summary.rt?.message" class="rt-message">
+{{ summary.rt.message }}
+</p>
+<p v-if="summary.rtWarning" class="rt-warning">
+{{ summary.rtWarning }}
+</p>
+</div>
+</el-card>
+
+</div>
 
 </div>
 
@@ -93,10 +102,12 @@ import ApplicationCard from './summary/ApplicationCard.vue';
 import RTRecommendCard from './summary/RTRecommendCard.vue';
 import QualityChartCard from './summary/QualityChartCard.vue';
 import PollutionCard from './summary/PollutionCard.vue';
+import ExtractionProblemCard from './summary/ExtractionProblemCard.vue';
 
 
 const qualityChartRef = ref(null);
 const pollutionChartRef = ref(null);
+const extractionChartRef = ref(null);
 
 
 defineProps({
@@ -111,7 +122,8 @@ defineExpose({
     async getCharts(){
         return {
             quality: await qualityChartRef.value?.getImage(),
-            pollution: await pollutionChartRef.value?.getImage()
+            pollution: await pollutionChartRef.value?.getImage(),
+            extraction: await extractionChartRef.value?.getImage()
         };
     }
 });
@@ -121,26 +133,90 @@ defineExpose({
 <style scoped>
 
 .summary-container{
-    width:100%;
+    width: 100%;
 }
 
-.chart-row{
-    margin-top:16px;
+.chart-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+@media (max-width: 900px){
+    .chart-grid{
+        grid-template-columns: 1fr;
+    }
 }
 
 /* PDF分页：避免模块被截断 */
 .pdf-section{
-    page-break-inside:avoid;
-    margin-bottom:20px;
+    page-break-inside: avoid;
+    margin-bottom: 20px;
+}
+
+.card-title{
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.rt-detail-card{
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f0f9ff
+        );
+    overflow: visible;
+}
+
+.rt-content{
+    padding: 0;
+}
+
+.rt-item{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.rt-label{
+    color: var(--text-light, #606266);
+}
+
+.rt-value{
+    font-weight: 600;
+    color: var(--primary-color, #409EFF);
+}
+
+.rt-message{
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--card-color, #ffffff);
+    border-radius: 4px;
+    line-height: 1.6;
+    font-size: 13px;
+}
+
+.rt-warning{
+    margin-top: 10px;
+    padding: 10px;
+    background: #fef0f0;
+    color: #f56c6c;
+    border-radius: 4px;
+    line-height: 1.6;
+    font-size: 13px;
 }
 
 /* 打印优化 */
 @media print{
     .summary-container{
-        background:#ffffff !important;
+        background: #ffffff !important;
     }
     .pdf-section{
-        break-inside:avoid;
+        break-inside: avoid;
     }
 }
 

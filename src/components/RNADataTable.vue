@@ -97,6 +97,14 @@ style="min-width:1400px"
 
 >
 
+<el-table-column
+type="expand"
+width="50"
+>
+<template #default="{row}">
+<SampleAdviceDetail :sample="row" />
+</template>
+</el-table-column>
 
 
 
@@ -293,6 +301,7 @@ width="300"
 <template #default="scope">
 
 
+<div class="short-text">
 <TextCell
 
 :text="
@@ -300,6 +309,7 @@ scope.row.result?.suggestion || ''
 "
 
 />
+</div>
 
 
 </template>
@@ -414,6 +424,9 @@ clearHistory
 
 import TextCell
 from './TextCell.vue'
+
+import SampleAdviceDetail
+from './SampleAdviceDetail.vue'
 
 
 import {ElMessage} from 'element-plus'
@@ -745,6 +758,14 @@ word-break:break-word;
 
 line-height:1.5;
 
+}
+
+.short-text{
+display:-webkit-box;
+-webkit-line-clamp:4;
+-webkit-box-orient:vertical;
+overflow:hidden;
+max-width:400px;
 }
 
 

@@ -136,6 +136,35 @@ export function createSummarySheet(workbook, summary, settings, charts){
     }
 
 
+    // ===== 提取流程问题统计 =====
+    sheet2.addRow([]);
+    const extractRow = sheet2.rowCount + 1;
+    sheet2.mergeCells(`A${extractRow}:F${extractRow}`);
+    setCellStyle(sheet2.getCell(`A${extractRow}`), {
+        font:{ bold:true, color:{argb:"FFFFFF"} },
+        fill:ExcelTheme.sectionGray
+    });
+    sheet2.getCell(`A${extractRow}`).value = "提取流程问题统计";
+    sheet2.getRow(extractRow).height = 24;
+
+    const ec = summary?.extractionCount || {};
+    const extractionKeys = Object.keys(ec);
+
+    if(extractionKeys.length > 0){
+        extractionKeys.forEach(key => {
+            sheet2.addRow([key, ec[key] + " 个样本"]);
+        });
+    } else {
+        sheet2.addRow(["未发现明显提取流程异常"]);
+    }
+
+    // 总体优化建议
+    if(summary?.extractionSummaryText){
+        sheet2.addRow([]);
+        sheet2.addRow(["总体优化建议", summary.extractionSummaryText]);
+    }
+
+
     // ===== RT模板建议 =====
     sheet2.addRow([]);
     const rtSuggRow = sheet2.rowCount + 1;
@@ -194,6 +223,29 @@ export function createSummarySheet(workbook, summary, settings, charts){
         const imageId2 = workbook.addImage({ base64, extension:"png" });
         sheet2.addImage(imageId2, {
             tl:{ col:0, row:chartTitleRow2 },
+            ext:{ width:550, height:300 }
+        });
+    }
+
+    // 预留图表空间
+    for(let i = 0; i < 15; i++){
+        sheet2.addRow([]);
+    }
+
+    const chartTitleRow3 = sheet2.rowCount + 1;
+    sheet2.mergeCells(`A${chartTitleRow3}:F${chartTitleRow3}`);
+    setCellStyle(sheet2.getCell(`A${chartTitleRow3}`), {
+        font:{ bold:true, size:14 },
+        fill:ExcelTheme.sectionGray
+    });
+    sheet2.getCell(`A${chartTitleRow3}`).value = "提取流程问题分析";
+    sheet2.getRow(chartTitleRow3).height = 24;
+
+    if(charts?.extraction){
+        const base64 = charts.extraction.replace(/^data:image\/png;base64,/, "");
+        const imageId3 = workbook.addImage({ base64, extension:"png" });
+        sheet2.addImage(imageId3, {
+            tl:{ col:0, row:chartTitleRow3 },
             ext:{ width:550, height:300 }
         });
     }

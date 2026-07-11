@@ -7,6 +7,8 @@
  *
  * 不重新计算 RNA 质量，直接读取 sample.result，
  * 保证 Excel 与页面显示完全一致。
+ *
+ * 第9.11.3步：传递提取方法、extraction 图表、批次总结。
  */
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -15,6 +17,7 @@ import { formatSamples, formatSummary } from "../formatExportData";
 import { createSampleSheet } from "./createSampleSheet";
 import { createSummarySheet } from "./createSummarySheet";
 import { checkExportData } from "../checkExportData";
+import { generateBatchExtractionSummary } from "../../../core/advice/batchExtractionSummary";
 
 
 export async function exportExcel(data, charts){
@@ -33,11 +36,18 @@ export async function exportExcel(data, charts){
     workbook.created = new Date();
 
 
-    // 格式化样本数据（读取 sample.result，不重新分析）
-    const formattedSamples = formatSamples(samples);
+    // 提取方法（来自 RT 参数 settings.method）
+    const extractionMethod = settings?.method || "";
 
-    // 格式化总结数据
+    // 格式化样本数据（读取 sample.result，不重新分析）
+    const formattedSamples = formatSamples(samples, extractionMethod);
+
+    // 格式化总结数据 + 追加批次提取总结文本
     const formattedSummary = formatSummary(summary);
+    formattedSummary.extractionSummaryText = generateBatchExtractionSummary(
+        formattedSummary.extractionCount,
+        formattedSummary.validCount
+    );
 
 
     // Sheet1 样本数据

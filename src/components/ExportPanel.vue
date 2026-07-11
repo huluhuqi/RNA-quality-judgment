@@ -28,7 +28,6 @@ type="success"
 
 
 
-
 <el-button
 
 type="primary"
@@ -83,10 +82,11 @@ summaryRef:Object
 
 
 
+
 async function excel(){
 
 
-let charts = {quality:null, pollution:null}
+let charts = {quality:null, pollution:null, extraction:null}
 
 if(props.summaryRef?.getCharts){
     charts = await props.summaryRef.getCharts()
@@ -105,7 +105,6 @@ settings:props.settings
 
 
 }
-
 
 
 

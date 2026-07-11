@@ -3,6 +3,8 @@
  *
  * 直接读取 formatSamples 的结果，不重新分析，
  * 保证 Excel 与页面显示完全一致。
+ *
+ * 第9.11.3步：新增提取方法、提取过程问题分析列。
  */
 import { qualityColor, autoRowHeight, ExcelTheme } from "./excelStyle";
 
@@ -16,12 +18,14 @@ export function createSampleSheet(workbook, formattedSamples){
 
     sheet1.columns = [
         { header:"模板ID", key:"id", width:18 },
+        { header:"提取方法", key:"extractionMethod", width:20 },
         { header:"RNA浓度(ng/μL)", key:"concentration", width:18 },
         { header:"A260/280", key:"a260280", width:15 },
         { header:"A260/230", key:"a260230", width:15 },
         { header:"RNA质量", key:"quality", width:12 },
-        { header:"污染分析", key:"pollution", width:45 },
-        { header:"建议", key:"suggestion", width:70 }
+        { header:"污染分析", key:"pollution", width:40 },
+        { header:"提取过程问题分析", key:"extractionProblem", width:60 },
+        { header:"建议", key:"suggestion", width:60 }
     ];
 
 
@@ -30,17 +34,19 @@ export function createSampleSheet(workbook, formattedSamples){
 
         const row = sheet1.addRow({
             id: item.id,
+            extractionMethod: item.extractionMethod || '',
             concentration: item.concentration ?? '',
             a260280: item.a260280 ?? '',
             a260230: item.a260230 ?? '',
             quality: item.quality,
             pollution: item.pollution,
+            extractionProblem: item.extractionProblem,
             advice: item.suggestion
         });
 
 
-        // 质量列着色
-        row.getCell(5).fill = {
+        // 质量列着色（第6列，因新增了提取方法列）
+        row.getCell(6).fill = {
             type:"pattern",
             pattern:"solid",
             fgColor:{ argb: qualityColor(item.quality) }

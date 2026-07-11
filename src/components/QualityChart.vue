@@ -23,11 +23,6 @@ from 'vue'
 
 import * as echarts from 'echarts'
 
-import {
-getTheme
-}
-from '../theme/theme'
-
 
 
 const props = defineProps({
@@ -51,6 +46,16 @@ let chart=null
 
 
 
+function getChartTextColor(){
+    return getComputedStyle(
+        document.documentElement
+    )
+    .getPropertyValue('--chart-text')
+    .trim()
+    ||
+    '#303133'
+}
+
 
 
 function render(){
@@ -61,17 +66,14 @@ if(chart){
 
 chart =
 echarts.init(
-chartRef.value,
-getTheme()==='dark'
-?
-'dark'
-:
-null
+chartRef.value
 )
 
-
+const textColor = getChartTextColor()
 
 chart.setOption({
+
+backgroundColor:'transparent',
 
 tooltip:{
 
@@ -86,7 +88,10 @@ trigger:'item'
 legend:{
 
 
-bottom:0
+bottom:0,
+textStyle:{
+color:textColor
+}
 
 
 },
@@ -113,8 +118,8 @@ avoidLabelOverlap:false,
 label:{
 
 show:true,
-
-formatter:'{b}: {c}'
+formatter:'{b}: {c}',
+color:textColor
 
 },
 
@@ -176,7 +181,6 @@ name:'待检测'
 
 
 }
-
 ]
 
 })
@@ -202,6 +206,22 @@ window.addEventListener(
 
 )
 
+window.addEventListener(
+
+'theme-change',
+
+()=>{
+
+if(chart){
+chart.dispose()
+chart=null
+}
+
+render()
+
+}
+
+)
 
 })
 
@@ -225,13 +245,6 @@ deep:true
 
 )
 
-watch(
-    ()=>getTheme(),
-    ()=>{
-        render()
-    }
-)
-
 
 
 onBeforeUnmount(()=>{
@@ -239,6 +252,7 @@ onBeforeUnmount(()=>{
 
 chart?.dispose()
 
+window.removeEventListener('theme-change', render)
 
 })
 
@@ -258,6 +272,7 @@ width:100%;
 
 height:260px;
 
+min-width:260px;
 
 }
 

@@ -40,12 +40,6 @@ import * as echarts
 
 from 'echarts'
 
-import {
-getTheme
-}
-from '../theme/theme'
-
-
 
 
 
@@ -67,6 +61,16 @@ let chart=null
 
 
 
+function getChartTextColor(){
+    return getComputedStyle(
+        document.documentElement
+    )
+    .getPropertyValue('--chart-text')
+    .trim()
+    ||
+    '#303133'
+}
+
 
 
 function render(){
@@ -77,18 +81,14 @@ if(chart){
 
 chart =
 echarts.init(
-chartRef.value,
-getTheme()==='dark'
-?
-'dark'
-:
-null
+chartRef.value
 )
 
-
+const textColor = getChartTextColor()
 
 chart.setOption({
 
+backgroundColor:'transparent',
 
 tooltip:{},
 
@@ -107,8 +107,11 @@ data:[
 
 '双重风险'
 
-]
+],
 
+axisLabel:{
+color:textColor
+}
 
 },
 
@@ -117,7 +120,10 @@ data:[
 yAxis:{
 
 
-type:'value'
+type:'value',
+axisLabel:{
+color:textColor
+}
 
 },
 
@@ -146,7 +152,6 @@ props.data?.双重污染风险||0
 
 ]
 
-
 })
 
 
@@ -159,6 +164,30 @@ onMounted(()=>{
 
 render()
 
+window.addEventListener(
+
+'resize',
+
+()=>chart?.resize()
+
+)
+
+window.addEventListener(
+
+'theme-change',
+
+()=>{
+
+if(chart){
+chart.dispose()
+chart=null
+}
+
+render()
+
+}
+
+)
 
 })
 
@@ -182,18 +211,14 @@ deep:true
 
 )
 
-watch(
-    ()=>getTheme(),
-    ()=>{
-        render()
-    }
-)
+
 
 onBeforeUnmount(()=>{
 
 
 chart?.dispose()
 
+window.removeEventListener('theme-change', render)
 
 })
 
@@ -213,6 +238,7 @@ height:260px;
 
 width:100%;
 
+min-width:260px;
 
 }
 

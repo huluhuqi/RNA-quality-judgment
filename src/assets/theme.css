@@ -1,85 +1,145 @@
 /* ===================== 默认 ===================== */
 :root{
-    --bg-color:#f5f9ff;
-    --card-color:#ffffff;
-    --text-color:#303133;
-    --border-color:#dcdfe6;
-    --primary-color:#409eff;
+    --page-bg:#f4f8ff;
+    --card-bg:#ffffff;
+    --text-main:#303133;
+    --text-secondary:#606266;
+    --border:#dcdfe6;
+    --primary:#409eff;
     --button-color:#409eff;
+    --chart-bg:#ffffff;
+    --chart-text:#303133;
+    --table-bg:#ffffff;
+    --table-text:#303133;
+    --header-bg:#eaf3ff;
 }
 
 /* ===================== 科研蓝 ===================== */
 [data-theme="blue"]{
-    --bg-color:#f3f8ff;
-    --card-color:#ffffff;
-    --text-color:#303133;
-    --border-color:#dcdfe6;
-    --primary-color:#409eff;
+    --page-bg:#f4f8ff;
+    --card-bg:#ffffff;
+    --text-main:#303133;
+    --text-secondary:#606266;
+    --border:#dcdfe6;
+    --primary:#409eff;
     --button-color:#409eff;
+    --chart-bg:#ffffff;
+    --chart-text:#303133;
+    --table-bg:#ffffff;
+    --table-text:#303133;
+    --header-bg:#eaf3ff;
 }
 
 /* ===================== 生命绿 ===================== */
 [data-theme="green"]{
-    --bg-color:#f2fff6;
-    --card-color:#ffffff;
-    --text-color:#303133;
-    --border-color:#dcdfe6;
-    --primary-color:#67c23a;
+    --page-bg:#f2fff6;
+    --card-bg:#ffffff;
+    --text-main:#303133;
+    --text-secondary:#606266;
+    --border:#d9ecff;
+    --primary:#67c23a;
     --button-color:#67c23a;
+    --chart-bg:#ffffff;
+    --chart-text:#303133;
+    --table-bg:#ffffff;
+    --table-text:#303133;
+    --header-bg:#eaffef;
 }
 
 /* ===================== 活力橙 ===================== */
 [data-theme="orange"]{
-    --bg-color:#fff8ef;
-    --card-color:#ffffff;
-    --text-color:#303133;
-    --border-color:#dcdfe6;
-    --primary-color:#e6a23c;
+    --page-bg:#fff8ed;
+    --card-bg:#ffffff;
+    --text-main:#303133;
+    --text-secondary:#606266;
+    --border:#f5dab1;
+    --primary:#e6a23c;
     --button-color:#e6a23c;
+    --chart-bg:#ffffff;
+    --chart-text:#303133;
+    --table-bg:#ffffff;
+    --table-text:#303133;
+    --header-bg:#fff0d6;
 }
 
 /* ===================== 实验紫 ===================== */
 [data-theme="purple"]{
-    --bg-color:#faf5ff;
-    --card-color:#ffffff;
-    --text-color:#303133;
-    --border-color:#dcdfe6;
-    --primary-color:#9c27b0;
+    --page-bg:#faf5ff;
+    --card-bg:#ffffff;
+    --text-main:#303133;
+    --text-secondary:#606266;
+    --border:#e1c8ff;
+    --primary:#9c27b0;
     --button-color:#9c27b0;
+    --chart-bg:#ffffff;
+    --chart-text:#303133;
+    --table-bg:#ffffff;
+    --table-text:#303133;
+    --header-bg:#f3e5ff;
 }
 
 /* ===================== 暗夜黑 ===================== */
 [data-theme="dark"]{
-    --bg-color:#141414;
-    --card-color:#1f1f1f;
-    --text-color:#eeeeee;
-    --border-color:#444;
-    --primary-color:#66b1ff;
+    --page-bg:#121212;
+    --card-bg:#1e1e1e;
+    --text-main:#ffffff;
+    --text-secondary:#cccccc;
+    --border:#444444;
+    --primary:#66b1ff;
     --button-color:#409eff;
+    --chart-bg:#1e1e1e;
+    --chart-text:#ffffff;
+    --table-bg:#1e1e1e;
+    --table-text:#ffffff;
+    --header-bg:#242424;
 }
 
-/* ===================== 全局背景 ===================== */
+/* ===================== 页面背景 ===================== */
 body{
-    background: var(--bg-color);
-    color: var(--text-color);
+    background: var(--page-bg);
+    color: var(--text-main);
     transition: background .3s, color .3s;
 }
 
-/* ===================== 卡片跟随主题 ===================== */
+/* ===================== 卡片 ===================== */
 .el-card{
-    background: var(--card-color)!important;
-    color: var(--text-color);
-    border-color: var(--border-color)!important;
+    background: var(--card-bg)!important;
+    color: var(--text-main);
+    border-color: var(--border)!important;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .el-card__header{
-    color: var(--text-color);
+    color: var(--text-main);
 }
 
-/* ===================== 表格跟随主题 ===================== */
+/* ===================== 普通文字 ===================== */
+body,
+span,
+div,
+p{
+    color: var(--text-main);
+}
+
+/* ===================== 次级文字 ===================== */
+.text-secondary{
+    color: var(--text-secondary);
+}
+
+/* ===================== 表格 ===================== */
 .el-table{
-    background: var(--card-color)!important;
-    color: var(--text-color);
+    background: var(--table-bg)!important;
+    color: var(--table-text);
+}
+
+.el-table th{
+    background: var(--header-bg)!important;
+    color: var(--text-main)!important;
+}
+
+.el-table td{
+    color: var(--table-text)!important;
 }
 
 /* ===================== 按钮跟随主题 ===================== */
@@ -95,4 +155,14 @@ body{
         color .5s ease,
         border-color .5s ease,
         box-shadow .5s ease;
+}
+
+/* ===================== 移动端图表高度调整 ===================== */
+@media(max-width:768px){
+    .chart{
+        height:220px;
+    }
+    .el-card__header{
+        font-size:15px;
+    }
 }

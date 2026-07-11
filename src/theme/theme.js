@@ -51,6 +51,11 @@ export function setTheme(theme){
             duration: 400
         }
     )
+
+    // 通知图表组件刷新
+    window.dispatchEvent(
+        new Event('theme-change')
+    )
 }
 
 export function initTheme(){

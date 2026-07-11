@@ -109,7 +109,7 @@ trigger:'item'
 legend:{
 
 
-bottom:0,
+bottom:'8%',
 textStyle:{
 color:textColor,
 fontSize
@@ -134,13 +134,16 @@ radius:[
 
 
 
-avoidLabelOverlap:false,
+avoidLabelOverlap:true,
 
 
 label:{
 
 show:true,
-formatter:'{b}: {c}',
+formatter:(params)=>{
+    if(params.value === 0) return ''
+    return `${params.name}: ${params.value}`
+},
 color:textColor,
 fontSize
 

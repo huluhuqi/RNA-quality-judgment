@@ -78,9 +78,12 @@ const problemList = computed(() => {
 })
 
 const summaryText = computed(() => {
+    const badCount = (props.summary.qualityCount?.较差 || 0) +
+                     (props.summary.qualityCount?.不合格 || 0);
     return generateBatchExtractionSummary(
         props.summary.extractionCount || {},
-        props.summary.validCount || 0
+        props.summary.validCount || 0,
+        badCount
     )
 })
 

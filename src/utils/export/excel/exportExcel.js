@@ -44,9 +44,12 @@ export async function exportExcel(data, charts){
 
     // 格式化总结数据 + 追加批次提取总结文本
     const formattedSummary = formatSummary(summary);
+    const badCount = (formattedSummary.qualityCount?.较差 || 0) +
+                     (formattedSummary.qualityCount?.不合格 || 0);
     formattedSummary.extractionSummaryText = generateBatchExtractionSummary(
         formattedSummary.extractionCount,
-        formattedSummary.validCount
+        formattedSummary.validCount,
+        badCount
     );
 
 

@@ -54,14 +54,14 @@ type="primary"
 <script setup>
 
 
-import {exportRNAReport}
+import {exportExcel}
 
-from '../utils/exportExcel'
+from '../utils/export'
 
 
 import {exportRNAReportPDF}
 
-from '../utils/pdfExport'
+from '../utils/export'
 
 
 
@@ -93,7 +93,7 @@ if(props.summaryRef?.getCharts){
 }
 
 
-await exportRNAReport({
+await exportExcel({
 
 samples:props.data,
 

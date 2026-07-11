@@ -120,6 +120,11 @@ import {calculateBatch}
 from './core/BatchStatistics'
 
 
+import {analyzeRNA}
+
+from './core/quality'
+
+
 import {
     calculateRT,
     checkConcentrationDistribution
@@ -226,14 +231,18 @@ function updateData(data){
 
 samples.value=data
 
+// 为每个样本填充 result，作为页面/Excel/PDF 统一数据源
+data.forEach(item=>{
+    if(!item.ignored){
+        item.result = analyzeRNA(item, rtConfig.value.method, rtConfig.value.application)
+    }
+})
 
 const batch =
 calculateBatch(data, rtConfig.value.method, rtConfig.value.application)
 
-
 const validSamples =
 data.filter(s=>!s.ignored)
-
 
 batch.rt =
 calculateRT(
@@ -245,7 +254,6 @@ batch.rtWarning =
 checkConcentrationDistribution(
 validSamples
 )
-
 
 summary.value=batch
 
@@ -260,10 +268,15 @@ function updateRTConfig(config){
 
 rtConfig.value=config
 
+// 参数变更时重新填充 result
+samples.value.forEach(item=>{
+    if(!item.ignored){
+        item.result = analyzeRNA(item, config.method, config.application)
+    }
+})
 
 const validSamples =
 samples.value.filter(s=>!s.ignored)
-
 
 const batch =
 calculateBatch(samples.value, config.method, config.application)

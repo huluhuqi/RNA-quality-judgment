@@ -120,9 +120,9 @@ import {calculateBatch}
 from './core/BatchStatistics'
 
 
-import {analyzeRNA}
+import {analyzeSamples}
 
-from './core/quality'
+from './core/analyzer/sampleAnalyzer'
 
 
 import {
@@ -231,11 +231,28 @@ function updateData(data){
 
 samples.value=data
 
-// 为每个样本填充 result，作为页面/Excel/PDF 统一数据源
-data.forEach(item=>{
-    if(!item.ignored){
-        item.result = analyzeRNA(item, rtConfig.value.method, rtConfig.value.application)
-    }
+// 统一分析：只执行一次，结果写入 sample.result
+refreshAnalysis()
+
+
+}
+
+
+/**
+ * 统一刷新分析结果与统计
+ * RNA 质量分析只执行一次，所有模块读取 sample.result
+ */
+function refreshAnalysis(){
+
+
+const data = samples.value
+
+// 一次批量分析，结果写入 result 字段
+const analyzed = analyzeSamples(data, rtConfig.value)
+
+// 原地更新 result，保持数组引用与表格响应式
+data.forEach((item, i)=>{
+    item.result = analyzed[i].result
 })
 
 const batch =
@@ -261,40 +278,13 @@ summary.value=batch
 }
 
 
-
-
 function updateRTConfig(config){
 
 
 rtConfig.value=config
 
-// 参数变更时重新填充 result
-samples.value.forEach(item=>{
-    if(!item.ignored){
-        item.result = analyzeRNA(item, config.method, config.application)
-    }
-})
-
-const validSamples =
-samples.value.filter(s=>!s.ignored)
-
-const batch =
-calculateBatch(samples.value, config.method, config.application)
-
-
-batch.rt =
-calculateRT(
-validSamples,
-config
-)
-
-batch.rtWarning =
-checkConcentrationDistribution(
-validSamples
-)
-
-
-summary.value=batch
+// 参数变更时重新分析
+refreshAnalysis()
 
 
 }

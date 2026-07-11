@@ -239,13 +239,13 @@ width="100"
 
 :type="
 getTagType(
-getAnalysis(scope.row).quality
+scope.row.result?.quality
 )
 "
 
 >
 
-{{getAnalysis(scope.row).quality}}
+{{scope.row.result?.quality || '无法判断'}}
 
 </el-tag>
 
@@ -270,7 +270,7 @@ width="260"
 <TextCell
 
 :text="
-getAnalysis(scope.row).pollution
+scope.row.result?.pollution || ''
 "
 
 />
@@ -296,7 +296,7 @@ width="300"
 <TextCell
 
 :text="
-getAnalysis(scope.row).suggestion
+scope.row.result?.suggestion || ''
 "
 
 />
@@ -393,9 +393,6 @@ size="small"
 
 import {ref} from 'vue'
 
-import {analyzeRNA}
-from '../core/RNAQuality'
-
 import {parsePasteData}
 
 from '../utils/excelImport'
@@ -433,13 +430,6 @@ const tableData = ref([])
 const emit = defineEmits([
     'update-data'
 ])
-
-
-function getAnalysis(row){
-
-    return analyzeRNA(row)
-
-}
 
 
 function handlePaste(e){

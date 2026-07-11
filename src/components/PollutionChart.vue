@@ -35,9 +35,17 @@ from 'vue'
 
 
 
-import * as echarts
+import * as echarts from 'echarts/core'
+import { BarChart } from 'echarts/charts'
+import { TooltipComponent, GridComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
 
-from 'echarts'
+echarts.use([
+    BarChart,
+    TooltipComponent,
+    GridComponent,
+    CanvasRenderer
+])
 
 import {
 getChartTheme,

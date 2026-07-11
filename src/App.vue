@@ -204,6 +204,8 @@ const rnaTableRef = ref(null)
 
 const rtConfig = ref({
 
+method:'硅胶膜柱提法',
+
 maxRNA:1000,
 
 minRNA:10,
@@ -223,7 +225,7 @@ samples.value=data
 
 
 const batch =
-calculateBatch(data)
+calculateBatch(data, rtConfig.value.method, rtConfig.value.application)
 
 
 const validSamples =
@@ -245,7 +247,6 @@ summary.value=batch
 
 
 
-
 function updateRTConfig(config){
 
 
@@ -256,11 +257,18 @@ const validSamples =
 samples.value.filter(s=>!s.ignored)
 
 
-summary.value.rt =
+const batch =
+calculateBatch(samples.value, config.method, config.application)
+
+
+batch.rt =
 calculateRT(
 validSamples,
-rtConfig.value
+config
 )
+
+
+summary.value=batch
 
 
 }

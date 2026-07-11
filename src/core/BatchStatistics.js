@@ -1,8 +1,8 @@
 import { analyzeRNA } from './RNAQuality'
 
+import { downstreamApplications } from '../config/downstreamApplication'
 
-
-export function calculateBatch(samples){
+export function calculateBatch(samples, extractionMethod, application){
 
 
     const totalCount =
@@ -39,7 +39,7 @@ export function calculateBatch(samples){
                 sample:item,
 
                 result:
-                analyzeRNA(item)
+                analyzeRNA(item, extractionMethod, application)
 
             })
         )
@@ -373,11 +373,16 @@ export function calculateBatch(samples){
     }
 
 
+    const appConfig = downstreamApplications[application] || downstreamApplications.qPCR
 
-
-
-
-
+    const applicationSummary = {
+        name: appConfig.name,
+        qualityLevel: appConfig.qualityLevel,
+        requirements: appConfig.requirements,
+        goodCount: qualityCount.优秀 + qualityCount.良好,
+        warningCount: qualityCount.一般 + qualityCount.较差,
+        total: testedSamples.length
+    }
 
 
     return {
@@ -459,8 +464,8 @@ export function calculateBatch(samples){
 
 
         pollutionSamples,
-
-        pollutionCount
+        pollutionCount,
+        applicationSummary
 
 
     }

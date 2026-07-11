@@ -120,9 +120,102 @@ ng/μL
 
 </b>
 
+</div>
+
+
+</el-card>
+
+
+</el-col>
+
+
+<el-col :xs="24" :sm="24" :md="12" :lg="8">
+
+
+<el-card shadow="hover" class="application-card">
+
+
+<template #header>
+
+实验用途分析
+
+</template>
+
+
+<div class="application-info">
+
+<div class="app-name">
+
+当前用途：
+
+<el-tag :type="applicationType">
+
+{{summary.applicationSummary?.name || '未选择'}}
+
+</el-tag>
 
 </div>
 
+
+<div class="app-level">
+
+质量要求：
+
+{{summary.applicationSummary?.qualityLevel || '-'}}
+
+</div>
+
+
+<div class="app-stats">
+
+符合要求：
+
+<b>
+
+{{summary.applicationSummary?.goodCount || 0}}
+
+</b>
+
+个
+
+</div>
+
+
+<div class="app-stats warning">
+
+需关注：
+
+<b>
+
+{{summary.applicationSummary?.warningCount || 0}}
+
+</b>
+
+个
+
+</div>
+
+
+<div v-if="summary.applicationSummary?.qualityLevel === '严格'" class="app-note">
+
+<el-alert
+
+type="warning"
+
+title="注意"
+
+description="严格用途建议提高RNA纯度标准，必要时进行RNA cleanup。"
+
+show-icon
+
+:closable="false"
+
+/>
+
+</div>
+
+
+</div>
 
 
 </el-card>
@@ -507,6 +600,19 @@ return ''
 }
 
 
+})
+
+
+const applicationType = computed(()=>{
+
+const level = props.summary.applicationSummary?.qualityLevel
+
+if(level === '严格'){
+    return 'danger'
+} else if(level === '常规'){
+    return 'success'
+}
+return ''
 
 })
 
@@ -602,6 +708,22 @@ overflow:visible;
 
 }
 
+.application-card{
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#ffffff,
+
+#f0f0ff
+
+);
+
+}
+
 :deep(.pollution-card .el-card__body){
 
 overflow:visible;
@@ -687,6 +809,42 @@ line-height:22px;
 .normal{
 
 color:#67c23a;
+
+}
+
+.application-info{
+
+line-height:28px;
+
+}
+
+.app-name{
+
+margin-bottom:8px;
+
+}
+
+.app-level{
+
+margin-bottom:8px;
+
+}
+
+.app-stats{
+
+margin-bottom:8px;
+
+}
+
+.app-stats.warning{
+
+color:#e6a23c;
+
+}
+
+.app-note{
+
+margin-top:12px;
 
 }
 

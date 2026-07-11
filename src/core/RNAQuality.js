@@ -2,8 +2,12 @@
  * RNA质量分析
  */
 
+import { extractionAdvice } from '../config/extractionAdvice'
 
-export function analyzeRNA(sample){
+import { downstreamApplications } from '../config/downstreamApplication'
+
+
+export function analyzeRNA(sample, extractionMethod, application){
 
 
     const a280 =
@@ -14,15 +18,12 @@ export function analyzeRNA(sample){
         parseFloat(sample.a260230)
 
 
-
     const hasA280 =
         !isNaN(a280)
 
 
-
     const hasA230 =
         !isNaN(a230)
-
 
 
     let quality = ''
@@ -30,6 +31,10 @@ export function analyzeRNA(sample){
     let pollution = ''
 
     let suggestion = ''
+
+    let pollutionType = null
+
+    const appConfig = downstreamApplications[application] || downstreamApplications.qPCR
 
 
 
@@ -42,37 +47,46 @@ export function analyzeRNA(sample){
 
     }
 
-    else if(
-        a280>=1.9 &&
-        a280<=2.1
-    ){
-
-        quality='优秀'
-
-    }
-
-    else if(
-        a280>=1.8 &&
-        a280<=2.2
-    ){
-
-        quality='良好'
-
-    }
-
-    else if(
-        a280>=1.7 &&
-        a280<=2.3
-    ){
-
-        quality='一般'
-
-    }
-
     else{
 
-        quality='较差'
+        const req = appConfig.requirements
 
+        const [min280, max280] = req.a280
+
+        const req230 = req.a230
+
+        let score = 0
+        let total = 0
+
+        if(hasA280){
+            total++
+            if(a280 >= min280 && a280 <= max280){
+                score++
+            } else if(a280 >= min280 - 0.1 && a280 <= max280 + 0.1){
+                score += 0.5
+            }
+        }
+
+        if(hasA230){
+            total++
+            if(a230 >= req230){
+                score++
+            } else if(a230 >= req230 - 0.3){
+                score += 0.5
+            }
+        }
+
+        const ratio = score / total
+
+        if(ratio >= 1){
+            quality = '优秀'
+        } else if(ratio >= 0.75){
+            quality = '良好'
+        } else if(ratio >= 0.5){
+            quality = '一般'
+        } else {
+            quality = '较差'
+        }
     }
 
 
@@ -88,9 +102,13 @@ export function analyzeRNA(sample){
 
         if(a280<1.8){
 
+
             pollutionList.push(
                 'A260/A280偏低，提示蛋白质或酚类污染风险'
             )
+
+            pollutionType = 'protein'
+
 
         }
 
@@ -101,6 +119,7 @@ export function analyzeRNA(sample){
             pollutionList.push(
                 'A260/A280偏高，可能存在RNA降解或测定误差'
             )
+
 
         }
 
@@ -121,8 +140,11 @@ export function analyzeRNA(sample){
                 'A260/A230严重偏低，提示胍盐、盐类或提取试剂残留风险'
             )
 
+            pollutionType = pollutionType ? 'both' : 'salt'
+
 
         }
+
 
         else if(a230<1.5){
 
@@ -131,8 +153,11 @@ export function analyzeRNA(sample){
                 'A260/A230偏低，提示盐离子、乙醇或有机物残留风险'
             )
 
+            pollutionType = pollutionType ? 'both' : 'salt'
+
 
         }
+
 
         else if(a230<2.0){
 
@@ -140,6 +165,8 @@ export function analyzeRNA(sample){
             pollutionList.push(
                 'A260/A230略低，存在轻微残留风险'
             )
+
+            pollutionType = pollutionType ? 'both' : 'salt'
 
 
         }
@@ -227,26 +254,57 @@ export function analyzeRNA(sample){
     }
 
 
+    else if(pollutionType && extractionMethod){
+
+
+        const advice = extractionAdvice[extractionMethod]
+
+        let finalAdvice = appConfig.advice || ''
+
+        if(advice){
+
+            if(pollutionType === 'protein' || pollutionType === 'both'){
+
+                finalAdvice += (finalAdvice ? '；' : '') + (advice.protein || '')
+
+            }
+
+            if(pollutionType === 'salt' || pollutionType === 'both'){
+
+                finalAdvice += (finalAdvice ? '；' : '') + (advice.salt || '')
+
+            }
+
+        }
+
+        suggestion = finalAdvice || suggestion
+
+    }
+
+
     else{
 
-
-        suggestion =
-        'RNA基本可使用，建议结合实验需求评估是否需要进一步纯化'
-
+        suggestion = appConfig.advice || 'RNA基本可使用，建议结合实验需求评估是否需要进一步纯化'
 
     }
 
 
 
 
-
     return {
+
 
         quality,
 
+
         pollution,
 
-        suggestion
+
+        suggestion,
+
+
+        pollutionType
+
 
     }
 

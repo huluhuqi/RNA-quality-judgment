@@ -97,7 +97,7 @@
 <script setup>
 
 
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 
 
 const config = reactive({
@@ -109,6 +109,32 @@ const config = reactive({
   maxVolume:12
 
 })
+
+
+const emit = defineEmits([
+    'update-config'
+])
+
+
+
+watch(
+
+config,
+
+(value)=>{
+
+emit(
+'update-config',
+value
+)
+
+},
+
+{
+deep:true
+}
+
+)
 
 
 </script>

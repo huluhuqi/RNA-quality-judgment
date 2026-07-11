@@ -7,7 +7,11 @@
 <Header/>
 
 
-<RTParameter/>
+<RTParameter
+
+@update-config="updateRTConfig"
+
+/>
 
 
 
@@ -54,6 +58,11 @@ import {calculateBatch}
 from './core/BatchStatistics'
 
 
+import {calculateRT}
+
+from './core/RTRecommendation'
+
+
 
 
 
@@ -75,10 +84,37 @@ quality:'暂无数据',
 
 pollution:'暂无数据',
 
-abnormal:0
+abnormal:0,
+
+rt:{
+
+recommendedRNA:0,
+
+minVolume:0,
+
+maxVolume:0,
+
+suggestion:''
+
+}
 
 })
 
+
+const samples =
+ref([])
+
+
+
+const rtConfig = ref({
+
+maxRNA:1000,
+
+minRNA:10,
+
+maxVolume:12
+
+})
 
 
 
@@ -87,8 +123,43 @@ abnormal:0
 function updateData(data){
 
 
-summary.value =
+samples.value=data
+
+
+const batch =
 calculateBatch(data)
+
+
+
+batch.rt =
+calculateRT(
+data,
+rtConfig.value
+)
+
+
+
+summary.value=batch
+
+
+}
+
+
+
+
+
+function updateRTConfig(config){
+
+
+rtConfig.value=config
+
+
+
+summary.value.rt =
+calculateRT(
+samples.value,
+rtConfig.value
+)
 
 
 }

@@ -128,6 +128,56 @@ summary.avgA260230.toFixed(2)
 </p>
 
 
+<p>
+
+推荐反转录RNA投入：
+
+<b>
+
+{{summary.rt.recommendedRNA}}
+
+ng
+
+</b>
+
+</p>
+
+
+
+<p>
+
+模板体积范围：
+
+<b>
+
+{{summary.rt.minVolume}}
+
+-
+
+{{summary.rt.maxVolume}}
+
+μL
+
+</b>
+
+</p>
+
+
+
+<p>
+
+RT建议：
+
+<b>
+
+{{summary.rt.suggestion}}
+
+</b>
+
+</p>
+
+
+
 
 <p>
 

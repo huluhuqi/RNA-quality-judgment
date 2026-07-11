@@ -79,19 +79,23 @@ v-for="item in applications"
 
 <el-form-item label="最大RNA上样量">
 
+<div class="input-with-unit">
+
 <el-input-number
 
 v-model="config.maxRNA"
 
 :min="1"
 
-class="full-input"
+class="compact-input"
 
 />
 
-<span>
+<span class="unit">
 ng
 </span>
+
+</div>
 
 </el-form-item>
 
@@ -102,19 +106,23 @@ ng
 
 <el-form-item label="最小RNA上样量">
 
+<div class="input-with-unit">
+
 <el-input-number
 
 v-model="config.minRNA"
 
 :min="1"
 
-class="full-input"
+class="compact-input"
 
 />
 
-<span>
+<span class="unit">
 ng
 </span>
+
+</div>
 
 </el-form-item>
 
@@ -125,19 +133,23 @@ ng
 
 <el-form-item label="最大模板体积">
 
+<div class="input-with-unit">
+
 <el-input-number
 
 v-model="config.maxVolume"
 
 :min="1"
 
-class="full-input"
+class="compact-input"
 
 />
 
-<span>
+<span class="unit">
 μL
 </span>
+
+</div>
 
 </el-form-item>
 
@@ -218,8 +230,8 @@ deep:true
     background:
         linear-gradient(
             135deg,
-            #fffdf0,
-            #fff7d6
+            var(--card-rt-from),
+            var(--card-rt-to)
         );
     border-radius:14px;
 }
@@ -238,8 +250,20 @@ deep:true
     width:100%;
 }
 
-.full-input{
-    width:100%;
+.input-with-unit{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.compact-input{
+    width:67%;
+}
+
+.unit{
+    color:var(--text-secondary);
+    font-size:14px;
+    white-space:nowrap;
 }
 
 @media(max-width:900px){

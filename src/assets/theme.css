@@ -403,10 +403,37 @@ p{
     color: var(--text-color)!important;
 }
 
+.el-input-number__decrease,
+.el-input-number__increase{
+    background: var(--input-bg)!important;
+    color: var(--text-color)!important;
+    border-color: var(--input-border)!important;
+}
+
+.el-input-number__decrease:hover,
+.el-input-number__increase:hover{
+    color: var(--primary-color)!important;
+}
+
+.el-input-number.is-controls-right .el-input-number__decrease,
+.el-input-number.is-controls-right .el-input-number__increase{
+    background: var(--input-bg)!important;
+    border-color: var(--input-border)!important;
+}
+
 /* ===================== 下拉选择器 ===================== */
+.el-select__wrapper{
+    background: var(--input-bg)!important;
+    box-shadow: 0 0 0 1px var(--input-border) inset!important;
+}
+
 .el-select__selected-item,
 .el-select__placeholder{
     color: var(--text-color)!important;
+}
+
+.el-select__caret{
+    color: var(--text-secondary)!important;
 }
 
 .el-select-dropdown{
@@ -464,14 +491,14 @@ p{
 
 /* ===================== 按钮 ===================== */
 .el-button{
-    color: var(--text-color);
-    border-color: var(--border-color);
-    background: var(--card-bg);
+    color: var(--text-color)!important;
+    border-color: var(--border-color)!important;
+    background: var(--card-bg)!important;
 }
 
 .el-button:hover{
-    color: var(--primary-color);
-    border-color: var(--primary-color);
+    color: var(--primary-color)!important;
+    border-color: var(--primary-color)!important;
 }
 
 .el-button--primary{
@@ -497,6 +524,67 @@ p{
     background: var(--tag-bg);
     color: var(--tag-text);
     border-color: var(--border-color);
+}
+
+.el-tag--success{
+    background: rgba(103,194,58,.15);
+    color: #67c23a;
+    border-color: rgba(103,194,58,.3);
+}
+
+.el-tag--warning{
+    background: rgba(230,162,60,.15);
+    color: #e6a23c;
+    border-color: rgba(230,162,60,.3);
+}
+
+.el-tag--danger{
+    background: rgba(245,108,108,.15);
+    color: #f56c6c;
+    border-color: rgba(245,108,108,.3);
+}
+
+.el-tag--info{
+    background: rgba(144,147,153,.15);
+    color: #909399;
+    border-color: rgba(144,147,153,.3);
+}
+
+.el-tag--primary{
+    background: rgba(64,158,255,.15);
+    color: #409eff;
+    border-color: rgba(64,158,255,.3);
+}
+
+/* light 模式标签 */
+.el-tag--light.el-tag--success{
+    background: rgba(103,194,58,.15)!important;
+    color: #67c23a!important;
+    border-color: rgba(103,194,58,.3)!important;
+}
+
+.el-tag--light.el-tag--warning{
+    background: rgba(230,162,60,.15)!important;
+    color: #e6a23c!important;
+    border-color: rgba(230,162,60,.3)!important;
+}
+
+.el-tag--light.el-tag--danger{
+    background: rgba(245,108,108,.15)!important;
+    color: #f56c6c!important;
+    border-color: rgba(245,108,108,.3)!important;
+}
+
+.el-tag--light.el-tag--info{
+    background: rgba(144,147,153,.15)!important;
+    color: #909399!important;
+    border-color: rgba(144,147,153,.3)!important;
+}
+
+.el-tag--light.el-tag--primary{
+    background: rgba(64,158,255,.15)!important;
+    color: #409eff!important;
+    border-color: rgba(64,158,255,.3)!important;
 }
 
 /* ===================== Radio / Checkbox ===================== */
@@ -571,6 +659,50 @@ p{
 /* ===================== Alert ===================== */
 .el-alert{
     background: var(--card-bg)!important;
+}
+
+.el-alert__title{
+    color: var(--text-color)!important;
+}
+
+.el-alert__description{
+    color: var(--text-secondary)!important;
+}
+
+.el-alert--success{
+    background: rgba(103,194,58,.1)!important;
+    border-color: rgba(103,194,58,.3)!important;
+}
+
+.el-alert--success .el-alert__title{
+    color: #67c23a!important;
+}
+
+.el-alert--warning{
+    background: rgba(230,162,60,.1)!important;
+    border-color: rgba(230,162,60,.3)!important;
+}
+
+.el-alert--warning .el-alert__title{
+    color: #e6a23c!important;
+}
+
+.el-alert--error{
+    background: rgba(245,108,108,.1)!important;
+    border-color: rgba(245,108,108,.3)!important;
+}
+
+.el-alert--error .el-alert__title{
+    color: #f56c6c!important;
+}
+
+.el-alert--info{
+    background: rgba(144,147,153,.1)!important;
+    border-color: rgba(144,147,153,.3)!important;
+}
+
+.el-alert--info .el-alert__title{
+    color: #909399!important;
 }
 
 /* ===================== 主题切换动画 ===================== */

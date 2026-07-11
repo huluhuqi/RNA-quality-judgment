@@ -165,8 +165,8 @@ defineExpose({
     background:
         linear-gradient(
             135deg,
-            #ffffff,
-            #f0f9ff
+            var(--card-rt-from),
+            var(--card-rt-to)
         );
     overflow: visible;
 }
@@ -194,7 +194,7 @@ defineExpose({
 .rt-message{
     margin-top: 12px;
     padding: 10px;
-    background: var(--card-color, #ffffff);
+    background: var(--card-bg, #ffffff);
     border-radius: 4px;
     line-height: 1.6;
     font-size: 13px;

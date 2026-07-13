@@ -52,56 +52,6 @@
     </el-card>
 </div>
 
-<!-- 批次统计详情 -->
-<div class="batch-stats pdf-section">
-    <el-card shadow="hover" class="batch-stat-card">
-        <div class="card-title">批次质量统计</div>
-        <div class="quality-stat-grid">
-            <div class="stat-item excellent">
-                <div class="stat-value">{{ batchSummary.quality.excellent }}</div>
-                <div class="stat-label">优秀</div>
-            </div>
-            <div class="stat-item good">
-                <div class="stat-value">{{ batchSummary.quality.good }}</div>
-                <div class="stat-label">良好</div>
-            </div>
-            <div class="stat-item warning">
-                <div class="stat-value">{{ batchSummary.quality.warning }}</div>
-                <div class="stat-label">一般</div>
-            </div>
-            <div class="stat-item poor">
-                <div class="stat-value">{{ batchSummary.quality.poor + batchSummary.quality.fail }}</div>
-                <div class="stat-label">异常</div>
-            </div>
-            <div class="stat-item unknown">
-                <div class="stat-value">{{ batchSummary.quality.unknown }}</div>
-                <div class="stat-label">待检测</div>
-            </div>
-        </div>
-    </el-card>
-
-    <el-card shadow="hover" class="batch-stat-card">
-        <div class="card-title">污染类型统计</div>
-        <div class="pollution-list">
-            <div
-                v-for="(num, type) in batchSummary.pollution"
-                :key="type"
-                class="pollution-item"
-            >
-                <span class="pollution-type">{{ type }}</span>
-                <span class="pollution-count">{{ num }} 个</span>
-            </div>
-            <div v-if="Object.keys(batchSummary.pollution).length === 0" class="empty-text">
-                未发现明显污染
-            </div>
-        </div>
-    </el-card>
-
-    <el-card shadow="hover" class="batch-stat-card">
-        <ExtractionSummary :data="batchSummary.extraction" />
-    </el-card>
-</div>
-
 </div>
 
 </template>

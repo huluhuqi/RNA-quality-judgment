@@ -146,6 +146,9 @@ from './rna/RNATable.vue'
 
 import {ElMessage} from 'element-plus'
 
+import { handleError } from '../core/error/errorHandler'
+import { ErrorType } from '../core/error/errorType'
+
 const store = useSampleStore()
 
 /**
@@ -272,65 +275,64 @@ function onCellChange(row){
 
 
 function importData(){
+    try {
+        const rawData = generateSamples()
 
-    const rawData = generateSamples()
+        if(rawData.length === 0){
+            ElMessage.warning('未识别到有效数据，请先粘贴数据')
+            return
+        }
 
-    if(rawData.length === 0){
-        ElMessage.warning('未识别到有效数据，请先粘贴数据')
-        return
+        const normalized = normalizeRNAData(rawData)
+
+        if(normalized.length === 0){
+            ElMessage.warning('数据均为空行，请检查输入内容')
+            return
+        }
+
+        const duplicates = checkDuplicateIds(normalized)
+
+        if(duplicates.length > 0){
+            ElMessage.warning(`检测到${duplicates.length}个重复模板ID，请检查`)
+        }
+
+        const dateStr = (() => {
+            const d = new Date()
+            const y = d.getFullYear()
+            const m = String(d.getMonth() + 1).padStart(2, "0")
+            const day = String(d.getDate()).padStart(2, "0")
+            return `${y}${m}${day}`
+        })()
+        const autoIdPattern = new RegExp(`^${dateStr}_\\d{3}$`)
+        const autoIdCount = normalized.filter(item =>
+            autoIdPattern.test(item.templateId)
+        ).length
+
+        const mapped = normalized.map(item => ({
+            id: item.templateId,
+            concentration: item.concentration,
+            a260280: item.a260280,
+            a260230: item.a260230
+        }))
+
+        saveSnapshot()
+
+        const newSamples = normalizeSamples(mapped)
+        newSamples.forEach(sample => {
+            store.addSample(sample)
+        })
+
+        clearPasteData()
+
+        let msg = `成功导入${normalized.length}个样本`
+        if(autoIdCount > 0){
+            msg += `，自动生成ID ${autoIdCount}个`
+        }
+        ElMessage.success(msg)
+    } catch (e) {
+        handleError(e, ErrorType.FILE_IMPORT, 'RNA数据导入')
+        ElMessage.error('数据导入失败，请检查数据格式')
     }
-
-    // 标准化：自动生成ID、清除空行、补齐缺失字段
-    const normalized = normalizeRNAData(rawData)
-
-    if(normalized.length === 0){
-        ElMessage.warning('数据均为空行，请检查输入内容')
-        return
-    }
-
-    // 重复ID检测
-    const duplicates = checkDuplicateIds(normalized)
-
-    if(duplicates.length > 0){
-        ElMessage.warning(`检测到${duplicates.length}个重复模板ID，请检查`)
-    }
-
-    // 统计自动生成ID数量（匹配 YYYYMMDD_XXX 格式）
-    const dateStr = (() => {
-        const d = new Date()
-        const y = d.getFullYear()
-        const m = String(d.getMonth() + 1).padStart(2, "0")
-        const day = String(d.getDate()).padStart(2, "0")
-        return `${y}${m}${day}`
-    })()
-    const autoIdPattern = new RegExp(`^${dateStr}_\\d{3}$`)
-    const autoIdCount = normalized.filter(item =>
-        autoIdPattern.test(item.templateId)
-    ).length
-
-    // 映射为 sampleModel 兼容格式（templateId → id）
-    const mapped = normalized.map(item => ({
-        id: item.templateId,
-        concentration: item.concentration,
-        a260280: item.a260280,
-        a260230: item.a260230
-    }))
-
-    saveSnapshot()
-
-    const newSamples = normalizeSamples(mapped)
-    newSamples.forEach(sample => {
-        store.addSample(sample)
-    })
-
-    clearPasteData()
-
-    let msg = `成功导入${normalized.length}个样本`
-    if(autoIdCount > 0){
-        msg += `，自动生成ID ${autoIdCount}个`
-    }
-    ElMessage.success(msg)
-
 }
 
 

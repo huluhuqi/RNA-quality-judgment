@@ -8,6 +8,8 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { createPDFData } from "./pdfTemplate";
+import { handleError } from "../../../core/error/errorHandler";
+import { ErrorType } from "../../../core/error/errorType";
 
 
 /**
@@ -22,69 +24,66 @@ export async function exportPDF(
     fileName = "RNA质量检测实验报告.pdf",
     data = null
 ){
+    try {
+        if(data){
+            createPDFData(data);
+        }
 
 
-    // 若传入数据，进行结构化整理（当前 PDF 为截图模式，数据供后续扩展使用）
-    if(data){
-        createPDFData(data);
-    }
+        const element = document.getElementById(elementId);
+
+        if(!element){
+            console.error("未找到PDF导出区域");
+            return;
+        }
 
 
-    const element = document.getElementById(elementId);
-
-    if(!element){
-        console.error("未找到PDF导出区域");
-        return;
-    }
-
-
-    // 截图（scale:2 提升清晰度）
-    const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        logging: false
-    });
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            logging: false
+        });
 
 
-    const imgData = canvas.toDataURL("image/png");
+        const imgData = canvas.toDataURL("image/png");
 
 
-    // A4 纵向
-    const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4"
-    });
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4"
+        });
 
 
-    const pageWidth = pdf.internal.pageSize.width;
-    const pageHeight = pdf.internal.pageSize.height;
+        const pageWidth = pdf.internal.pageSize.width;
+        const pageHeight = pdf.internal.pageSize.height;
 
-    // 按页宽等比缩放
-    const imgWidth = pageWidth;
-    const imgHeight = canvas.height * pageWidth / canvas.width;
-
-
-    let heightLeft = imgHeight;
-    let position = 0;
+        const imgWidth = pageWidth;
+        const imgHeight = canvas.height * pageWidth / canvas.width;
 
 
-    // 首页
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+        let heightLeft = imgHeight;
+        let position = 0;
 
 
-    // 后续页
-    while(heightLeft > 0){
-        position = heightLeft - imgHeight;
-        pdf.addPage();
         pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
+
+
+        while(heightLeft > 0){
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+
+
+        pdf.save(fileName);
+    } catch (e) {
+        handleError(e, ErrorType.EXPORT_PDF, 'PDF导出');
+        throw new Error('PDF生成失败');
     }
-
-
-    pdf.save(fileName);
 
 
 }

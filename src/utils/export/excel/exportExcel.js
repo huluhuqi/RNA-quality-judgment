@@ -18,57 +18,56 @@ import { createSampleSheet } from "./createSampleSheet";
 import { createSummarySheet } from "./createSummarySheet";
 import { checkExportData } from "../checkExportData";
 import { generateBatchExtractionSummary } from "../../../core/advice/batchExtractionSummary";
+import { handleError } from "../../../core/error/errorHandler";
+import { ErrorType } from "../../../core/error/errorType";
 
 
 export async function exportExcel(data, charts){
 
+    try {
+        const { samples, summary, settings } = data;
 
-    const { samples, summary, settings } = data;
+        if(!checkExportData(samples)){
+            console.warn("存在未分析样本，导出数据可能不完整");
+        }
 
-    // 一致性检查：未分析样本仅警告，不阻断导出
-    if(!checkExportData(samples)){
-        console.warn("存在未分析样本，导出数据可能不完整");
+
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = "RNA质量检测工具";
+        workbook.created = new Date();
+
+
+        const extractionMethod = settings?.method || "";
+
+        const formattedSamples = formatSamples(samples, extractionMethod);
+
+        const formattedSummary = formatSummary(summary);
+        const badCount = (formattedSummary.qualityCount?.较差 || 0) +
+                         (formattedSummary.qualityCount?.不合格 || 0);
+        formattedSummary.extractionSummaryText = generateBatchExtractionSummary(
+            formattedSummary.extractionCount,
+            formattedSummary.validCount,
+            badCount
+        );
+
+
+        createSampleSheet(workbook, formattedSamples);
+
+        createSummarySheet(workbook, formattedSummary, settings, charts);
+
+
+        const buffer = await workbook.xlsx.writeBuffer();
+
+        saveAs(
+            new Blob([buffer], {
+                type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }),
+            "RNA质量检测报告.xlsx"
+        );
+    } catch (e) {
+        handleError(e, ErrorType.EXPORT_EXCEL, 'Excel导出');
+        throw new Error('Excel导出失败');
     }
-
-
-    const workbook = new ExcelJS.Workbook();
-    workbook.creator = "RNA质量检测工具";
-    workbook.created = new Date();
-
-
-    // 提取方法（来自 RT 参数 settings.method）
-    const extractionMethod = settings?.method || "";
-
-    // 格式化样本数据（读取 sample.result，不重新分析）
-    const formattedSamples = formatSamples(samples, extractionMethod);
-
-    // 格式化总结数据 + 追加批次提取总结文本
-    const formattedSummary = formatSummary(summary);
-    const badCount = (formattedSummary.qualityCount?.较差 || 0) +
-                     (formattedSummary.qualityCount?.不合格 || 0);
-    formattedSummary.extractionSummaryText = generateBatchExtractionSummary(
-        formattedSummary.extractionCount,
-        formattedSummary.validCount,
-        badCount
-    );
-
-
-    // Sheet1 样本数据
-    createSampleSheet(workbook, formattedSamples);
-
-    // Sheet2 总结报告
-    createSummarySheet(workbook, formattedSummary, settings, charts);
-
-
-    // 导出
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    saveAs(
-        new Blob([buffer], {
-            type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        }),
-        "RNA质量检测报告.xlsx"
-    );
 
 
 }

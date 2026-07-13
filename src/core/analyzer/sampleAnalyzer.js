@@ -28,6 +28,8 @@ import {
     hasAnalysisCache,
     clearAnalysisCache
 } from "../cache/sampleAnalysisCache"
+import { handleError } from "../error/errorHandler"
+import { ErrorType } from "../error/errorType"
 
 
 /**
@@ -40,7 +42,6 @@ import {
  */
 export function analyzeSample(sample, config = {}, useCache = true){
 
-
     if(sample.ignored){
         return {
             ...sample,
@@ -48,7 +49,6 @@ export function analyzeSample(sample, config = {}, useCache = true){
         };
     }
 
-    // 检查缓存
     const sampleId = sample.id || sample.templateId;
     if (useCache && sampleId && hasAnalysisCache(sampleId)) {
         const cachedResult = getAnalysisCache(sampleId);
@@ -58,7 +58,6 @@ export function analyzeSample(sample, config = {}, useCache = true){
         };
     }
 
-    // 执行分析
     const qualityResult = analyzeRNA(
         sample,
         config.method,
@@ -77,7 +76,6 @@ export function analyzeSample(sample, config = {}, useCache = true){
         advice
     };
 
-    // 缓存结果
     if (sampleId) {
         setAnalysisCache(sampleId, result);
     }
@@ -87,7 +85,24 @@ export function analyzeSample(sample, config = {}, useCache = true){
         result
     };
 
+}
 
+export function safeAnalyzeSample(sample, config = {}) {
+    try {
+        return analyzeSample(sample, config);
+    } catch (e) {
+        handleError(e, ErrorType.ANALYSIS, `样本 ${sample.id || sample.templateId} 分析失败`);
+        return {
+            ...sample,
+            result: {
+                quality: "无法判断",
+                pollution: "数据异常",
+                suggestion: "请检查输入数据",
+                status: { rtRecommend: false, qualityAnalysis: false },
+                advice: { pollution: [], extraction: [], concentration: [] }
+            }
+        };
+    }
 }
 
 
@@ -100,9 +115,8 @@ export function analyzeSample(sample, config = {}, useCache = true){
  */
 export function analyzeSamples(samples = [], config = {}){
 
-
     return samples.map(sample =>
-        analyzeSample(sample, config)
+        safeAnalyzeSample(sample, config)
     );
 
 

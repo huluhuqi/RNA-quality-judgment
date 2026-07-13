@@ -47,6 +47,8 @@ getChartGridColor
 from '../theme/chartTheme'
 
 import { useSampleStore } from '../store/sampleStore'
+import { handleError } from '../core/error/errorHandler'
+import { ErrorType } from '../core/error/errorType'
 
 const store = useSampleStore()
 
@@ -76,136 +78,148 @@ function getFontSize(){
 
 
 function render(){
+    try {
+        if(chart){
+            chart.dispose()
+        }
 
-if(chart){
-    chart.dispose()
-}
+        chart =
+        echarts.init(
+        chartRef.value
+        )
 
-chart =
-echarts.init(
-chartRef.value
-)
+        const textColor = getChartTextColor()
+        const fontSize = getFontSize()
 
-const textColor = getChartTextColor()
-const fontSize = getFontSize()
+        chart.setOption({
 
-chart.setOption({
+        ...getChartTheme(),
 
-...getChartTheme(),
-
-tooltip:{},
-
-
-xAxis:{
+        tooltip:{},
 
 
-type:'category',
+        xAxis:{
 
 
-data:[
-
-'蛋白/酚类污染',
-
-'盐类/试剂残留',
-
-'双重风险'
-
-],
-
-axisLabel:{
-color:textColor,
-fontSize
-}
-
-},
+        type:'category',
 
 
+        data:[
 
-yAxis:{
+        '蛋白/酚类污染',
 
+        '盐类/试剂残留',
 
-type:'value',
-axisLabel:{
-color:textColor,
-fontSize
-},
-splitLine:{
-lineStyle:{
-color: getChartGridColor()
-}
-}
+        '双重风险'
 
-},
+        ],
+
+        axisLabel:{
+        color:textColor,
+        fontSize
+        }
+
+        },
 
 
 
-series:[
+
+        yAxis:{
 
 
-{
+        type:'value',
+        axisLabel:{
+        color:textColor,
+        fontSize
+        },
+        splitLine:{
+        lineStyle:{
+        color: getChartGridColor()
+        }
+        }
 
-type:'bar',
-
-
-data:[
-
-
-{
-
-value:
-props.data?.蛋白或酚类污染||0,
-
-name:'蛋白/酚类污染',
-
-itemStyle:{
-
-color:'#e74c3c'
-
-}
-
-},
+        },
 
 
 
-{
 
-value:
-props.data?.盐类或试剂残留||0,
+        series:[
 
-name:'盐类/试剂残留',
 
-itemStyle:{
+        {
 
-color:'#f39c12'
+        type:'bar',
 
-}
 
-},
+        data:[
 
 
 
-{
+        {
 
-value:
-props.data?.双重污染风险||0,
+        value:
+        props.data?.蛋白或酚类污染||0,
 
-name:'双重污染风险',
+        name:'蛋白/酚类污染',
 
-itemStyle:{
+        itemStyle:{
 
-color:'#8e44ad'
+        color:'#e74c3c'
 
-}
+        }
 
-}
+        },
 
 
-]
 
-}
-]
 
-})
+        {
+
+        value:
+        props.data?.盐类或试剂残留||0,
+
+        name:'盐类/试剂残留',
+
+        itemStyle:{
+
+        color:'#f39c12'
+
+        }
+
+        },
+
+
+
+
+        {
+
+        value:
+        props.data?.双重污染风险||0,
+
+        name:'双重污染风险',
+
+        itemStyle:{
+
+        color:'#8e44ad'
+
+        }
+
+        }
+
+
+        ]
+
+        }
+        ]
+
+        })
+    } catch (e) {
+        handleError(e, ErrorType.CHART, 'PollutionChart');
+        if(chart){
+            chart.dispose();
+            chart = null;
+        }
+    }
 
 
 }

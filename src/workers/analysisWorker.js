@@ -124,7 +124,7 @@ function batchAnalyze(samples, chunkSize = 200) {
     
     for (let i = 0; i < total; i++) {
         const sample = samples[i];
-        const analysis = sample.ignored ? null : analyzeSample(sample);
+        const analysis = analyzeSample(sample);
         
         results.push({
             ...sample,

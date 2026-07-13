@@ -12,15 +12,6 @@ import { ErrorType } from "../error/errorType"
 import { getContaminationDisplay } from "../../config/contaminationMapping"
 
 export function analyzeSample(sample, config = {}, useCache = true){
-    const ignored = sample.status?.ignored || sample.ignored;
-    if(ignored){
-        return {
-            ...sample,
-            analysis: null,
-            result: null
-        };
-    }
-
     const sampleId = sample.id || sample.raw?.templateId || sample.templateId;
     if (useCache && sampleId && hasAnalysisCache(sampleId)) {
         const cachedResult = getAnalysisCache(sampleId);

@@ -71,7 +71,6 @@ initTheme()
 
 import { ref, watch, onMounted } from 'vue'
 import { useSampleStore } from './store/sampleStore'
-import { loadSamples } from './storage/sampleStorage'
 
 import Header from './components/Header.vue'
 import RTParameter from './components/RTParameter.vue'
@@ -170,12 +169,8 @@ watch(() => store.dirty, () => {
     refreshAnalysis()
 })
 
-onMounted(async () => {
-    const samples = await loadSamples()
-    await store.loadState()
-    
-    if(samples.length > 0){
-        store.setSamples(samples)
+onMounted(() => {
+    if(store.samples.length > 0){
         restored.value = true
     }
 })

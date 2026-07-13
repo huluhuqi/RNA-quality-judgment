@@ -26,10 +26,6 @@ function options(index) {
     return fields.filter(item => !used.includes(item.value));
 }
 
-function pasteInput(index, event) {
-    inputs.value[index] = event.target.value;
-}
-
 function generateID(index) {
     const d = new Date();
     const dateStr = (
@@ -68,9 +64,9 @@ function importData() {
         const sample = createSample({
             raw: {
                 templateId: raw.templateId || generateID(i),
-                concentration: raw.concentration !== null ? Number(raw.concentration) : null,
-                a260280: raw.a260280 !== null ? Number(raw.a260280) : null,
-                a260230: raw.a260230 !== null ? Number(raw.a260230) : null
+                concentration: raw.concentration !== null && raw.concentration !== "" ? Number(raw.concentration) : null,
+                a260280: raw.a260280 !== null && raw.a260280 !== "" ? Number(raw.a260280) : null,
+                a260230: raw.a260230 !== null && raw.a260230 !== "" ? Number(raw.a260230) : null
             }
         });
 
@@ -104,10 +100,10 @@ function importData() {
                 </el-select>
 
                 <el-input
+                    v-model="inputs[index]"
                     type="textarea"
                     :rows="8"
                     :placeholder="`粘贴${fields.find(f => f.value === columns[index])?.label || '数据'}，每行一个`"
-                    @input="pasteInput(index, $event)"
                 />
             </div>
         </div>

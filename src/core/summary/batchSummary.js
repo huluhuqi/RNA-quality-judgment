@@ -209,7 +209,7 @@ function analyzeRT(samples) {
     let noConcentrationCount = 0;
 
     samples.forEach(sample => {
-        const statusCode = sample.rt?.statusCode;
+        const statusCode = sample.rtConfig?.statusCode || sample.rt?.statusCode;
         switch (statusCode) {
             case RT_STATUS.OK.code:
                 okCount++;

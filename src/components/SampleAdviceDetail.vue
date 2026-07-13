@@ -1,7 +1,14 @@
 <script setup>
 
 import { computed } from 'vue'
-import { getTemplateVolumeDisplay, getTargetRNA } from '@/utils/rtHelper'
+import {
+  getTemplateVolumeDisplay,
+  getTargetRNA,
+  getWaterVolumeDisplay,
+  getRTStatusCode,
+  getRTSuggestion,
+  getRequiredConcentration
+} from '@/utils/rtHelper'
 import { getRtStatusStyle } from '@/constants/rtStatusStyle'
 
 const props = defineProps({
@@ -37,18 +44,12 @@ const experimentAdvice = computed(() => {
 })
 
 const rtTemplateVolume = computed(() => getTemplateVolumeDisplay(props.sample))
-const rtStatusCode = computed(() => props.sample?.rt?.statusCode || '')
+const rtStatusCode = computed(() => getRTStatusCode(props.sample))
 const rtStatusStyle = computed(() => getRtStatusStyle(rtStatusCode.value))
 const rtTargetRNA = computed(() => getTargetRNA(props.sample))
-const rtWaterVolume = computed(() => {
-    const wv = props.sample?.rt?.waterVolume;
-    if (wv !== null && wv !== undefined) {
-        return wv + " μL";
-    }
-    return "无法配置";
-})
-const rtSuggestion = computed(() => props.sample?.rt?.suggestion || '')
-const rtRequiredConcentration = computed(() => props.sample?.rt?.requiredConcentration)
+const rtWaterVolume = computed(() => getWaterVolumeDisplay(props.sample))
+const rtSuggestion = computed(() => getRTSuggestion(props.sample))
+const rtRequiredConcentration = computed(() => getRequiredConcentration(props.sample))
 
 function getPollutionTagType(type) {
   if (type.includes('严重') || type.includes('异常')) {

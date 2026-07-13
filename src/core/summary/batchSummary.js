@@ -7,7 +7,8 @@
  * 性能优化：使用脏检查避免重复计算
  */
 import { QUALITY_LEVEL, PENDING, getQualityLabel } from "../../config/qualityLevel";
-import { getValidSamples } from "../sample/sampleUtils";
+import { getActiveSamples } from "../../utils/sampleFilter";
+import { RT_STATUS } from "../../constants/rtStatus";
 
 // 缓存
 let cachedSummary = null;
@@ -27,7 +28,7 @@ export function generateBatchSummary(samples = []) {
         return cachedSummary;
     }
 
-    const validSamples = getValidSamples(samples);
+    const validSamples = getActiveSamples(samples);
 
     const summary = {
 
@@ -198,26 +199,37 @@ function analyzeExtraction(samples) {
 
 
 /**
- * RT分析
+ * RT配置统计
+ * 基于 sample.rt.statusCode 进行分类统计
  */
 function analyzeRT(samples) {
 
-    let recommend = 0;
-    let cannot = 0;
+    let okCount = 0;
+    let overVolumeCount = 0;
+    let noConcentrationCount = 0;
 
     samples.forEach(sample => {
-
-        if (sample.result?.status?.rtRecommend) {
-            recommend++;
-        } else {
-            cannot++;
+        const statusCode = sample.rt?.statusCode;
+        switch (statusCode) {
+            case RT_STATUS.OK.code:
+                okCount++;
+                break;
+            case RT_STATUS.OVER_VOLUME.code:
+                overVolumeCount++;
+                break;
+            case RT_STATUS.NO_CONCENTRATION.code:
+            default:
+                noConcentrationCount++;
+                break;
         }
-
     });
 
     return {
-        recommend,
-        cannot
+        ok: okCount,
+        overVolume: overVolumeCount,
+        noConcentration: noConcentrationCount,
+        recommend: okCount,
+        cannot: noConcentrationCount
     };
 
 }

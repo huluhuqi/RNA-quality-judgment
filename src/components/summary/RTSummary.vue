@@ -6,11 +6,15 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    recommend: {
+    ok: {
         type: Number,
         default: 0
     },
-    cannot: {
+    overVolume: {
+        type: Number,
+        default: 0
+    },
+    noConcentration: {
         type: Number,
         default: 0
     }
@@ -22,38 +26,34 @@ const volumeRange = computed(() => {
     }
     return '-';
 });
-
-const overVolumeCount = computed(() => {
-    return props.data.overVolumeCount || 0;
-});
 </script>
 
 <template>
 
 <div class="rt-summary">
-    <h4 class="summary-title">RT体系配置</h4>
+    <h4 class="summary-title">RT配置统计</h4>
 
     <div class="rt-stats">
         <div class="stat-item">
-            <span class="stat-label">可正常RT</span>
-            <span class="stat-value success">{{ recommend }}</span>
+            <span class="stat-label">可直接RT</span>
+            <span class="stat-value success">{{ ok }}</span>
             <span class="stat-unit">个</span>
         </div>
         <div class="stat-item">
-            <span class="stat-label">超体积限制</span>
-            <span class="stat-value danger">{{ overVolumeCount }}</span>
+            <span class="stat-label">模板超限</span>
+            <span class="stat-value warning">{{ overVolume }}</span>
             <span class="stat-unit">个</span>
         </div>
         <div class="stat-item">
-            <span class="stat-label">无法计算</span>
-            <span class="stat-value warning">{{ cannot }}</span>
+            <span class="stat-label">缺少浓度</span>
+            <span class="stat-value info">{{ noConcentration }}</span>
             <span class="stat-unit">个</span>
         </div>
     </div>
 
     <div v-if="data.recommendedRNA" class="rt-detail">
         <div class="detail-item">
-            <span class="detail-label">推荐RNA投入量</span>
+            <span class="detail-label">RNA投入量</span>
             <span class="detail-value">{{ data.recommendedRNA }} ng</span>
         </div>
         <div class="detail-item">
@@ -64,14 +64,7 @@ const overVolumeCount = computed(() => {
             <span class="detail-label">最大模板体积</span>
             <span class="detail-value">12 μL</span>
         </div>
-        <div class="detail-item">
-            <span class="detail-label">浓度状态</span>
-            <span class="detail-value">{{ data.level || '无法判断' }}</span>
-        </div>
     </div>
-
-    <p v-if="data.message" class="rt-message">{{ data.message }}</p>
-    <p v-if="data.warning" class="rt-warning-text">{{ data.warning }}</p>
 </div>
 
 </template>
@@ -93,25 +86,31 @@ const overVolumeCount = computed(() => {
 
 .rt-stats{
     display: flex;
-    gap: 20px;
+    gap: 12px;
     margin-bottom: 15px;
     padding-bottom: 15px;
     border-bottom: 1px solid var(--border-color, #e4e7ed);
 }
 
 .stat-item{
+    flex: 1;
     display: flex;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: center;
     gap: 4px;
+    padding: 10px 4px;
+    background: var(--card-bg, #ffffff);
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #e4e7ed);
 }
 
 .stat-label{
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-secondary, #606266);
 }
 
 .stat-value{
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
 }
 
@@ -123,26 +122,29 @@ const overVolumeCount = computed(() => {
     color: #e6a23c;
 }
 
+.stat-value.info{
+    color: #909399;
+}
+
 .stat-value.danger{
     color: #f56c6c;
 }
 
 .stat-unit{
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-light, #909399);
 }
 
 .rt-detail{
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 8px;
 }
 
 .detail-item{
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    padding: 6px 0;
 }
 
 .detail-label{
@@ -154,26 +156,6 @@ const overVolumeCount = computed(() => {
     font-size: 13px;
     font-weight: 500;
     color: var(--text-color, #303133);
-}
-
-.rt-message{
-    margin: 0 0 10px;
-    padding: 10px;
-    background: var(--card-bg, #ffffff);
-    border-radius: 4px;
-    line-height: 1.6;
-    font-size: 13px;
-    color: var(--text-color, #303133);
-}
-
-.rt-warning-text{
-    margin: 0;
-    padding: 10px;
-    background: rgba(245, 108, 108, 0.1);
-    color: var(--danger-color, #f56c6c);
-    border-radius: 4px;
-    line-height: 1.6;
-    font-size: 13px;
 }
 
 </style>

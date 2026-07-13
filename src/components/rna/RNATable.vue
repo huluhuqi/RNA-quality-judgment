@@ -7,7 +7,8 @@ import SampleAdviceDetail from '../SampleAdviceDetail.vue';
 import { getQualityLabel } from '@/config/qualityLevel';
 import { saveHistory } from '@/utils/historyManager';
 import { isIgnored } from '@/utils/sampleFilter';
-import { getTemplateVolumeDisplay, getWaterVolumeDisplay, getRTStatusCode, getRTSuggestion } from '@/utils/rtHelper';
+import { getTemplateVolumeDisplay, getRTStatusCode } from '@/utils/rtHelper';
+import { getRtStatusStyle } from '@/constants/rtStatusStyle';
 
 const props = defineProps({
     samples: {
@@ -63,23 +64,13 @@ function getTagType(value) {
 }
 
 function getRTTagType(statusCode) {
-    switch (statusCode) {
-        case 'OK': return 'success';
-        case 'OVER_VOLUME': return 'danger';
-        case 'NO_CONCENTRATION': return 'info';
-        case 'LOW_INPUT': return 'warning';
-        default: return 'info';
-    }
+    const style = getRtStatusStyle(statusCode);
+    return style.type;
 }
 
 function getRTStatusDisplay(statusCode) {
-    switch (statusCode) {
-        case 'OK': return '可直接RT';
-        case 'OVER_VOLUME': return '需浓缩';
-        case 'NO_CONCENTRATION': return '无法计算';
-        case 'LOW_INPUT': return '投入不足';
-        default: return '无法计算';
-    }
+    const style = getRtStatusStyle(statusCode);
+    return style.label;
 }
 
 function getTemplateVolume(sample) {
@@ -180,20 +171,26 @@ function getTemplateVolume(sample) {
                 </template>
             </el-table-column>
 
-            <el-table-column label="模板建议体积" width="140">
+            <el-table-column label="RNA模板体积" width="140">
                 <template #default="scope">
-                    <span
-                        class="rt-volume"
-                        :class="{ 'rt-warning': getRTStatusCode(scope.row) === 'OVER_VOLUME' }"
-                    >{{ getTemplateVolume(scope.row) }}</span>
+                    <el-tag
+                        v-if="getRTStatusCode(scope.row) === 'OVER_VOLUME'"
+                        type="warning"
+                        size="small"
+                        effect="light"
+                    >
+                        {{ getTemplateVolume(scope.row) }}
+                    </el-tag>
+                    <span v-else class="rt-volume">{{ getTemplateVolume(scope.row) }}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column label="RT状态" width="120">
+            <el-table-column label="RT状态" width="130">
                 <template #default="scope">
                     <el-tag
                         :type="getRTTagType(getRTStatusCode(scope.row))"
                         size="small"
+                        effect="light"
                     >{{ getRTStatusDisplay(getRTStatusCode(scope.row)) }}</el-tag>
                 </template>
             </el-table-column>

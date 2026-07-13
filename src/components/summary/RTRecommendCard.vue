@@ -9,7 +9,7 @@ RT体系配置
 <div class="info">
 
 <p>
-推荐RNA投入量：
+RNA投入量：
 <b>
 {{summary.rt?.recommendedRNA || 0}}
 </b>
@@ -37,6 +37,7 @@ ng
 <el-tag
 :type="rtLevelType"
 size="small"
+effect="light"
 >
 {{rtLevelText}}
 </el-tag>

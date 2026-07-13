@@ -2,6 +2,7 @@
 
 import { computed } from 'vue'
 import { getTemplateVolumeDisplay, getTargetRNA } from '@/utils/rtHelper'
+import { getRtStatusStyle } from '@/constants/rtStatusStyle'
 
 const props = defineProps({
   sample: {
@@ -11,7 +12,6 @@ const props = defineProps({
 })
 
 const analysis = computed(() => props.sample?.analysis || {})
-const result = computed(() => props.sample?.result || {})
 
 const analysisPollutionTypes = computed(() => {
   return analysis.value.pollution?.types || []
@@ -29,10 +29,9 @@ const experimentAdvice = computed(() => {
   return analysis.value.advice?.experiment || []
 })
 
-// RT数据只从 sample.rt 读取（唯一数据源），禁止从 analysis.rt 读取
 const rtTemplateVolume = computed(() => getTemplateVolumeDisplay(props.sample))
-const rtStatusText = computed(() => props.sample?.rt?.statusText || '无法计算')
 const rtStatusCode = computed(() => props.sample?.rt?.statusCode || '')
+const rtStatusStyle = computed(() => getRtStatusStyle(rtStatusCode.value))
 const rtTargetRNA = computed(() => getTargetRNA(props.sample))
 const rtMaxTemplateVolume = computed(() => props.sample?.rt?.maxTemplateVolume ?? 12)
 const rtWaterVolume = computed(() => {
@@ -53,15 +52,6 @@ function getPollutionTagType(type) {
     return 'warning'
   }
   return 'info'
-}
-
-function getRTStatusType(statusCode) {
-    switch (statusCode) {
-        case 'OK': return 'success'
-        case 'OVER_VOLUME': return 'warning'
-        case 'NO_CONCENTRATION': return 'info'
-        default: return 'info'
-    }
 }
 
 </script>
@@ -121,36 +111,56 @@ function getRTStatusType(statusCode) {
     </div>
 
     <div class="advice-section">
-      <h3>RT体系配置</h3>
-      <div class="rt-info">
-        <div class="rt-item">
-          <span>推荐RNA投入量</span>
-          <b>{{ rtTargetRNA }} ng</b>
+      <el-card shadow="hover" class="rt-card">
+        <template #header>
+          <span class="rt-card-title">RT体系配置</span>
+        </template>
+
+        <div class="rt-row">
+          <span class="rt-label">RNA投入量</span>
+          <strong class="rt-value">{{ rtTargetRNA }} ng</strong>
         </div>
-        <div class="rt-item">
-          <span>RNA模板体积</span>
-          <b :class="{ 'warning-value': rtStatusCode === 'OVER_VOLUME' }">{{ rtTemplateVolume }}</b>
+
+        <div class="rt-row">
+          <span class="rt-label">RNA模板体积</span>
+          <strong
+            class="rt-value"
+            :class="{ 'warning-value': rtStatusCode === 'OVER_VOLUME' }"
+          >{{ rtTemplateVolume }}</strong>
         </div>
-        <div class="rt-item">
-          <span>最大模板体积</span>
-          <b>{{ rtMaxTemplateVolume }} μL</b>
+
+        <div class="rt-row">
+          <span class="rt-label">RT补水体积</span>
+          <strong class="rt-value">{{ rtWaterVolume }}</strong>
         </div>
-        <div class="rt-item">
-          <span>RT补水体积</span>
-          <b :class="{ 'warning-value': rtStatusCode === 'NO_CONCENTRATION' }">{{ rtWaterVolume }}</b>
+
+        <div class="rt-row">
+          <span class="rt-label">最大模板体积</span>
+          <strong class="rt-value">{{ rtMaxTemplateVolume }} μL</strong>
         </div>
-        <div class="rt-item">
-          <span>状态</span>
-          <el-tag :type="getRTStatusType(rtStatusCode)" size="small">{{ rtStatusText }}</el-tag>
+
+        <div class="rt-status-row">
+          <el-tag
+            :type="rtStatusStyle.type"
+            effect="light"
+          >
+            {{ rtStatusStyle.icon }} {{ rtStatusStyle.label }}
+          </el-tag>
         </div>
-        <div v-if="rtRequiredConcentration" class="rt-item">
-          <span>最低需要浓度</span>
-          <b>≥ {{ rtRequiredConcentration }} ng/μL</b>
+
+        <div v-if="rtRequiredConcentration !== null && rtRequiredConcentration !== undefined && rtStatusCode !== 'OK'" class="rt-concentration">
+          最低需要浓度：<b>≥ {{ rtRequiredConcentration }} ng/μL</b>
         </div>
-      </div>
-      <div v-if="rtSuggestion && rtStatusCode !== 'OK'" class="rt-suggestion">
-        <el-alert :title="rtSuggestion" type="warning" :closable="false" show-icon />
-      </div>
+
+        <div v-if="rtSuggestion && rtStatusCode !== 'OK'" class="rt-suggestion">
+          <el-alert
+            :title="rtSuggestion"
+            type="warning"
+            :closable="false"
+            show-icon
+          />
+        </div>
+      </el-card>
     </div>
   </div>
 
@@ -193,27 +203,27 @@ function getRTStatusType(statusCode) {
 
 .pollution-description{
   padding: 8px 12px;
-  background: var(--card-color, #ffffff);
+  background: var(--card-bg, #ffffff);
   border-radius: 4px;
-  border: 1px solid var(--border, #e4e7ed);
+  border: 1px solid var(--border-color, #e4e7ed);
   font-size: 13px;
-  color: var(--text-main, #303133);
+  color: var(--text-color, #303133);
   line-height: 1.5;
   margin-top: 8px;
 }
 
 .advice-list{
   padding: 8px 12px;
-  background: var(--card-color, #ffffff);
+  background: var(--card-bg, #ffffff);
   border-radius: 4px;
-  border: 1px solid var(--border, #e4e7ed);
+  border: 1px solid var(--border-color, #e4e7ed);
   margin: 0;
 }
 
 .advice-list li{
   font-size: 13px;
   line-height: 1.8;
-  color: var(--text-main, #303133);
+  color: var(--text-color, #303133);
   margin: 4px 0;
   padding-left: 4px;
 }
@@ -228,26 +238,26 @@ function getRTStatusType(statusCode) {
 
 .extraction-steps{
   padding: 6px 12px;
-  background: var(--card-color, #ffffff);
+  background: var(--card-bg, #ffffff);
   border-radius: 4px;
-  border: 1px solid var(--border, #e4e7ed);
+  border: 1px solid var(--border-color, #e4e7ed);
   margin: 0;
 }
 
 .extraction-steps li{
   font-size: 13px;
   line-height: 1.8;
-  color: var(--text-main, #303133);
+  color: var(--text-color, #303133);
   margin: 2px 0;
 }
 
 .advice-text{
   padding: 8px 12px;
-  background: var(--card-color, #ffffff);
+  background: var(--card-bg, #ffffff);
   border-radius: 4px;
-  border: 1px solid var(--border, #e4e7ed);
+  border: 1px solid var(--border-color, #e4e7ed);
   font-size: 13px;
-  color: var(--text-main, #303133);
+  color: var(--text-color, #303133);
   line-height: 1.5;
 }
 
@@ -257,62 +267,60 @@ function getRTStatusType(statusCode) {
   padding: 8px 0;
 }
 
-.rt-info{
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.rt-card{
+  height: 100%;
+  background: linear-gradient(135deg, var(--card-rt-from), var(--card-rt-to));
 }
 
-.rt-item{
+.rt-card-title{
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-color);
+}
+
+.rt-row{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--border, #e4e7ed);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.rt-item:last-child{
-  border-bottom: none;
-}
-
-.rt-item span{
+.rt-label{
   font-size: 13px;
-  color: var(--text-secondary, #606266);
+  color: var(--text-secondary);
 }
 
-.rt-item b{
-  font-size: 14px;
-  color: var(--text-main, #303133);
+.rt-value{
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
 }
 
 .warning-value{
-  color: var(--danger-color, #f56c6c) !important;
+  color: var(--warning-color, #e6a23c) !important;
+}
+
+.rt-status-row{
+  padding: 12px 0 0;
+  text-align: center;
+}
+
+.rt-concentration{
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--card-bg, #ffffff);
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.rt-concentration b{
+  color: var(--text-color);
 }
 
 .rt-suggestion{
   margin-top: 10px;
-}
-
-.rt-status{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.rt-volume-info{
-  font-size: 13px;
-  color: var(--text-main, #303133);
-}
-
-.rt-recommendation{
-  padding: 8px 12px;
-  background: var(--card-color, #ffffff);
-  border-radius: 4px;
-  border: 1px solid var(--border, #e4e7ed);
-  font-size: 13px;
-  color: var(--text-main, #303133);
-  line-height: 1.5;
 }
 
 </style>

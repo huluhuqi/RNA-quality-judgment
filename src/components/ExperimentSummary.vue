@@ -35,8 +35,9 @@
     <el-card shadow="hover" class="rt-detail-card">
         <RTSummary 
             :data="summary.rt || {}" 
-            :recommend="batchSummary.rt.recommend" 
-            :cannot="batchSummary.rt.cannot" 
+            :ok="batchSummary.rt.ok" 
+            :over-volume="batchSummary.rt.overVolume"
+            :no-concentration="batchSummary.rt.noConcentration"
         />
     </el-card>
 </div>

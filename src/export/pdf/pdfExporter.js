@@ -113,7 +113,7 @@ export function exportPDF(data, charts = {}) {
     if (firstSample?.rt) {
         pdf.text(`RNA投入量: ${firstSample.rt.targetRNA || ""} ng`, marginLeft, y);
         y += 7;
-        pdf.text(`RNA模板体积: ${firstSample.rt.templateVolume !== null && firstSample.rt.templateVolume !== undefined ? firstSample.rt.templateVolume + " μL" : "无法计算"}`, marginLeft, y);
+        pdf.text(`RNA模板体积: ${firstSample.rt.templateVolume !== null && firstSample.rt.templateVolume !== undefined ? firstSample.rt.templateVolume + " μL" : "无法配置"}`, marginLeft, y);
         y += 7;
         pdf.text(`最大模板体积: ${firstSample.rt.maxTemplateVolume || 12} μL`, marginLeft, y);
         y += 7;

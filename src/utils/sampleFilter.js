@@ -2,11 +2,12 @@
  * 样本状态统一过滤模块
  *
  * 全局唯一规则：
+ *   有效样本 = 未被忽略 && 未被删除
  *   被忽略样本 = sample.status.ignored === true
- *   不再使用 sample.ignored（旧字段，仅做兼容回退）
+ *   被删除样本 = sample.deleted === true (预留，当前未使用)
  *
- * 所有模块必须通过此模块判断样本是否被忽略，
- * 禁止在各处直接写 sample.ignored 或 sample.status?.ignored。
+ * 所有模块必须通过此模块判断样本有效性，
+ * 禁止在各处直接写 sample.ignored / sample.status?.ignored / sample.deleted。
  */
 
 /**
@@ -15,16 +16,40 @@
  * @returns {boolean}
  */
 export function isIgnored(sample) {
-    return sample?.status?.ignored === true;
+    if (!sample) return false;
+    return sample.status?.ignored === true || sample.ignored === true;
 }
 
 /**
- * 获取有效样本（排除被忽略的）
+ * 判断样本是否被删除
+ * @param {Object} sample 样本对象
+ * @returns {boolean}
+ */
+export function isDeleted(sample) {
+    if (!sample) return true;
+    return sample.deleted === true;
+}
+
+/**
+ * 判断样本是否为有效样本（未忽略 && 未删除）
+ * @param {Object} sample 样本对象
+ * @returns {boolean}
+ */
+export function isActiveSample(sample) {
+    if (!sample) return false;
+    if (isDeleted(sample)) return false;
+    if (isIgnored(sample)) return false;
+    return true;
+}
+
+/**
+ * 获取有效样本（排除被忽略和被删除的）
  * @param {Array} samples 样本数组
  * @returns {Array} 有效样本数组
  */
 export function getActiveSamples(samples = []) {
-    return samples.filter(s => !isIgnored(s));
+    if (!Array.isArray(samples)) return [];
+    return samples.filter(s => isActiveSample(s));
 }
 
 /**
@@ -33,7 +58,8 @@ export function getActiveSamples(samples = []) {
  * @returns {Array} 忽略样本数组
  */
 export function getIgnoredSamples(samples = []) {
-    return samples.filter(s => isIgnored(s));
+    if (!Array.isArray(samples)) return [];
+    return samples.filter(s => isIgnored(s) && !isDeleted(s));
 }
 
 /**

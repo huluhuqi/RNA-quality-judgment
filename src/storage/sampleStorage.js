@@ -1,5 +1,6 @@
 import { getDB } from "./db";
 import { createSample } from "@/models/SampleModel";
+import { migrateSample } from "@/utils/dataMigration";
 
 export async function saveSamples(samples) {
     try {
@@ -27,12 +28,19 @@ export async function loadSamples() {
     try {
         const db = await getDB();
         const result = await db.get("samples", "current");
-        return result?.data ? result.data.map(item => createSample(item)) : [];
+        if (result?.data && Array.isArray(result.data)) {
+            return result.data.map(item => migrateSample(createSample(item)));
+        }
+        return [];
     } catch (e) {
         console.warn("IndexedDB读取失败，降级到localStorage", e);
         try {
             const data = localStorage.getItem("rna_samples");
-            return data ? JSON.parse(data).map(item => createSample(item)) : [];
+            if (data) {
+                const parsed = JSON.parse(data);
+                return parsed.map(item => migrateSample(createSample(item)));
+            }
+            return [];
         } catch (e2) {
             console.error("localStorage读取失败", e2);
             return [];

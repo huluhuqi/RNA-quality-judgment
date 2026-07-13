@@ -88,6 +88,7 @@ import { QUALITY_LEVEL, PENDING } from './config/qualityLevel'
 import { getActiveSamples } from './utils/sampleFilter'
 import { calculateTemplateVolume } from './analysis/rt/templateVolumeCalculator'
 import { logRTConsistency } from './utils/dataCheck'
+import { migrateSamples } from './utils/dataMigration'
 
 import { uiState, setLoading } from './store/uiState'
 
@@ -197,7 +198,17 @@ watch(() => store.dirty, () => {
 
 onMounted(() => {
     if(store.samples.length > 0){
-        restored.value = true
+        const migrated = migrateSamples(store.samples);
+        let changed = false;
+        migrated.forEach((s, i) => {
+            if (s !== store.samples[i]) {
+                changed = true;
+            }
+        });
+        if (changed) {
+            store.samples = migrated;
+        }
+        restored.value = true;
     }
 })
 

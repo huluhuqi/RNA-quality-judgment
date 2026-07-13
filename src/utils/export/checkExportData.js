@@ -15,9 +15,7 @@ export function checkExportData(samples = []){
 
 
     return samples
-
-        .filter(item => !item.ignored)
-
+        .filter(item => !(item.status?.ignored === true || item.ignored === true))
         .every(item => {
             return item.result && item.result.quality;
         });

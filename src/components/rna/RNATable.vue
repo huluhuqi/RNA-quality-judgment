@@ -69,6 +69,18 @@ function getRTTagType(status) {
     }
 }
 
+function getTemplateVolume(sample) {
+    const concentration = sample.raw?.concentration ?? sample.concentration;
+    const targetRNA = sample.rt?.recommendedRNA || 100;
+
+    if (!concentration || concentration <= 0) {
+        return "无法计算";
+    }
+
+    const volume = targetRNA / concentration;
+    return volume.toFixed(2) + " μL";
+}
+
 </script>
 
 <template>
@@ -163,20 +175,9 @@ function getRTTagType(status) {
                 </template>
             </el-table-column>
 
-            <el-table-column label="RT模板推荐" width="200">
+            <el-table-column label="模板建议体积" width="160">
                 <template #default="scope">
-                    <div class="rt-cell">
-                        <el-tag
-                            v-if="scope.row.analysis?.rt?.status"
-                            :type="getRTTagType(scope.row.analysis.rt.status)"
-                            size="small"
-                        >
-                            {{ scope.row.analysis.rt.status }}
-                        </el-tag>
-                        <span v-if="scope.row.analysis?.rt?.inputVolume" class="rt-volume">
-                            {{ scope.row.analysis.rt.inputVolume }} μL
-                        </span>
-                    </div>
+                    <span class="rt-volume">{{ getTemplateVolume(scope.row) }}</span>
                 </template>
             </el-table-column>
 

@@ -10,7 +10,6 @@
 import { analyzeRNA } from "../quality";
 import { getAnalysisStatus } from "../analyze/analysisStatus";
 import { QUALITY_LEVEL, PENDING } from "../../config/qualityLevel";
-import { getValidSamples } from "../sample/sampleUtils";
 
 
 export function getSampleStatistics(samples, extractionMethod, application){
@@ -18,8 +17,12 @@ export function getSampleStatistics(samples, extractionMethod, application){
 
     const totalCount = samples.length;
 
-    const ignoredSamples = samples.filter(item => item.ignored);
-    const activeSamples = getValidSamples(samples);
+    const ignoredSamples = samples.filter(
+        item => item.status?.ignored === true || item.ignored === true
+    );
+    const activeSamples = samples.filter(
+        item => !(item.status?.ignored === true || item.ignored === true)
+    );
     const ignoredCount = ignoredSamples.length;
 
 

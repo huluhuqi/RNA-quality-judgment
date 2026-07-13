@@ -76,6 +76,10 @@ function importData() {
     emit("import", result);
     ElMessage.success(`成功导入${result.length}个样本`);
 }
+
+function clearData() {
+    inputs.value = ["", "", "", ""];
+}
 </script>
 
 <template>
@@ -108,13 +112,18 @@ function importData() {
             </div>
         </div>
 
-        <div class="action-area">
+        <div class="button-area">
             <el-button
                 type="primary"
-                size="large"
                 @click="importData"
             >
                 导入数据
+            </el-button>
+
+            <el-button
+                @click="clearData"
+            >
+                清空数据
             </el-button>
         </div>
     </div>
@@ -142,9 +151,12 @@ function importData() {
     width: 100%;
 }
 
-.action-area{
+.button-area{
     display: flex;
-    justify-content: flex-end;
+    gap: 12px;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 20px;
 }
 
 @media(max-width: 1200px){

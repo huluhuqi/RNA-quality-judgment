@@ -308,18 +308,16 @@ function importData(){
             autoIdPattern.test(item.templateId)
         ).length
 
-        const mapped = normalized.map(item => ({
-            id: item.templateId,
-            concentration: item.concentration,
-            a260280: item.a260280,
-            a260230: item.a260230
-        }))
-
         saveSnapshot()
 
-        const newSamples = normalizeSamples(mapped)
-        newSamples.forEach(sample => {
-            store.addSample(sample)
+        // 直接使用normalized数据，保留templateId字段
+        normalized.forEach((item, index) => {
+            store.addSample({
+                templateId: item.templateId || '',
+                concentration: item.concentration,
+                a260280: item.a260280,
+                a260230: item.a260230
+            })
         })
 
         clearPasteData()

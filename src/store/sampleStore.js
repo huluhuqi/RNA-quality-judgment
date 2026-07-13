@@ -26,7 +26,7 @@ export const useSampleStore = defineStore(
 
         function addSample(sample) {
             const newSample = {
-                id: Date.now(),
+                id: crypto.randomUUID(),
                 templateId: sample.templateId || createTemplateId(),
                 concentration: sample.concentration ?? "",
                 a260280: sample.a260280 ?? "",
@@ -41,7 +41,8 @@ export const useSampleStore = defineStore(
         function importSamples(list) {
             samples.value = list.map((item, index) => ({
                 ...item,
-                id: item.id || Date.now() + index,
+                id: item.id || crypto.randomUUID(),
+                templateId: item.templateId || createTemplateId(),
                 ignored: item.ignored || false
             }));
             update();

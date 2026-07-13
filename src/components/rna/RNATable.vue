@@ -76,7 +76,6 @@ function getTagType(value) {
             height="600"
             stripe
             style="min-width: 1400px"
-            :class="{ 'table-animate': true }"
         >
             <el-table-column type="expand" width="50">
                 <template #default="{ row }">
@@ -84,10 +83,11 @@ function getTagType(value) {
                 </template>
             </el-table-column>
 
-            <el-table-column label="模板ID" fixed="left" width="140">
+            <el-table-column label="模板ID" prop="templateId" fixed="left" width="180">
                 <template #default="scope">
                     <el-input
-                        v-model="scope.row.id"
+                        v-model="scope.row.templateId"
+                        size="small"
                         @change="onCellChange(scope.row)"
                     />
                 </template>
@@ -274,40 +274,6 @@ function getTagType(value) {
 @keyframes lineRemove{
     from{ width: 100%; }
     to{ width: 0; }
-}
-
-.table-animate :deep(.el-table__body tr){
-    transition: all .35s ease;
-}
-
-.table-animate :deep(.el-table__body tr.table-row-enter-active){
-    animation: rowEnter .4s ease;
-}
-
-.table-animate :deep(.el-table__body tr.table-row-leave-active){
-    animation: rowLeave .35s ease forwards;
-}
-
-@keyframes rowEnter{
-    from{
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to{
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes rowLeave{
-    from{
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to{
-        opacity: 0;
-        transform: translateX(40px);
-    }
 }
 
 </style>

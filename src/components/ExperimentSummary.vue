@@ -2,17 +2,6 @@
 
 <div id="pdf-report" class="summary-container">
 
-<!-- 实验总体结论 -->
-<el-card class="summary-conclusion pdf-section">
-    <div class="conclusion-header">
-        <h3>实验总体结论</h3>
-        <el-tag :type="conclusionType">{{ conclusionLabel }}</el-tag>
-    </div>
-    <div class="conclusion-content">
-        <SummaryConclusion :text="batchSummary.conclusion" :type="conclusionType" />
-    </div>
-</el-card>
-
 <!-- 第一层核心指标（保留原有卡片） -->
 <el-row :gutter="16" class="top-summary pdf-section">
     <el-col :xs="24" :sm="12" :lg="6">
@@ -69,9 +58,6 @@ import RTRecommendCard from './summary/RTRecommendCard.vue';
 import QualityChartCard from './summary/QualityChartCard.vue';
 import PollutionCard from './summary/PollutionCard.vue';
 import ExtractionProblemCard from './summary/ExtractionProblemCard.vue';
-import SummaryConclusion from './summary/SummaryConclusion.vue';
-import QualityDistribution from './summary/QualityDistribution.vue';
-import ExtractionSummary from './summary/ExtractionSummary.vue';
 import RTSummary from './summary/RTSummary.vue';
 
 const store = useSampleStore();
@@ -89,26 +75,6 @@ const props = defineProps({
 
 const batchSummary = computed(() => {
     return generateBatchSummary(store.validSamples);
-});
-
-const conclusionType = computed(() => {
-    const total = batchSummary.value.total;
-    if (total === 0) return 'info';
-    const poor = batchSummary.value.quality.poor + batchSummary.value.quality.fail;
-    const poorRate = poor / total;
-    if (poorRate < 0.1) return 'success';
-    if (poorRate < 0.3) return 'warning';
-    return 'danger';
-});
-
-const conclusionLabel = computed(() => {
-    const total = batchSummary.value.total;
-    if (total === 0) return '暂无数据';
-    const poor = batchSummary.value.quality.poor + batchSummary.value.quality.fail;
-    const poorRate = poor / total;
-    if (poorRate < 0.1) return '质量良好';
-    if (poorRate < 0.3) return '质量一般';
-    return '质量较差';
 });
 
 defineExpose({

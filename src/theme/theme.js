@@ -1,4 +1,4 @@
-const KEY = "RNA_QC_THEME"
+import { saveTheme, loadTheme } from '../storage/settingStorage'
 
 export const themes = {
     blue: "科研蓝",
@@ -9,18 +9,11 @@ export const themes = {
 }
 
 export function getTheme(){
-    return (
-        localStorage.getItem(KEY)
-        ||
-        "blue"
-    )
+    return loadTheme()
 }
 
 export function setTheme(theme){
-    localStorage.setItem(
-        KEY,
-        theme
-    )
+    saveTheme(theme)
 
     document.documentElement
     .setAttribute(

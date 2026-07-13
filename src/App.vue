@@ -4,6 +4,15 @@
 
     <Header />
 
+    <el-alert
+        v-if="restored"
+        title="已恢复上次实验数据"
+        type="success"
+        :closable="true"
+        @close="restored = false"
+        style="margin-bottom: 15px;"
+    />
+
     <div class="experiment-status" v-if="store.samples.length > 0">
         <span class="status-item">
             <span class="status-label">有效样本</span>
@@ -62,6 +71,7 @@ initTheme()
 
 import { ref, watch, onMounted } from 'vue'
 import { useSampleStore } from './store/sampleStore'
+import { loadSamples } from './storage/sampleStorage'
 
 import Header from './components/Header.vue'
 import RTParameter from './components/RTParameter.vue'
@@ -76,12 +86,13 @@ import { calculateBatch } from './core/BatchStatistics'
 import { analyzeSamples } from './core/analyzer/sampleAnalyzer'
 import { calculateRT, checkConcentrationDistribution } from './core/RTRecommendation'
 import { QUALITY_LEVEL, PENDING } from './config/qualityLevel'
-import { saveExperiment, loadExperiment, clearExperiment } from './utils/storage'
 import { getValidSamples } from './core/sample/sampleUtils'
 
 import { uiState, setLoading } from './store/uiState'
 
 const store = useSampleStore()
+
+const restored = ref(false)
 
 const summary = ref({
     totalCount:0,
@@ -153,29 +164,19 @@ function updateRTConfig(config){
 
 function handleClear(){
     store.clearSamples()
-    clearExperiment()
 }
 
 watch(() => store.dirty, () => {
     refreshAnalysis()
 })
 
-watch(() => store.samples, (value) => {
-    saveExperiment({
-        samples: value,
-        rtConfig: rtConfig.value
-    })
-}, { deep: true })
-
-onMounted(() => {
-    const saved = loadExperiment()
-    if(saved){
-        store.importSamples(saved.samples || [])
-        rtConfig.value = saved.rtConfig || {
-            maxRNA:1000,
-            minRNA:10,
-            maxVolume:12
-        }
+onMounted(async () => {
+    const samples = await loadSamples()
+    await store.loadState()
+    
+    if(samples.length > 0){
+        store.importSamples(samples)
+        restored.value = true
     }
 })
 

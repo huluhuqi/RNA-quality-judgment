@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { saveSamples, loadSamples, clearSamplesStorage } from "@/storage/sampleStorage";
+import { saveSettings, loadSettings } from "@/storage/settingStorage";
 
 export const useSampleStore = defineStore(
     "sample",
@@ -61,6 +63,7 @@ export const useSampleStore = defineStore(
 
         function clearSamples() {
             samples.value = [];
+            clearSamplesStorage();
             update();
         }
 
@@ -76,8 +79,25 @@ export const useSampleStore = defineStore(
             return samples.value.filter((item) => !item.ignored);
         });
 
-        function update() {
+        async function update() {
             dirty.value++;
+            await saveSamples(samples.value);
+            await saveSettings({
+                parameters: parameters.value,
+                info: experimentInfo.value
+            });
+        }
+
+        async function loadState() {
+            const settings = await loadSettings();
+            if (settings) {
+                if (settings.parameters) {
+                    parameters.value = { ...parameters.value, ...settings.parameters };
+                }
+                if (settings.info) {
+                    experimentInfo.value = { ...experimentInfo.value, ...settings.info };
+                }
+            }
         }
 
         function createTemplateId() {
@@ -100,7 +120,8 @@ export const useSampleStore = defineStore(
             removeSample,
             ignoreSample,
             clearSamples,
-            updateSample
+            updateSample,
+            loadState
         };
     }
 );

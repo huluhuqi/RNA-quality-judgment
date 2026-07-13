@@ -1,31 +1,31 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { shallowRef, computed } from "vue";
 import { saveSamples, loadSamples, clearSamplesStorage } from "@/storage/sampleStorage";
 import { saveSettings, loadSettings } from "@/storage/settingStorage";
 
 export const useSampleStore = defineStore(
     "sample",
     () => {
-        const samples = ref([]);
+        const samples = shallowRef([]);
 
-        const experimentInfo = ref({
+        const experimentInfo = shallowRef({
             name: "",
             operator: "",
             date: ""
         });
 
-        const parameters = ref({
+        const parameters = shallowRef({
             extractionMethod: "柱式提取",
             rtVolume: 20,
             targetAmount: 1000
         });
 
-        const dirty = ref(0);
+        const dirty = shallowRef(0);
 
-        const analysisResult = ref(null);
+        const analysisResult = shallowRef(null);
 
         function addSample(sample) {
-            samples.value.push({
+            const newSample = {
                 id: Date.now(),
                 templateId: sample.templateId || createTemplateId(),
                 concentration: sample.concentration ?? "",
@@ -33,7 +33,8 @@ export const useSampleStore = defineStore(
                 a260230: sample.a260230 ?? "",
                 ignored: false,
                 analysis: null
-            });
+            };
+            samples.value = [...samples.value, newSample];
             update();
         }
 
@@ -54,10 +55,12 @@ export const useSampleStore = defineStore(
         }
 
         function ignoreSample(id) {
-            const item = samples.value.find((x) => x.id === id);
-            if (item) {
-                item.ignored = !item.ignored;
-            }
+            samples.value = samples.value.map(item => {
+                if (item.id === id) {
+                    return { ...item, ignored: !item.ignored };
+                }
+                return item;
+            });
             update();
         }
 
@@ -68,11 +71,13 @@ export const useSampleStore = defineStore(
         }
 
         function updateSample(id, data) {
-            const item = samples.value.find((x) => x.id === id);
-            if (item) {
-                Object.assign(item, data);
-                update();
-            }
+            samples.value = samples.value.map(item => {
+                if (item.id === id) {
+                    return { ...item, ...data };
+                }
+                return item;
+            });
+            update();
         }
 
         const validSamples = computed(() => {

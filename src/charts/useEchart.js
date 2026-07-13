@@ -1,30 +1,47 @@
-import { onMounted, onBeforeUnmount, watch, nextTick } from "vue";
+import { onMounted, onBeforeUnmount, watch, nextTick, getCurrentInstance } from "vue";
 import * as echarts from "echarts";
 
 export function useEchart(el, option) {
     let chart = null;
+    let resizeTimer = null;
 
     function init() {
         if (!el.value) return;
+        if (chart) return;
 
         chart = echarts.init(el.value);
-        chart.setOption(option.value);
+        chart.setOption(option.value || {});
     }
 
     function resize() {
-        chart?.resize();
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            chart?.resize();
+        }, 100);
     }
 
     function dispose() {
-        chart?.dispose();
-        chart = null;
+        if (chart) {
+            chart.dispose();
+            chart = null;
+        }
+        if (resizeTimer) {
+            clearTimeout(resizeTimer);
+            resizeTimer = null;
+        }
     }
 
     function refresh() {
         if (!chart) {
             init();
         } else {
-            chart.setOption(option.value, true);
+            chart.setOption(option.value || {}, true);
+        }
+    }
+
+    function setOption(opt, notMerge = false) {
+        if (chart) {
+            chart.setOption(opt, notMerge);
         }
     }
 
@@ -50,7 +67,7 @@ export function useEchart(el, option) {
     });
 
     watch(option, (value) => {
-        if (chart) {
+        if (chart && value) {
             chart.setOption(value, true);
         }
     }, { deep: true });
@@ -59,6 +76,8 @@ export function useEchart(el, option) {
         resize,
         refresh,
         dispose,
-        getDataURL
+        setOption,
+        getDataURL,
+        getInstance: () => chart
     };
 }

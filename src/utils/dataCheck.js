@@ -7,6 +7,8 @@
 
 import { RT_STATUS } from "@/constants/rtStatus";
 
+const isDev = import.meta.env?.DEV ?? false;
+
 /**
  * 检查RT数据一致性
  *
@@ -122,7 +124,7 @@ export function logRTConsistency(samples) {
     const errors = safeCheckRTConsistency(samples);
     if (errors.length > 0) {
         console.error(`[RT一致性检查] 发现 ${errors.length} 个异常:`, errors);
-    } else {
+    } else if (isDev) {
         console.log(`[RT一致性检查] 通过，共 ${samples.length} 个样本`);
     }
     return errors;

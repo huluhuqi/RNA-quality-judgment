@@ -81,9 +81,16 @@ function onCellChange(row){
 
 function handleImport(samples) {
     try {
-        saveSnapshot()
-        store.importSamples(samples)
-        store.analyzeAll()
+        saveSnapshot();
+        const largeCount = samples.length > 500;
+        if (largeCount) {
+            ElMessage.info(`正在导入 ${samples.length} 个样本，请稍候...`);
+        }
+        store.importSamples(samples);
+        store.analyzeAll();
+        if (largeCount) {
+            ElMessage.success(`${samples.length} 个样本导入完成`);
+        }
     } catch (e) {
         handleError(e, ErrorType.FILE_IMPORT, 'RNA数据导入')
         ElMessage.error('数据导入失败，请检查数据格式')

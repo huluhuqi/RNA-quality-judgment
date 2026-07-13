@@ -13,26 +13,22 @@ import { normalizeSamples } from '../core/sampleModel'
  */
 
 export function saveExperiment(data){
+    try {
+        const toSave = {
+            ...data,
+            samples: (data.samples || []).map(item => {
+                const { result, ...rest } = item
+                return rest
+            })
+        }
 
-
-    const toSave = {
-        ...data,
-        samples: (data.samples || []).map(item => {
-            const { result, ...rest } = item
-            return rest
-        })
+        localStorage.setItem(
+            KEY,
+            JSON.stringify(toSave)
+        )
+    } catch (e) {
+        console.error("实验数据保存失败", e)
     }
-
-
-    localStorage.setItem(
-
-        KEY,
-
-        JSON.stringify(toSave)
-
-    )
-
-
 }
 
 
@@ -43,32 +39,25 @@ export function saveExperiment(data){
  */
 
 export function loadExperiment(){
+    try {
+        const data = localStorage.getItem(KEY)
 
+        if(!data){
+            return null
+        }
 
-    const data =
-    localStorage.getItem(KEY)
+        const parsed = JSON.parse(data)
 
+        // 兼容旧数据：统一 sample 字段结构
+        if(parsed && Array.isArray(parsed.samples)){
+            parsed.samples = normalizeSamples(parsed.samples)
+        }
 
-
-    if(!data){
-
+        return parsed
+    } catch (e) {
+        console.error("实验数据读取失败", e)
         return null
-
     }
-
-
-    const parsed = JSON.parse(data)
-
-
-    // 兼容旧数据：统一 sample 字段结构
-    if(parsed && Array.isArray(parsed.samples)){
-        parsed.samples = normalizeSamples(parsed.samples)
-    }
-
-
-    return parsed
-
-
 }
 
 

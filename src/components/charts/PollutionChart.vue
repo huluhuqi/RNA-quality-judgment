@@ -26,9 +26,12 @@ const option = computed(() => {
     }));
 
     const textColor = getChartTextColor(theme.mode);
+    const sampleCount = chartSamples.length;
+    const largeMode = sampleCount > 500;
 
     return {
         ...getChartTheme(theme.mode),
+        animation: !largeMode,
         tooltip: {
             trigger: "axis",
             axisPointer: {

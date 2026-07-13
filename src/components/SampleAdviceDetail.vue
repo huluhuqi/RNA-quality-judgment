@@ -1,6 +1,7 @@
 <script setup>
 
 import { computed } from 'vue'
+import { getTemplateVolumeDisplay, getRTStatus, getTargetRNA } from '@/utils/rtHelper'
 
 const props = defineProps({
   sample: {
@@ -28,17 +29,10 @@ const experimentAdvice = computed(() => {
   return analysis.value.advice?.experiment || []
 })
 
-const rtStatus = computed(() => {
-  return analysis.value.rt?.status || ''
-})
-
-const rtInputVolume = computed(() => {
-  return analysis.value.rt?.inputVolume || null
-})
-
-const rtRecommendation = computed(() => {
-  return analysis.value.rt?.recommendation || ''
-})
+// RT数据只从 sample.rt 读取（唯一数据源），禁止从 analysis.rt 读取
+const rtTemplateVolume = computed(() => getTemplateVolumeDisplay(props.sample))
+const rtStatus = computed(() => getRTStatus(props.sample))
+const rtTargetRNA = computed(() => getTargetRNA(props.sample))
 
 function getPollutionTagType(type) {
   if (type.includes('严重') || type.includes('异常')) {
@@ -50,11 +44,11 @@ function getPollutionTagType(type) {
   return 'info'
 }
 
-function getRTTagType(status) {
+function getRTStatusType(status) {
   switch (status) {
-    case '推荐': return 'success'
-    case '需要稀释': return 'warning'
-    case '浓度不足': return 'danger'
+    case '正常': return 'success'
+    case '超过最大模板体积': return 'warning'
+    case '无法计算': return 'info'
     default: return 'info'
   }
 }
@@ -116,22 +110,20 @@ function getRTTagType(status) {
     </div>
 
     <div class="advice-section">
-      <h3>RT模板推荐</h3>
-      <div v-if="rtRecommendation">
-        <div class="rt-status">
-          <el-tag :type="getRTTagType(rtStatus)" size="small">
-            {{ rtStatus }}
-          </el-tag>
-          <span v-if="rtInputVolume" class="rt-volume-info">
-            建议加入: {{ rtInputVolume }} μL
-          </span>
+      <h3>RT模板分析</h3>
+      <div class="rt-info">
+        <div class="rt-item">
+          <span>推荐RNA投入量</span>
+          <b>{{ rtTargetRNA }} ng</b>
         </div>
-        <div class="rt-recommendation">
-          {{ rtRecommendation }}
+        <div class="rt-item">
+          <span>模板建议体积</span>
+          <b>{{ rtTemplateVolume }}</b>
         </div>
-      </div>
-      <div v-else class="empty-text">
-        缺少RNA浓度数据，无法计算RT模板量
+        <div class="rt-item">
+          <span>状态</span>
+          <el-tag :type="getRTStatusType(rtStatus)" size="small">{{ rtStatus }}</el-tag>
+        </div>
       </div>
     </div>
   </div>
@@ -237,6 +229,34 @@ function getRTTagType(status) {
   color: var(--text-light, #909399);
   font-size: 13px;
   padding: 8px 0;
+}
+
+.rt-info{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rt-item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border, #e4e7ed);
+}
+
+.rt-item:last-child{
+  border-bottom: none;
+}
+
+.rt-item span{
+  font-size: 13px;
+  color: var(--text-secondary, #606266);
+}
+
+.rt-item b{
+  font-size: 14px;
+  color: var(--text-main, #303133);
 }
 
 .rt-status{

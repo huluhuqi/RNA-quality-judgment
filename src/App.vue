@@ -156,10 +156,9 @@ function refreshAnalysis(){
                 const conc = sample.raw?.concentration ?? sample.concentration
                 const result = calculateTemplateVolume(conc, targetRNA)
                 sample.rt = {
-                    templateVolume: result.value,
-                    status: result.status,
-                    reason: result.reason,
-                    recommendedRNA: targetRNA
+                    targetRNA,
+                    templateVolume: result.templateVolume,
+                    status: result.status
                 }
             })
 

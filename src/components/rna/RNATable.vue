@@ -7,7 +7,7 @@ import SampleAdviceDetail from '../SampleAdviceDetail.vue';
 import { getQualityLabel } from '@/config/qualityLevel';
 import { saveHistory } from '@/utils/historyManager';
 import { isIgnored } from '@/utils/sampleFilter';
-import { calculateTemplateVolume } from '@/analysis/rt/templateVolumeCalculator';
+import { getTemplateVolumeDisplay } from '@/utils/rtHelper';
 
 const props = defineProps({
     samples: {
@@ -72,20 +72,7 @@ function getRTTagType(status) {
 }
 
 function getTemplateVolume(sample) {
-    if (sample.rt?.templateVolume !== null && sample.rt?.templateVolume !== undefined) {
-        return sample.rt.templateVolume + " μL";
-    }
-
-    // 兜底计算
-    const concentration = sample.raw?.concentration ?? sample.concentration;
-    const targetRNA = sample.rt?.recommendedRNA || 100;
-    const result = calculateTemplateVolume(concentration, targetRNA);
-
-    if (result.value === null) {
-        return "无法计算";
-    }
-
-    return result.value + " μL";
+    return getTemplateVolumeDisplay(sample);
 }
 
 </script>

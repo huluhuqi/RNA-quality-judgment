@@ -14,7 +14,7 @@ export function createExportData(samples, experiment) {
             quality: sample.analysis?.quality,
             pollution: sample.analysis?.pollution,
             advice: sample.analysis?.advice,
-            rt: sample.rt
+            rt: sample.rtConfig || sample.rt
         })),
         summary: {
             total: samples.length,

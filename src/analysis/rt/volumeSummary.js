@@ -12,8 +12,11 @@
  */
 export function summarizeVolume(samples = []) {
     const volumes = samples
-        .filter(s => s.rt?.templateVolume !== null && s.rt?.templateVolume !== undefined)
-        .map(s => s.rt.templateVolume);
+        .filter(s => {
+            const rt = s.rtConfig || s.rt;
+            return rt?.templateVolume !== null && rt?.templateVolume !== undefined;
+        })
+        .map(s => (s.rtConfig || s.rt).templateVolume);
 
     if (volumes.length === 0) {
         return null;

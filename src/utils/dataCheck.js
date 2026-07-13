@@ -25,7 +25,7 @@ export function checkRTConsistency(samples = []) {
     const errors = [];
 
     samples.forEach((sample, index) => {
-        const rt = sample.rt;
+        const rt = sample.rtConfig || sample.rt;
         if (!rt) {
             errors.push({
                 index,

@@ -158,7 +158,7 @@ function refreshAnalysis(){
             validSamples.forEach(sample => {
                 const conc = sample.raw?.concentration ?? sample.concentration
                 const result = calculateTemplateVolume(conc, targetRNA, maxTemplateVolume)
-                sample.rt = {
+                sample.rtConfig = {
                     targetRNA,
                     templateVolume: result.templateVolume,
                     maxTemplateVolume,
@@ -166,8 +166,10 @@ function refreshAnalysis(){
                     statusCode: result.statusCode,
                     statusText: result.statusText,
                     suggestion: result.suggestion,
-                    requiredConcentration: result.requiredConcentration
+                    requiredConcentration: result.requiredConcentration,
+                    calculatedAt: Date.now()
                 }
+                delete sample.rt
             })
 
             store.samples = [...data]

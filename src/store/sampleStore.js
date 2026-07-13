@@ -102,11 +102,11 @@ export const useSampleStore = defineStore("sample", () => {
     function analyzeAll() {
         samples.value = samples.value.map(sample => {
             const analysis = analyzeSample(sample);
-            const rt = calculateSampleRT(sample, 100, 12);
+            const rtConfig = calculateSampleRT(sample, 100, 12);
             return {
                 ...sample,
                 analysis,
-                rt
+                rtConfig
             };
         });
         update();

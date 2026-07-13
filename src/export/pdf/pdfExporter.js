@@ -110,21 +110,22 @@ export function exportPDF(data, charts = {}) {
     pdf.setFontSize(11);
     pdf.setFont("normal");
     const firstSample = report.samples[0];
-    if (firstSample?.rt) {
-        pdf.text(`RNA投入量: ${firstSample.rt.targetRNA || ""} ng`, marginLeft, y);
+    const rt = firstSample?.rtConfig || firstSample?.rt;
+    if (rt) {
+        pdf.text(`RNA投入量: ${rt.targetRNA || ""} ng`, marginLeft, y);
         y += 7;
-        pdf.text(`RT模板体积: ${firstSample.rt.templateVolume !== null && firstSample.rt.templateVolume !== undefined ? firstSample.rt.templateVolume + " μL" : "无法配置"}`, marginLeft, y);
+        pdf.text(`RT模板体积: ${rt.templateVolume !== null && rt.templateVolume !== undefined ? rt.templateVolume + " μL" : "无法配置"}`, marginLeft, y);
         y += 7;
-        pdf.text(`RT补水体积: ${firstSample.rt.waterVolume !== null && firstSample.rt.waterVolume !== undefined ? firstSample.rt.waterVolume + " μL" : "无法配置"}`, marginLeft, y);
+        pdf.text(`RT补水体积: ${rt.waterVolume !== null && rt.waterVolume !== undefined ? rt.waterVolume + " μL" : "无法配置"}`, marginLeft, y);
         y += 7;
-        pdf.text(`状态: ${firstSample.rt.statusText || ""}`, marginLeft, y);
+        pdf.text(`状态: ${rt.statusText || ""}`, marginLeft, y);
         y += 7;
-        if (firstSample.rt.suggestion) {
-            pdf.text(`建议: ${firstSample.rt.suggestion}`, marginLeft, y);
+        if (rt.suggestion) {
+            pdf.text(`建议: ${rt.suggestion}`, marginLeft, y);
             y += 7;
         }
-        if (firstSample.rt.requiredConcentration !== null && firstSample.rt.requiredConcentration !== undefined) {
-            pdf.text(`最低推荐浓度: ${firstSample.rt.requiredConcentration} ng/μL`, marginLeft, y);
+        if (rt.requiredConcentration !== null && rt.requiredConcentration !== undefined) {
+            pdf.text(`最低推荐浓度: ${rt.requiredConcentration} ng/μL`, marginLeft, y);
             y += 7;
         }
     } else {

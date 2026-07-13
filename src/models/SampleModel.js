@@ -1,6 +1,11 @@
 import { createRTResult } from "./rtModel";
 
+/**
+ * 标准化样本数据
+ * 兼容旧格式，统一输出到新格式
+ */
 export function normalizeSample(data) {
+    const rtData = data.rtConfig || data.rt || createRTResult();
     return {
         id: data.id || crypto.randomUUID(),
         raw: {
@@ -13,11 +18,16 @@ export function normalizeSample(data) {
             ignored: false
         },
         analysis: null,
-        rt: createRTResult()
+        rtConfig: rtData
     };
 }
 
+/**
+ * 创建标准样本对象
+ * 字段命名：2026-07 最终冻结版
+ */
 export function createSample(data = {}) {
+    const rtData = data.rtConfig || data.rt || createRTResult();
     return {
         id: data.id || crypto.randomUUID(),
         raw: {
@@ -46,15 +56,15 @@ export function createSample(data = {}) {
             pollution: data.analysis?.pollution || null,
             advice: data.analysis?.advice || null
         },
-        rt: {
-            targetRNA: data.rt?.targetRNA || null,
-            templateVolume: data.rt?.templateVolume || null,
-            maxTemplateVolume: data.rt?.maxTemplateVolume || 12,
-            waterVolume: data.rt?.waterVolume || null,
-            statusCode: data.rt?.statusCode || "",
-            statusText: data.rt?.statusText || "",
-            suggestion: data.rt?.suggestion || "",
-            requiredConcentration: data.rt?.requiredConcentration || null
+        rtConfig: {
+            targetRNA: rtData.targetRNA || null,
+            templateVolume: rtData.templateVolume !== undefined ? rtData.templateVolume : null,
+            maxTemplateVolume: rtData.maxTemplateVolume || 12,
+            waterVolume: rtData.waterVolume !== undefined ? rtData.waterVolume : null,
+            statusCode: rtData.statusCode || "",
+            statusText: rtData.statusText || "",
+            suggestion: rtData.suggestion || "",
+            requiredConcentration: rtData.requiredConcentration !== undefined ? rtData.requiredConcentration : null
         },
         status: {
             ignored: data.status?.ignored || data.ignored || false,
@@ -81,4 +91,11 @@ export function getSampleA260280(sample) {
 
 export function getSampleA260230(sample) {
     return sample.raw?.a260230 ?? sample.a260230 ?? null;
+}
+
+/**
+ * 获取 RT 配置（兼容旧字段 rt）
+ */
+export function getSampleRTConfig(sample) {
+    return sample?.rtConfig || sample?.rt || createRTResult();
 }

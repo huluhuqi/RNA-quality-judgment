@@ -44,27 +44,26 @@ export function createSample(data = {}){
             String(data.id ?? ""),
 
 
+        // 空值保留 null，不转为0，避免质量判断将"未检测"误判为"0值不合格"
         concentration:
-            Number(data.concentration ?? 0),
+            toNullableNumber(data.concentration),
 
 
         // 兼容旧字段 a280 / A260_280
         a260280:
-            Number(
+            toNullableNumber(
                 data.a260280
                 ?? data.a280
                 ?? data.A260_280
-                ?? 0
             ),
 
 
         // 兼容旧字段 a230 / A260_230
         a260230:
-            Number(
+            toNullableNumber(
                 data.a260230
                 ?? data.a230
                 ?? data.A260_230
-                ?? 0
             ),
 
 
@@ -103,5 +102,24 @@ export function normalizeSamples(samples = []){
         item => createSample(item)
     )
 
+
+}
+
+
+/**
+ * 空值保留 null，有效值转 Number
+ *
+ * null/undefined/"" → null
+ * 数字/数字字符串 → Number
+ */
+function toNullableNumber(value) {
+
+    if (value === null || value === undefined || value === "") {
+        return null;
+    }
+
+    const num = Number(value);
+
+    return isNaN(num) ? null : num;
 
 }

@@ -1,13 +1,13 @@
 /**
  * RNA质量分析统一入口
  *
- * 输出结构与原 RNAQuality.js 完全一致：
- *   { quality, pollution, suggestion, pollutionType, diagnosis }
+ * 输出结构：
+ *   { quality, qualityScore, qualityDetail, pollution, suggestion, pollutionType, diagnosis }
  *
  * 保持原函数签名 analyzeRNA(sample, extractionMethod, application)，
  * 调用方无需修改。
  */
-import { judgeQuality } from "./qualityJudge";
+import { judgeQuality, analyzeQuality } from "./qualityJudge";
 import { judgePollution } from "./pollutionJudge";
 import { buildSuggestion } from "./suggestionBuilder";
 
@@ -15,14 +15,14 @@ import { buildSuggestion } from "./suggestionBuilder";
 export function analyzeRNA(sample, extractionMethod, application){
 
 
-    const quality = judgeQuality(sample, application);
+    const qualityResult = analyzeQuality(sample, application);
 
 
     const pollution = judgePollution(sample, extractionMethod);
 
 
     const suggestion = buildSuggestion(
-        quality,
+        qualityResult.quality,
         pollution,
         application,
         extractionMethod
@@ -30,7 +30,10 @@ export function analyzeRNA(sample, extractionMethod, application){
 
 
     return {
-        quality,
+        quality: qualityResult.quality,
+        qualityScore: qualityResult.score,
+        qualityDetail: qualityResult.detail,
+        riskMessage: qualityResult.riskMessage,
         pollution: pollution.pollutionText,
         suggestion,
         pollutionType: pollution.pollutionType,

@@ -34,6 +34,14 @@ RNA质量评级
 {{getQC(QUALITY_LEVEL.POOR.value) + getQC(QUALITY_LEVEL.FAIL.value)}} 个
 </p>
 
+<p
+v-if="getQC('pending') > 0"
+class="pending-text"
+>
+待检测：
+{{getQC('pending')}} 个（缺少A260/280）
+</p>
+
 </div>
 
 </el-card>
@@ -95,6 +103,11 @@ const qualityTag = computed(()=>{
             var(--card-quality-from),
             var(--card-quality-to)
         );
+}
+
+.pending-text{
+    color:var(--text-secondary, #909399);
+    font-size:13px;
 }
 
 </style>

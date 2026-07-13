@@ -11,10 +11,13 @@
           :key="item.type"
           class="pollution-item"
         >
-          <el-tag :type="item.level === '严重' ? 'danger' : 'warning'">
-            {{ item.level }}
+          <el-tag :type="getPollutionTagType(item.level)">
+            {{ getPollutionLevelLabel(item.level) }}
           </el-tag>
-          <span class="pollution-text">{{ item.text }}</span>
+          <div class="pollution-content">
+            <span class="pollution-type">{{ item.type }}</span>
+            <span class="pollution-text">{{ item.reason || item.text }}</span>
+          </div>
         </div>
       </div>
       <div v-else class="empty-text">
@@ -24,7 +27,22 @@
 
     <div class="advice-section">
       <h3>提取过程问题分析</h3>
-      <div v-if="extraction.length">
+      <div v-if="extractionProblem.length">
+        <div
+          v-for="(item, idx) in extractionProblem"
+          :key="idx"
+          class="problem-item"
+        >
+          <div class="problem-header">
+            <el-tag type="warning">{{ item.problem }}</el-tag>
+          </div>
+          <div class="problem-detail">
+            <p><strong>可能步骤：</strong>{{ item.step }}</p>
+            <p><strong>优化建议：</strong>{{ item.suggestion }}</p>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="extraction.length">
         <el-collapse>
           <el-collapse-item
             v-for="(item, idx) in extraction"
@@ -79,7 +97,10 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  sample: Object
+  sample: {
+    type: Object,
+    default: () => ({})
+  }
 })
 
 const advice = computed(() => {
@@ -94,9 +115,45 @@ const extraction = computed(() => {
   return advice.value.extraction || []
 })
 
+const extractionProblem = computed(() => {
+  return advice.value.extractionProblem || []
+})
+
 const suggestion = computed(() => {
   return props.sample?.result?.suggestion || ''
 })
+
+function getPollutionTagType(level) {
+  switch(level) {
+    case 'high':
+    case '严重':
+      return 'danger'
+    case 'medium':
+    case '轻度':
+      return 'warning'
+    case 'info':
+      return 'info'
+    case 'normal':
+      return 'success'
+    default:
+      return 'info'
+  }
+}
+
+function getPollutionLevelLabel(level) {
+  switch(level) {
+    case 'high':
+      return '高风险'
+    case 'medium':
+      return '中等'
+    case 'info':
+      return '提示'
+    case 'normal':
+      return '正常'
+    default:
+      return level
+  }
+}
 
 </script>
 
@@ -130,7 +187,7 @@ const suggestion = computed(() => {
 
 .pollution-item{
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   margin: 8px 0;
   padding: 8px 12px;
@@ -139,9 +196,43 @@ const suggestion = computed(() => {
   border: 1px solid var(--border, #e4e7ed);
 }
 
-.pollution-text{
+.pollution-content{
+  flex: 1;
+}
+
+.pollution-type{
+  display: block;
+  font-weight: 600;
   font-size: 13px;
   color: var(--text-main, #303133);
+}
+
+.pollution-text{
+  font-size: 12px;
+  color: var(--text-secondary, #606266);
+  line-height: 1.5;
+}
+
+.problem-item{
+  margin: 8px 0;
+  padding: 12px;
+  background: var(--card-color, #ffffff);
+  border-radius: 4px;
+  border: 1px solid var(--border, #e4e7ed);
+}
+
+.problem-header{
+  margin-bottom: 8px;
+}
+
+.problem-detail{
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-main, #303133);
+}
+
+.problem-detail p{
+  margin: 4px 0;
 }
 
 .empty-text{

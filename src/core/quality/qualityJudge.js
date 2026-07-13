@@ -1,70 +1,65 @@
 /**
  * RNA质量评级
  *
- * 保留原有基于下游应用配置的评分逻辑：
- *   - 有应用配置时按 requirements 评分
- *   - 无应用配置时回退到 QUALITY_STANDARD
+ * 第7步：升级为新质量评分算法
+ * 
+ * 评分规则（总分100分）：
+ *   - A260/280：40分权重
+ *   - A260/230：40分权重
+ *   - 综合风险：20分权重
+ *
+ * 根据下游实验用途自动调整阈值：
+ *   - normal: 常规RT
+ *   - qpcr:   RT-qPCR
+ *   - rnaseq: RNA-seq
+ *   - smallRNA: 小核酸实验
  */
-import { QUALITY_STANDARD } from "./constants";
-import { downstreamApplications } from "../../config/downstreamApplication";
-import { QUALITY_LEVEL, PENDING } from "../../config/qualityLevel";
+import { calculateRNAQuality } from "./rnaQualityScore";
+import { PENDING } from "../../config/qualityLevel";
 
 
-export function judgeQuality(sample, application){
-
+export function judgeQuality(sample, application) {
 
     const a280 = parseFloat(sample.a260280);
-    const a230 = parseFloat(sample.a260230);
 
-    const hasA280 = !isNaN(a280);
-
-
-    // 无浓度比值
-    if(!hasA280){
+    if (isNaN(a280)) {
         return PENDING.value;
     }
 
+    const result = calculateRNAQuality(sample, application);
 
-    const appConfig = downstreamApplications[application] || downstreamApplications.qPCR;
-    const req = appConfig.requirements;
+    return result.levelValue;
 
-    const [min280, max280] = req.a280;
-    const req230 = req.a230;
+}
 
-    let score = 0;
-    let total = 0;
 
-    if(hasA280){
-        total++;
-        if(a280 >= min280 && a280 <= max280){
-            score++;
-        } else if(a280 >= min280 - 0.1 && a280 <= max280 + 0.1){
-            score += 0.5;
-        }
+/**
+ * 获取完整质量分析结果（包含评分、等级、详情、风险提示）
+ *
+ * @param {Object} sample 样本数据
+ * @param {string} application 下游实验用途
+ * @returns {Object} 完整质量分析结果
+ */
+export function analyzeQuality(sample, application) {
+
+    const a280 = parseFloat(sample.a260280);
+
+    if (isNaN(a280)) {
+        return {
+            quality: PENDING.value,
+            score: null,
+            detail: ["未检测A260/280，无法判断"],
+            riskMessage: "缺少关键检测数据"
+        };
     }
 
-    const hasA230 = !isNaN(a230);
-    if(hasA230){
-        total++;
-        if(a230 >= req230){
-            score++;
-        } else if(a230 >= req230 - 0.3){
-            score += 0.5;
-        }
-    }
+    const result = calculateRNAQuality(sample, application);
 
-    const ratio = score / total;
-
-    if(ratio >= 1){
-        return QUALITY_LEVEL.EXCELLENT.value;
-    }
-    if(ratio >= 0.75){
-        return QUALITY_LEVEL.GOOD.value;
-    }
-    if(ratio >= 0.5){
-        return QUALITY_LEVEL.WARNING.value;
-    }
-    return QUALITY_LEVEL.POOR.value;
-
+    return {
+        quality: result.levelValue,
+        score: result.score,
+        detail: result.detail,
+        riskMessage: result.riskMessage
+    };
 
 }

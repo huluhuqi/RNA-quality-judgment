@@ -88,6 +88,14 @@ export function judgePollution(sample, extractionMethod){
     }
 
 
+    /*
+    A260/230未检测时，提示盐类污染无法评估
+    */
+    if(hasA280 && !hasA230){
+        pollutionList.push("未检测A260/230，盐类污染风险无法评估");
+    }
+
+
     // 污染文本
     let pollutionText = "";
     if(pollutionList.length === 0){

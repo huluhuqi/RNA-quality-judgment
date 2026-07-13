@@ -14,6 +14,7 @@
 import { judgePollution } from "./pollutionJudge"
 import { getExtractionAdvice } from "./extractionAdvice"
 import { getConcentrationAdvice } from "./concentrationAdvice"
+import { analyzeExtractionProblem } from "./extractionProblemAnalyzer"
 
 
 /**
@@ -31,6 +32,11 @@ function generateFallbackExtraction(sample){
 
     const a280 = Number(sample.a260280);
     const a230 = Number(sample.a260230);
+
+    // 没有任何纯度数据时不生成兜底建议
+    if(sample.a260280 == null && sample.a260230 == null){
+        return result;
+    }
 
     if(!isNaN(a280) && a280 && a280 < 1.8){
         result.push({
@@ -77,26 +83,39 @@ function generateFallbackExtraction(sample){
         });
     }
 
-    // 若两项指标均无异常但样本质量较差，给出通用建议
+    // 若两项指标均无异常，不生成兜底建议
+    // 仅在实际有异常但未匹配到具体分类时给出通用建议
     if(result.length === 0){
-        result.push({
-            type: "general",
-            level: "轻度",
-            title: "RNA质量异常，建议检查提取流程",
-            cause: [
-                "RNA质量较差但具体指标未明显异常",
-                "可能存在复合污染或操作误差"
-            ],
-            step: [
-                "检查整体提取流程",
-                "确认样本保存条件"
-            ],
-            solution: [
-                "重新提取RNA",
-                "优化提取条件",
-                "必要时进行RNA纯化"
-            ]
-        });
+
+        const hasAbnormal280 =
+            sample.a260280 != null
+            && (a280 < 1.8 || a280 > 2.2);
+
+        const hasAbnormal230 =
+            sample.a260230 != null
+            && a230 < 1.8;
+
+        if(hasAbnormal280 || hasAbnormal230){
+            result.push({
+                type: "general",
+                level: "轻度",
+                title: "RNA质量异常，建议检查提取流程",
+                cause: [
+                    "RNA质量较差但具体指标未明显异常",
+                    "可能存在复合污染或操作误差"
+                ],
+                step: [
+                    "检查整体提取流程",
+                    "确认样本保存条件"
+                ],
+                solution: [
+                    "重新提取RNA",
+                    "优化提取条件",
+                    "必要时进行RNA纯化"
+                ]
+            });
+        }
+
     }
 
     return result;
@@ -116,6 +135,9 @@ function generateFallbackExtraction(sample){
 export function generateAdvice(sample, method, rtConfig = {}){
 
     const pollution = judgePollution(sample);
+
+    const extractionProblem = analyzeExtractionProblem({ ...sample, extractionMethod: method }, pollution);
+
     let extraction = getExtractionAdvice(method, pollution);
     let extractionSource = "confirmed";
 
@@ -136,7 +158,8 @@ export function generateAdvice(sample, method, rtConfig = {}){
     return {
         pollution,
         extraction,
-        concentration
+        concentration,
+        extractionProblem
     };
 
 }

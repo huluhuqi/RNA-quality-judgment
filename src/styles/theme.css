@@ -1,0 +1,132 @@
+:root{
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-color: #303133;
+    --text-secondary: #606266;
+    --text-light: #909399;
+    --border-color: #e4e7ed;
+    --primary-color: #409eff;
+    --primary-light: #66b1ff;
+    --success-color: #67c23a;
+    --warning-color: #e6a23c;
+    --danger-color: #f56c6c;
+    --chart-bg: #ffffff;
+    --chart-text: #303133;
+    --table-header-bg: #f5f7fa;
+    --input-bg: #ffffff;
+    --button-text: #ffffff;
+    --label-color: #606266;
+    --tag-bg: #ecf5ff;
+    --tag-text: #409eff;
+}
+
+.dark{
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-color: #ffffff;
+    --text-secondary: #a0a0a0;
+    --text-light: #6c6c6c;
+    --border-color: #3a3a3a;
+    --primary-color: #409eff;
+    --primary-light: #66b1ff;
+    --success-color: #67c23a;
+    --warning-color: #e6a23c;
+    --danger-color: #f56c6c;
+    --chart-bg: #1e1e1e;
+    --chart-text: #ffffff;
+    --table-header-bg: #2a2a2a;
+    --input-bg: #2a2a2a;
+    --button-text: #ffffff;
+    --label-color: #a0a0a0;
+    --tag-bg: #2d3a5a;
+    --tag-text: #66b1ff;
+}
+
+.page-container{
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+@media(max-width: 900px){
+    .page-container{
+        padding: 10px;
+    }
+}
+
+body{
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color .3s, color .3s;
+}
+
+.el-card{
+    background: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.el-card__header{
+    border-color: var(--border-color) !important;
+}
+
+.el-card__body{
+    color: var(--text-color) !important;
+}
+
+.el-form-item__label{
+    color: var(--label-color) !important;
+}
+
+.el-input__wrapper{
+    background-color: var(--input-bg) !important;
+}
+
+.el-input__inner{
+    color: var(--text-color) !important;
+}
+
+.el-select__wrapper{
+    background-color: var(--input-bg) !important;
+}
+
+.el-table{
+    background: var(--card-bg) !important;
+}
+
+.el-table th{
+    background-color: var(--table-header-bg) !important;
+    color: var(--text-secondary) !important;
+}
+
+.el-table td{
+    color: var(--text-color) !important;
+}
+
+.el-tag{
+    background-color: var(--tag-bg) !important;
+    color: var(--tag-text) !important;
+}
+
+.el-button--primary{
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light)) !important;
+    border: none !important;
+}
+
+::-webkit-scrollbar{
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track{
+    background: var(--card-bg);
+}
+
+::-webkit-scrollbar-thumb{
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background: var(--text-light);
+}

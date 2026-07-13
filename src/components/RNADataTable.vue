@@ -20,35 +20,71 @@ type="primary"
 新增样本
 </el-button>
 
-
 </div>
-
 
 </template>
 
 
 
-<!-- 粘贴输入框 -->
+<!-- 四窗格粘贴输入区 -->
+
+<div class="rna-input-grid">
+
+
+<div
+v-for="(column,index) in inputColumns"
+:key="index"
+class="input-box"
+>
+
+
+<div class="input-box-header">
+
+<el-select
+v-model="column.field"
+size="small"
+class="field-select"
+>
+
+
+<el-option
+
+v-for="item in getAvailableFields(
+column.field,
+selectedFields
+)"
+
+:key="item.value"
+
+:label="item.label"
+
+:value="item.value"
+
+/>
+
+
+</el-select>
+
+</div>
+
 
 <el-input
 
-v-model="pasteText"
+v-model="column.text"
 
 type="textarea"
 
-:rows="5"
+:rows="8"
 
-placeholder="
-请从Excel复制数据：
-
-模板ID  RNA浓度  A260/A280  A260/A230
-
-然后粘贴到这里
-"
-
-@paste="handlePaste"
+:placeholder="'请粘贴Excel单列数据'"
 
 />
+
+
+</div>
+
+
+</div>
 
 
 
@@ -64,9 +100,9 @@ type="success"
 
 
 <el-button
-@click="clearData"
+@click="clearPasteData"
 >
-清空
+清空输入
 </el-button>
 
 
@@ -75,316 +111,12 @@ type="success"
 
 
 
-
-<div class="table-wrapper">
-<div class="table-container">
-
-<el-table
-
-:data="tableData"
-
-row-key="id"
-
-:row-class-name="rowClass"
-
-border
-
-height="600"
-
-stripe
-
-style="min-width:1400px"
-
->
-
-<el-table-column
-type="expand"
-width="50"
->
-<template #default="{row}">
-<SampleAdviceDetail :sample="row" />
-</template>
-</el-table-column>
-
-
-
-<el-table-column
-label="模板ID"
-fixed="left"
-width="140"
->
-
-<template #default="scope">
-
-<el-input
-v-model="scope.row.id"
-@change="onCellChange(scope.row)"
+<RNATable
+:samples="tableData"
+@delete="handleTableDelete"
+@ignore="handleTableIgnore"
+@cell-change="onCellChange"
 />
-
-</template>
-
-</el-table-column>
-
-
-
-
-<el-table-column
-
-label="RNA浓度"
-
-sortable
-
-prop="concentration"
-
-width="120"
-
->
-
-<template #default="scope">
-
-<el-input-number
-
-v-model="scope.row.concentration"
-
-:controls="false"
-
-@change="onCellChange(scope.row)"
-
-/>
-
-
-</template>
-
-
-</el-table-column>
-
-
-
-
-
-
-<el-table-column
-
-label="A260/A280"
-
-sortable
-
-prop="a260280"
-
-width="130"
-
->
-
-<template #default="scope">
-
-<el-input-number
-
-v-model="scope.row.a260280"
-
-:controls="false"
-
-@change="onCellChange(scope.row)"
-
-/>
-
-
-</template>
-
-</el-table-column>
-
-
-
-
-
-
-
-<el-table-column
-
-label="A260/A230"
-
-sortable
-
-prop="a260230"
-
-width="130"
-
->
-
-<template #default="scope">
-
-
-<el-input-number
-
-v-model="scope.row.a260230"
-
-:controls="false"
-
-@change="onCellChange(scope.row)"
-
-/>
-
-
-</template>
-
-
-</el-table-column>
-
-
-
-
-
-
-<el-table-column
-label="RNA质量"
-width="100"
->
-
-
-<template #default="scope">
-
-
-<el-tag
-
-:type="
-getTagType(
-scope.row.result?.quality
-)
-"
->
-
-{{getQualityLabel(scope.row.result?.quality) || '无法判断'}}
-
-</el-tag>
-
-
-</template>
-
-
-</el-table-column>
-
-
-
-
-<el-table-column
-label="污染分析"
-width="260"
->
-
-
-<template #default="scope">
-
-
-<TextCell
-
-:text="
-scope.row.result?.pollution || ''
-"
-
-/>
-
-
-</template>
-
-
-</el-table-column>
-
-
-
-
-<el-table-column
-label="建议"
-width="300"
->
-
-
-<template #default="scope">
-
-
-<div class="short-text">
-<TextCell
-
-:text="
-scope.row.result?.suggestion || ''
-"
-
-/>
-</div>
-
-
-</template>
-
-
-</el-table-column>
-
-
-<el-table-column
-
-label="操作"
-
-width="180"
-
-fixed="right"
-
->
-
-
-<template #default="scope">
-
-<el-button-group>
-
-<el-button
-
-size="small"
-
-@click="toggleIgnore(scope.row)"
-
->
-
-{{
-
-scope.row.ignored
-
-?
-
-"恢复"
-
-:
-
-"忽略"
-
-}}
-
-</el-button>
-
-<el-button
-
-type="danger"
-
-size="small"
-
-@click="deleteRow(scope.$index)"
-
->
-
-删除
-
-</el-button>
-
-</el-button-group>
-
-</template>
-
-
-</el-table-column>
-
-
-
-
-</el-table>
-
-</div>
-</div>
-
 
 
 
@@ -396,16 +128,18 @@ size="small"
 
 
 
-
 <script setup>
 
+import {ref, computed} from 'vue'
 
-import {ref} from 'vue'
+import {
+getAvailableFields
+} from '../config/rnaInputFields'
 
-import {parsePasteData}
-
-from '../utils/excelImport'
-
+import {
+normalizeRNAData,
+checkDuplicateIds
+} from '../core/import/rnaDataNormalize'
 
 import {
 createSample,
@@ -414,10 +148,8 @@ normalizeSamples
 
 import {
 QUALITY_LEVEL,
-PENDING,
 getQualityLabel
 } from '../config/qualityLevel'
-
 
 import {
 saveHistory,
@@ -426,20 +158,58 @@ canUndo,
 clearHistory
 } from '../utils/historyManager'
 
-
 import TextCell
 from './TextCell.vue'
 
 import SampleAdviceDetail
 from './SampleAdviceDetail.vue'
 
+import RNATable
+from './rna/RNATable.vue'
 
 import {ElMessage} from 'element-plus'
 
 
+/**
+ * 四窗格输入列
+ *
+ * 每个窗格：{ field: 字段value, text: 粘贴文本 }
+ */
+const inputColumns = ref([
+
+    {
+        field: "templateId",
+        text: ""
+    },
+
+    {
+        field: "concentration",
+        text: ""
+    },
+
+    {
+        field: "a260280",
+        text: ""
+    },
+
+    {
+        field: "a260230",
+        text: ""
+    }
+
+]);
 
 
-const pasteText = ref('')
+/**
+ * 所有窗格已选字段列表（用于互斥）
+ */
+const selectedFields = computed(() => {
+
+    return inputColumns.value.map(
+        item => item.field
+    );
+
+});
 
 
 const tableData = ref([])
@@ -450,8 +220,73 @@ const emit = defineEmits([
 ])
 
 
-function handlePaste(e){
+/**
+ * 解析单列文本为字符串数组
+ */
+function parseColumn(text){
 
+    return text
+        .split(/\n|\r\n/)
+        .map(item => item.trim())
+        .filter(item => item !== "");
+
+}
+
+
+/**
+ * 将四窗格数据组合为样本数组
+ *
+ * 输出 templateId 字段，由 normalizeRNAData 统一处理
+ */
+function generateSamples(){
+
+    const columns = {};
+
+    inputColumns.value.forEach(item => {
+
+        columns[item.field] =
+            parseColumn(item.text);
+
+    });
+
+    const maxLength = Math.max(
+
+        ...Object.values(columns)
+            .map(arr => arr.length)
+
+    );
+
+    if(maxLength === 0 || maxLength === -Infinity){
+        return [];
+    }
+
+    const result = [];
+
+    for(let i = 0; i < maxLength; i++){
+
+        result.push({
+
+            templateId:
+                columns.templateId?.[i]
+                || "",
+
+            concentration:
+                columns.concentration?.[i]
+                || null,
+
+            a260280:
+                columns.a260280?.[i]
+                || null,
+
+            a260230:
+                columns.a260230?.[i]
+                || null
+
+        });
+
+    }
+
+    return result;
 
 }
 
@@ -472,128 +307,115 @@ function onCellChange(row){
 
 function importData(){
 
+    const rawData = generateSamples()
 
-const data = parsePasteData(
-    pasteText.value
-)
+    if(rawData.length === 0){
+        ElMessage.warning('未识别到有效数据，请先粘贴数据')
+        return
+    }
 
-if(data.length === 0){
-    ElMessage.warning('未识别到有效数据')
-    return
+    // 标准化：自动生成ID、清除空行、补齐缺失字段
+    const normalized = normalizeRNAData(rawData)
+
+    if(normalized.length === 0){
+        ElMessage.warning('数据均为空行，请检查输入内容')
+        return
+    }
+
+    // 重复ID检测
+    const duplicates = checkDuplicateIds(normalized)
+
+    if(duplicates.length > 0){
+        ElMessage.warning(`检测到${duplicates.length}个重复模板ID，请检查`)
+    }
+
+    // 统计自动生成ID数量（匹配 YYYYMMDD_XXX 格式）
+    const dateStr = (() => {
+        const d = new Date()
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, "0")
+        const day = String(d.getDate()).padStart(2, "0")
+        return `${y}${m}${day}`
+    })()
+    const autoIdPattern = new RegExp(`^${dateStr}_\\d{3}$`)
+    const autoIdCount = normalized.filter(item =>
+        autoIdPattern.test(item.templateId)
+    ).length
+
+    // 映射为 sampleModel 兼容格式（templateId → id）
+    const mapped = normalized.map(item => ({
+        id: item.templateId,
+        concentration: item.concentration,
+        a260280: item.a260280,
+        a260230: item.a260230
+    }))
+
+    saveSnapshot()
+
+    tableData.value.push(
+        ...normalizeSamples(mapped)
+    )
+
+    emit(
+        'update-data',
+        tableData.value
+    )
+
+    clearPasteData()
+
+    let msg = `成功导入${normalized.length}个样本`
+    if(autoIdCount > 0){
+        msg += `，自动生成ID ${autoIdCount}个`
+    }
+    ElMessage.success(msg)
+
 }
 
-saveSnapshot()
 
-tableData.value.push(
-    ...normalizeSamples(data)
-)
+/**
+ * 清空所有输入窗格文本
+ */
+function clearPasteData(){
 
-emit(
-'update-data',
-tableData.value
-)
-
-
-pasteText.value=''
-
-ElMessage.success(`成功导入${data.length}个样本`)
-
+    inputColumns.value.forEach(item => {
+        item.text = ""
+    });
 
 }
-
 
 
 function addRow(){
 
-saveSnapshot()
+    saveSnapshot()
 
-tableData.value.push(
-    createSample({})
-)
+    tableData.value.push(
+        createSample({})
+    )
 
-emit(
-'update-data',
-tableData.value
-)
-
+    emit(
+        'update-data',
+        tableData.value
+    )
 
 }
-
 
 
 function clearData(){
 
-if(tableData.value.length === 0) return
+    if(tableData.value.length === 0) return
 
-saveSnapshot()
+    saveSnapshot()
 
-tableData.value=[]
+    tableData.value=[]
 
-emit(
-'update-data',
-[]
-)
+    emit(
+        'update-data',
+        []
+    )
 
-ElMessage.success('已清空数据')
-
-
-}
-
-function deleteRow(index){
-
-
-const id =
-tableData.value[index].id
-
-const row =
-document.querySelector(
-`tr[data-row-key="${id}"]`
-)
-
-if(row){
-
-row.style.transition="all .3s"
-row.style.opacity=0
-row.style.transform=
-"translateX(-30px)"
+    ElMessage.success('已清空数据')
 
 }
-
-saveSnapshot()
-
-setTimeout(()=>{
-
-tableData.value.splice(
-index,
-1
-)
-
-emit(
-'update-data',
-tableData.value
-)
-
-},300)
-
-
-}
-
-
-function toggleIgnore(row){
-
-saveSnapshot()
-
-row.ignored =
-!row.ignored
-
-emit(
-'update-data',
-tableData.value
-)
-
-
-}
-
 
 function addSamples(list){
     if(!list || list.length === 0) return
@@ -651,6 +473,18 @@ if(typeof window !== 'undefined'){
 }
 
 
+function handleTableDelete(row){
+    const index = tableData.value.findIndex(item => item.id === row.id)
+    if(index !== -1){
+        tableData.value.splice(index, 1)
+        emit('update-data', tableData.value)
+    }
+}
+
+function handleTableIgnore(row){
+    emit('update-data', tableData.value)
+}
+
 defineExpose({
     addSamples,
     handleUndo,
@@ -658,69 +492,7 @@ defineExpose({
 })
 
 
-function rowClass({row}){
-
-
-if(row.ignored){
-
-return "ignored-row"
-
-}
-
-
-return "normal-row"
-
-
-}
-
-
-function getTagType(value){
-
-
-switch(value){
-
-
-case QUALITY_LEVEL.EXCELLENT.value:
-
-return 'success'
-
-
-case QUALITY_LEVEL.GOOD.value:
-
-return ''
-
-
-case QUALITY_LEVEL.WARNING.value:
-
-return 'warning'
-
-
-case QUALITY_LEVEL.POOR.value:
-
-return 'danger'
-
-
-case QUALITY_LEVEL.FAIL.value:
-
-return 'danger'
-
-
-default:
-
-return 'info'
-
-
-}
-
-
-}
-
-
-
-
 </script>
-
-
 
 
 
@@ -731,192 +503,94 @@ return 'info'
 .table-header{
 
 
-display:flex;
+    display:flex;
 
-justify-content:space-between;
 
-align-items:center;
+    justify-content:space-between;
+
+
+    align-items:center;
 
 
 }
 
+
+/* 四窗格输入区 */
+.rna-input-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap:15px;
+
+    margin-bottom:15px;
+
+}
+
+.input-box{
+
+    background:
+        var(--card-bg, #ffffff);
+
+    padding:15px;
+
+    border-radius:10px;
+
+    border:1px solid var(--border-color, #e4e7ed);
+
+}
+
+.input-box-header{
+
+    margin-bottom:10px;
+
+}
+
+.field-select{
+
+    width:100%;
+
+}
+
+@media(max-width:1000px){
+
+    .rna-input-grid{
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+@media(max-width:600px){
+
+    .rna-input-grid{
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
 
 
 .btn-area{
 
-margin:15px 0;
-
+    margin:15px 0;
 }
 
 .button-group{
 
-display:flex;
+    display:flex;
 
-gap:10px;
+    gap:10px;
 
-flex-wrap:wrap;
-
-}
-
-
-
-.cell-text{
-
-white-space:normal;
-
-word-break:break-word;
-
-line-height:1.5;
+    flex-wrap:wrap;
 
 }
-
-.short-text{
-display:-webkit-box;
--webkit-line-clamp:4;
--webkit-box-orient:vertical;
-overflow:hidden;
-max-width:400px;
-}
-
-
-.table-wrapper{
-
-width:100%;
-
-overflow-x:auto;
-
-}
-
-.table-wrapper .el-table{
-
-min-width:1400px;
-
-}
-
-.table-container{
-
-width:100%;
-
-}
-
-
-/* 行级动画 */
-.el-table__body tr{
-
-transition:
-transform .35s ease,
-opacity .35s ease;
-
-}
-
-.table-row-move{
-
-transition:
-transform .35s ease;
-
-}
-
-
-/* 忽略行 - 渐变透明 + 左到右删除线 */
-:deep(.ignored-row td){
-
-position:relative;
-
-opacity:.45;
-
-animation:
-ignoreFade .4s;
-
-}
-
-:deep(.ignored-row td::after){
-
-content:"";
-
-position:absolute;
-
-left:0;
-
-top:50%;
-
-height:1px;
-
-background:
-currentColor;
-
-width:0;
-
-animation:
-lineThrough .5s forwards;
-
-}
-
-@keyframes lineThrough{
-
-from{
-width:0;
-}
-
-to{
-width:100%;
-}
-
-}
-
-@keyframes ignoreFade{
-
-from{
-opacity:1;
-}
-
-to{
-opacity:.45;
-}
-
-}
-
-
-/* 恢复行 - 删除线反向消失 */
-:deep(.normal-row td){
-
-position:relative;
-
-}
-
-:deep(.normal-row td::after){
-
-content:"";
-
-position:absolute;
-
-left:0;
-
-top:50%;
-
-height:1px;
-
-background:
-currentColor;
-
-width:0;
-
-animation:
-lineRemove .3s;
-
-}
-
-@keyframes lineRemove{
-
-from{
-width:100%;
-}
-
-to{
-width:0;
-}
-
-}
-
 
 
 </style>

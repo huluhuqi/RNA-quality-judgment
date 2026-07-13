@@ -28,6 +28,30 @@
 <b>{{summary.avgConcentration || 0}} ng/μL</b>
 </p>
 
+<p
+v-if="summary.noConcentrationCount > 0"
+class="warn-text"
+>
+缺少浓度：
+<b>{{summary.noConcentrationCount}}</b> 个（无法推荐RT模板量）
+</p>
+
+<p
+v-if="summary.noA260280Count > 0"
+class="warn-text"
+>
+缺少A260/280：
+<b>{{summary.noA260280Count}}</b> 个（仅完成RT分析）
+</p>
+
+<p
+v-if="summary.partialPollutionCount > 0"
+class="warn-text"
+>
+缺少A260/230：
+<b>{{summary.partialPollutionCount}}</b> 个（仅依据A260/280判断污染）
+</p>
+
 </div>
 
 </el-card>
@@ -57,6 +81,11 @@ defineProps({
     margin:8px 0;
     font-size:14px;
     line-height:1.6;
+}
+
+.warn-text{
+    color:var(--warning-color, #e6a23c);
+    font-size:13px;
 }
 
 .info-card{

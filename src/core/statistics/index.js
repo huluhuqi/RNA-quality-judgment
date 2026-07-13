@@ -52,7 +52,12 @@ export function calculateBatch(samples, extractionMethod, application){
         applicationSummary: summary.applicationSummary,
 
         extractionCount: getExtractionStatistics(samples),
-        extractionChartData: toExtractionChartData(getExtractionStatistics(samples))
+        extractionChartData: toExtractionChartData(getExtractionStatistics(samples)),
+
+        // 分析完整度统计
+        noConcentrationCount: sampleStat.noConcentrationCount,
+        noA260280Count: sampleStat.noA260280Count,
+        partialPollutionCount: sampleStat.partialPollutionCount
     };
 
 

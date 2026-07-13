@@ -4,9 +4,15 @@
  * 不进行任何重新计算，只读取分析结果。
  * 统一读取 sample.result，保证 Excel / PDF / 页面三者一致。
  *
- * 第9.11.3步：新增提取方法、污染详情、提取过程问题分析字段。
+ * 第5步：升级为新污染分析模型和提取问题分析结构。
  */
 import { QUALITY_LEVEL, PENDING, getQualityLabel } from "../../config/qualityLevel";
+import { getValidSamples } from "../../core/sample/sampleUtils";
+import {
+    formatPollutionText,
+    formatExtractionProblemText,
+    formatExtractionSuggestionText
+} from "../../core/export/formatReportData";
 
 
 /**
@@ -19,28 +25,19 @@ import { QUALITY_LEVEL, PENDING, getQualityLabel } from "../../config/qualityLev
 export function formatSamples(samples = [], extractionMethod = ""){
 
 
-    return samples
-
-        .filter(item => !item.ignored)
-
+    return getValidSamples(samples)
         .map(item => {
 
             const advice = item.result?.advice || {};
 
-            // 污染分析：从 advice.pollution 拼接文本
-            const pollutionText = (advice.pollution || [])
-                .map(p => p.text)
-                .join("\n") || item.result?.pollution || "无";
+            // 污染分析：使用新结构 { type, reason, level }
+            const pollutionText = formatPollutionText(advice.pollution);
 
-            // 提取过程问题分析：从 advice.extraction 拼接结构化文本
-            const extractionProblemText = (advice.extraction || [])
-                .map(e => {
-                    return `${e.title}\n` +
-                        "可能原因：" + (e.cause || []).join("；") + "\n" +
-                        "涉及步骤：" + (e.step || []).join("；") + "\n" +
-                        "优化建议：" + (e.solution || []).join("；");
-                })
-                .join("\n\n") || "无";
+            // 提取过程问题分析：使用新结构 extractionProblem { problem, step, suggestion }
+            const extractionProblemText = formatExtractionProblemText(advice.extractionProblem);
+
+            // 优化建议：从 extractionProblem 提取建议
+            const suggestionText = formatExtractionSuggestionText(advice.extractionProblem);
 
             return {
                 id: item.id || "",
@@ -51,7 +48,7 @@ export function formatSamples(samples = [], extractionMethod = ""){
                 quality: item.result?.quality ? getQualityLabel(item.result.quality) : "无法判断",
                 pollution: pollutionText,
                 extractionProblem: extractionProblemText,
-                suggestion: item.result?.suggestion || ""
+                suggestion: suggestionText
             };
 
         });

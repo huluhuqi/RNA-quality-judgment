@@ -13,6 +13,7 @@
  * @returns {Object} { "问题标题": 数量, ... }
  */
 import { isPoorQuality } from "../../config/qualityLevel";
+import { getValidSamples } from "../sample/sampleUtils";
 
 
 /**
@@ -25,8 +26,7 @@ export function getExtractionStatistics(samples = []){
 
     const count = {};
 
-    samples
-        .filter(item => !item.ignored)
+    getValidSamples(samples)
         .forEach(sample => {
 
             const quality = sample.result?.quality;

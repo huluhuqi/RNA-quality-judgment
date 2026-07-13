@@ -5,9 +5,12 @@
  *   - 总样本数 / 有效样本数 / 忽略样本数 / 待检测数
  *   - 各质量等级数量（优秀/良好/一般/较差/待检测）
  *   - 浓度统计（平均/最小/最大）
+ *   - 分析完整度统计（缺少A260/280、缺少浓度）
  */
 import { analyzeRNA } from "../quality";
+import { getAnalysisStatus } from "../analyze/analysisStatus";
 import { QUALITY_LEVEL, PENDING } from "../../config/qualityLevel";
+import { getValidSamples } from "../sample/sampleUtils";
 
 
 export function getSampleStatistics(samples, extractionMethod, application){
@@ -16,7 +19,7 @@ export function getSampleStatistics(samples, extractionMethod, application){
     const totalCount = samples.length;
 
     const ignoredSamples = samples.filter(item => item.ignored);
-    const activeSamples = samples.filter(item => !item.ignored);
+    const activeSamples = getValidSamples(samples);
     const ignoredCount = ignoredSamples.length;
 
 
@@ -62,6 +65,20 @@ export function getSampleStatistics(samples, extractionMethod, application){
     const avgConcentration = average(concentrations);
 
 
+    // 分析完整度统计
+    const noConcentrationCount = activeSamples.filter(
+        item => !getAnalysisStatus(item).rtRecommend
+    ).length;
+
+    const noA260280Count = activeSamples.filter(
+        item => !getAnalysisStatus(item).qualityAnalysis
+    ).length;
+
+    const partialPollutionCount = activeSamples.filter(
+        item => getAnalysisStatus(item).only280Analysis
+    ).length;
+
+
     return {
         totalCount,
         validCount: activeSamples.length,
@@ -73,7 +90,11 @@ export function getSampleStatistics(samples, extractionMethod, application){
         qualityCount,
         avgConcentration: Number(avgConcentration.toFixed(2)),
         minConcentration: concentrations.length ? Math.min(...concentrations) : 0,
-        maxConcentration: concentrations.length ? Math.max(...concentrations) : 0
+        maxConcentration: concentrations.length ? Math.max(...concentrations) : 0,
+        // 分析完整度
+        noConcentrationCount,
+        noA260280Count,
+        partialPollutionCount
     };
 
 

@@ -1,0 +1,36 @@
+{
+    "name": "RNA质量检测工具",
+    "version": "1.0.0",
+    "build": "RC1",
+    "releaseDate": "2026-07-13",
+    "description": "基于Web的RNA质量检测与分析工具",
+    "author": "",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/huluhuqi/RNA-quality-judgment"
+    },
+    "features": [
+        "RNA质量自动分析",
+        "污染风险判断",
+        "提取流程建议",
+        "RT模板推荐",
+        "Excel/PDF报告导出",
+        "支持大批量数据（10000+样本）"
+    ],
+    "performance": {
+        "firstLoad": "<2s",
+        "1000Samples": "流畅",
+        "5000Samples": "可用",
+        "10000Samples": "不卡死"
+    },
+    "themes": ["light", "dark"],
+    "techStack": {
+        "frontend": "Vue 3",
+        "build": "Vite",
+        "ui": "Element Plus",
+        "charts": "ECharts",
+        "excel": "ExcelJS / xlsx",
+        "pdf": "jsPDF"
+    }
+}

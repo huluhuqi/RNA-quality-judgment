@@ -68,13 +68,25 @@ from '../utils/export'
 const props =
 defineProps({
 
-summary:Object,
+summary:{
+type:Object,
+default:()=>({})
+},
 
-data:Array,
+data:{
+type:Array,
+default:()=>[]
+},
 
-settings:Object,
+settings:{
+type:Object,
+default:()=>({})
+},
 
-summaryRef:Object
+summaryRef:{
+type:Object,
+default:null
+}
 
 })
 

@@ -3,13 +3,13 @@
 <el-card shadow="hover" class="rt-card">
 
 <div class="card-title">
-RT模板建议
+RT体系配置
 </div>
 
 <div class="info">
 
 <p>
-推荐RNA量：
+推荐RNA投入量：
 <b>
 {{summary.rt?.recommendedRNA || 0}}
 </b>
@@ -20,6 +20,14 @@ ng
 模板体积：
 <b>
 {{summary.rt?.minVolume || 0}} ~ {{summary.rt?.maxVolume || 0}}
+</b>
+μL
+</p>
+
+<p>
+最大模板体积：
+<b>
+12
 </b>
 μL
 </p>

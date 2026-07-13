@@ -33,6 +33,14 @@ const experimentAdvice = computed(() => {
 const rtTemplateVolume = computed(() => getTemplateVolumeDisplay(props.sample))
 const rtStatus = computed(() => getRTStatus(props.sample))
 const rtTargetRNA = computed(() => getTargetRNA(props.sample))
+const rtMaxTemplateVolume = computed(() => props.sample?.rt?.maxTemplateVolume ?? 12)
+const rtWaterVolume = computed(() => {
+    const wv = props.sample?.rt?.waterVolume;
+    if (wv !== null && wv !== undefined) {
+        return wv + " μL";
+    }
+    return "无法计算";
+})
 
 function getPollutionTagType(type) {
   if (type.includes('严重') || type.includes('异常')) {
@@ -110,15 +118,23 @@ function getRTStatusType(status) {
     </div>
 
     <div class="advice-section">
-      <h3>RT模板分析</h3>
+      <h3>RT体系配置</h3>
       <div class="rt-info">
         <div class="rt-item">
           <span>推荐RNA投入量</span>
           <b>{{ rtTargetRNA }} ng</b>
         </div>
         <div class="rt-item">
-          <span>模板建议体积</span>
+          <span>RNA模板体积</span>
           <b>{{ rtTemplateVolume }}</b>
+        </div>
+        <div class="rt-item">
+          <span>最大模板体积</span>
+          <b>{{ rtMaxTemplateVolume }} μL</b>
+        </div>
+        <div class="rt-item">
+          <span>RT补水体积</span>
+          <b :class="{ 'warning-value': props.sample?.rt?.waterVolume !== null && props.sample?.rt?.waterVolume < 0 }">{{ rtWaterVolume }}</b>
         </div>
         <div class="rt-item">
           <span>状态</span>
@@ -257,6 +273,10 @@ function getRTStatusType(status) {
 .rt-item b{
   font-size: 14px;
   color: var(--text-main, #303133);
+}
+
+.warning-value{
+  color: var(--danger-color, #f56c6c) !important;
 }
 
 .rt-status{

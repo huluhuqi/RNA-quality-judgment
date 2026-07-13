@@ -87,6 +87,7 @@ import { calculateRT, checkConcentrationDistribution } from './core/RTRecommenda
 import { QUALITY_LEVEL, PENDING } from './config/qualityLevel'
 import { getActiveSamples } from './utils/sampleFilter'
 import { calculateTemplateVolume } from './analysis/rt/templateVolumeCalculator'
+import { calculateWaterVolume } from './analysis/rt/waterVolumeCalculator'
 
 import { uiState, setLoading } from './store/uiState'
 
@@ -152,13 +153,17 @@ function refreshAnalysis(){
 
             // 为每个有效样本计算模板建议体积
             const targetRNA = batch.rt?.recommendedRNA || 100
+            const maxTemplateVolume = rtConfig.value.maxVolume || 12
             validSamples.forEach(sample => {
                 const conc = sample.raw?.concentration ?? sample.concentration
-                const result = calculateTemplateVolume(conc, targetRNA)
+                const templateResult = calculateTemplateVolume(conc, targetRNA)
+                const waterResult = calculateWaterVolume(templateResult.templateVolume, maxTemplateVolume)
                 sample.rt = {
                     targetRNA,
-                    templateVolume: result.templateVolume,
-                    status: result.status
+                    templateVolume: templateResult.templateVolume,
+                    maxTemplateVolume,
+                    waterVolume: waterResult.waterVolume,
+                    status: waterResult.status
                 }
             })
 

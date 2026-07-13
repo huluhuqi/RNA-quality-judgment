@@ -27,7 +27,7 @@ const volumeRange = computed(() => {
 <template>
 
 <div class="rt-summary">
-    <h4 class="summary-title">RT模板分析</h4>
+    <h4 class="summary-title">RT体系配置</h4>
     
     <div class="rt-stats">
         <div class="stat-item">
@@ -44,12 +44,16 @@ const volumeRange = computed(() => {
 
     <div v-if="data.recommendedRNA" class="rt-detail">
         <div class="detail-item">
-            <span class="detail-label">推荐投入量</span>
+            <span class="detail-label">推荐RNA投入量</span>
             <span class="detail-value">{{ data.recommendedRNA }} ng</span>
         </div>
         <div class="detail-item">
             <span class="detail-label">模板体积范围</span>
             <span class="detail-value">{{ volumeRange }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">最大模板体积</span>
+            <span class="detail-value">12 μL</span>
         </div>
         <div class="detail-item">
             <span class="detail-label">浓度状态</span>

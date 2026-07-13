@@ -171,7 +171,10 @@ function getTemplateVolume(sample) {
 
             <el-table-column label="模板建议体积" width="160">
                 <template #default="scope">
-                    <span class="rt-volume">{{ getTemplateVolume(scope.row) }}</span>
+                    <span
+                        class="rt-volume"
+                        :class="{ 'rt-warning': scope.row.rt?.templateVolume !== null && scope.row.rt?.templateVolume > (scope.row.rt?.maxTemplateVolume || 12) }"
+                    >{{ getTemplateVolume(scope.row) }}</span>
                 </template>
             </el-table-column>
 
@@ -249,6 +252,11 @@ function getTemplateVolume(sample) {
 .rt-volume{
     font-size: 12px;
     color: var(--text-main, #303133);
+}
+
+.rt-warning{
+    color: var(--danger-color, #f56c6c) !important;
+    font-weight: 600;
 }
 
 .el-table__body tr{

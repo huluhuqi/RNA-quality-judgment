@@ -10,6 +10,10 @@ export function createSampleSheet(samples) {
         污染类型: s.pollution?.types?.join(";") || "",
         提取建议: s.advice?.extraction ? JSON.stringify(s.advice.extraction) : "",
         下游实验建议: s.advice?.experiment || "",
-        模板建议体积: s.rt?.templateVolume ? s.rt.templateVolume + " μL" : "无法计算"
+        推荐RNA量: s.rt?.targetRNA || "",
+        RNA模板体积: s.rt?.templateVolume !== null && s.rt?.templateVolume !== undefined ? s.rt.templateVolume + " μL" : "无法计算",
+        最大模板体积: (s.rt?.maxTemplateVolume ?? 12) + " μL",
+        RT补水体积: s.rt?.waterVolume !== null && s.rt?.waterVolume !== undefined ? s.rt.waterVolume + " μL" : "无法计算",
+        RT状态: s.rt?.status || ""
     }));
 }

@@ -45,7 +45,10 @@ export function createSample(data = {}) {
             advice: data.analysis?.advice || null
         },
         rt: {
-            inputVolume: data.rt?.inputVolume || null,
+            targetRNA: data.rt?.targetRNA || null,
+            templateVolume: data.rt?.templateVolume || null,
+            maxTemplateVolume: data.rt?.maxTemplateVolume || 12,
+            waterVolume: data.rt?.waterVolume || null,
             recommendation: data.rt?.recommendation || ""
         },
         status: {

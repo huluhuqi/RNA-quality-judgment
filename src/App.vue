@@ -142,6 +142,7 @@ function refreshAnalysis(){
             const analyzed = analyzeSamples(data, rtConfig.value)
             data.forEach((item, i) => {
                 item.result = analyzed[i].result
+                item.analysis = analyzed[i].analysis
             })
 
             const batch = calculateBatch(data, rtConfig.value.method, rtConfig.value.application)
@@ -150,7 +151,6 @@ function refreshAnalysis(){
             batch.rt = calculateRT(validSamples, rtConfig.value)
             batch.rtWarning = checkConcentrationDistribution(validSamples)
 
-            // 为每个有效样本计算模板建议体积
             const targetRNA = batch.rt?.recommendedRNA || 100
             const maxTemplateVolume = rtConfig.value.maxVolume || 12
             validSamples.forEach(sample => {
@@ -167,6 +167,8 @@ function refreshAnalysis(){
                     requiredConcentration: result.requiredConcentration
                 }
             })
+
+            store.samples = [...data]
 
             summary.value = batch
         } finally {

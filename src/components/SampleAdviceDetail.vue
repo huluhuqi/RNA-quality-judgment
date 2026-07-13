@@ -116,9 +116,15 @@ function getPollutionTagType(type) {
           <span class="rt-card-title">RT体系配置</span>
         </template>
 
-        <div class="rt-row">
-          <span class="rt-label">RNA投入量</span>
-          <strong class="rt-value">{{ rtTargetRNA }} ng</strong>
+        <div class="rt-grid">
+          <div class="rt-grid-item">
+            <span class="rt-label">RNA投入量</span>
+            <strong class="rt-value">{{ rtTargetRNA }} ng</strong>
+          </div>
+          <div class="rt-grid-item">
+            <span class="rt-label">RT补水体积</span>
+            <strong class="rt-value">{{ rtWaterVolume }}</strong>
+          </div>
         </div>
 
         <div class="rt-row">
@@ -127,11 +133,6 @@ function getPollutionTagType(type) {
             class="rt-value"
             :class="{ 'warning-value': rtStatusCode === 'OVER_VOLUME' }"
           >{{ rtTemplateVolume }}</strong>
-        </div>
-
-        <div class="rt-row">
-          <span class="rt-label">RT补水体积</span>
-          <strong class="rt-value">{{ rtWaterVolume }}</strong>
         </div>
 
         <div class="rt-row">
@@ -275,6 +276,33 @@ function getPollutionTagType(type) {
 .rt-card-title{
   font-weight: 600;
   font-size: 15px;
+  color: var(--text-color);
+}
+
+.rt-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0;
+}
+
+.rt-grid-item{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.rt-grid-item .rt-label{
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.rt-grid-item .rt-value{
+  font-size: 18px;
+  font-weight: 600;
   color: var(--text-color);
 }
 

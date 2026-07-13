@@ -33,7 +33,6 @@ const rtTemplateVolume = computed(() => getTemplateVolumeDisplay(props.sample))
 const rtStatusCode = computed(() => props.sample?.rt?.statusCode || '')
 const rtStatusStyle = computed(() => getRtStatusStyle(rtStatusCode.value))
 const rtTargetRNA = computed(() => getTargetRNA(props.sample))
-const rtMaxTemplateVolume = computed(() => props.sample?.rt?.maxTemplateVolume ?? 12)
 const rtWaterVolume = computed(() => {
     const wv = props.sample?.rt?.waterVolume;
     if (wv !== null && wv !== undefined) {
@@ -122,22 +121,16 @@ function getPollutionTagType(type) {
             <strong class="rt-value">{{ rtTargetRNA }} ng</strong>
           </div>
           <div class="rt-grid-item">
+            <span class="rt-label">RT模板体积</span>
+            <strong
+              class="rt-value"
+              :class="{ 'warning-value': rtStatusCode === 'OVER_VOLUME' }"
+            >{{ rtTemplateVolume }}</strong>
+          </div>
+          <div class="rt-grid-item">
             <span class="rt-label">RT补水体积</span>
             <strong class="rt-value">{{ rtWaterVolume }}</strong>
           </div>
-        </div>
-
-        <div class="rt-row">
-          <span class="rt-label">RNA模板体积</span>
-          <strong
-            class="rt-value"
-            :class="{ 'warning-value': rtStatusCode === 'OVER_VOLUME' }"
-          >{{ rtTemplateVolume }}</strong>
-        </div>
-
-        <div class="rt-row">
-          <span class="rt-label">最大模板体积</span>
-          <strong class="rt-value">{{ rtMaxTemplateVolume }} μL</strong>
         </div>
 
         <div class="rt-status-row">
@@ -281,37 +274,26 @@ function getPollutionTagType(type) {
 
 .rt-grid{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 0;
+  padding: 20px 0;
 }
 
 .rt-grid-item{
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 0;
+  gap: 8px;
 }
 
 .rt-grid-item .rt-label{
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
 }
 
 .rt-grid-item .rt-value{
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--text-color);
-}
-
-.rt-row{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .rt-label{

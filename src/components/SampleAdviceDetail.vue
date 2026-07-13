@@ -25,6 +25,13 @@ const extractionAdvice = computed(() => {
   return analysis.value.advice?.extraction || []
 })
 
+const displayExtractionAdvice = computed(() => {
+  if (!extractionAdvice.value || extractionAdvice.value.length === 0) {
+    return [{ type: "none", problem: "", steps: ["当前样本未发现明显提取流程异常"] }]
+  }
+  return extractionAdvice.value
+})
+
 const experimentAdvice = computed(() => {
   return analysis.value.advice?.experiment || []
 })
@@ -80,20 +87,17 @@ function getPollutionTagType(type) {
 
     <div class="advice-section">
       <h3>提取过程建议</h3>
-      <div v-if="extractionAdvice.length">
-        <div v-for="(item, idx) in extractionAdvice" :key="idx" class="extraction-item">
-          <div class="extraction-problem">
-            <el-tag type="warning" size="small">{{ item.problem }}</el-tag>
+      <div class="extraction-list">
+        <div v-for="(group, idx) in displayExtractionAdvice" :key="idx" class="extraction-group">
+          <div v-if="group.problem" class="extraction-group-title">
+            <el-tag type="warning" size="small">{{ group.problem }}</el-tag>
           </div>
           <ul class="extraction-steps">
-            <li v-for="(step, sIdx) in item.steps" :key="sIdx">
+            <li v-for="(step, sIdx) in group.steps" :key="sIdx">
               {{ step }}
             </li>
           </ul>
         </div>
-      </div>
-      <div v-else class="empty-text">
-        当前检测指标未发现明显提取污染风险
       </div>
     </div>
   </div>
@@ -222,12 +226,14 @@ function getPollutionTagType(type) {
   padding-left: 4px;
 }
 
-.extraction-item{
-  margin-bottom: 12px;
+.extraction-list{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.extraction-problem{
-  margin-bottom: 6px;
+.extraction-group-title{
+  margin-bottom: 4px;
 }
 
 .extraction-steps{

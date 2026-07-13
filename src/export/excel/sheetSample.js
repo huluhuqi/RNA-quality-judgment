@@ -28,10 +28,9 @@ export function createSampleSheet(samples) {
         提取建议: formatExtractionForExcel(s.advice?.extraction),
         实验建议: safeValue(s.advice?.experiment),
         RNA投入量: safeValue(s.rt?.targetRNA),
-        RNA模板体积: s.rt?.templateVolume !== null && s.rt?.templateVolume !== undefined
+        RT模板体积: s.rt?.templateVolume !== null && s.rt?.templateVolume !== undefined
             ? s.rt.templateVolume + " μL"
             : "无法配置",
-        最大模板体积: safeValue(s.rt?.maxTemplateVolume, 12) + " μL",
         RT补水体积: s.rt?.waterVolume !== null && s.rt?.waterVolume !== undefined
             ? s.rt.waterVolume + " μL"
             : "无法配置",

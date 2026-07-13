@@ -171,7 +171,7 @@ function getTemplateVolume(sample) {
                 </template>
             </el-table-column>
 
-            <el-table-column label="RNA模板体积" width="140">
+            <el-table-column label="RT模板体积" width="140">
                 <template #default="scope">
                     <el-tag
                         v-if="getRTStatusCode(scope.row) === 'OVER_VOLUME'"

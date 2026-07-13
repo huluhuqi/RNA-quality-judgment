@@ -95,17 +95,22 @@ function formatPollutionText(pollution = []) {
 /**
  * 格式化提取建议为结构化数组
  *
- * generateAdvice 返回的 extraction 数组项含 { type, level, title, cause, step, solution }
- * UI 模板需要 { problem, steps }
+ * generateAdvice 返回的 extraction 数组项含 { type, level, title, cause, step, solution, source }
+ * UI 模板需要 { type, problem, steps }
  *
- * @returns {Array} [{ problem: string, steps: string[] }]
+ * @returns {Array} [{ type: string, problem: string, steps: string[] }]
  */
 function formatExtractionAdvice(extraction = []) {
     if (!extraction || extraction.length === 0) return [];
 
     return extraction.map(item => ({
+        type: item.type || "",
         problem: item.title || getContaminationDisplay(item.type) || "提取流程建议",
-        steps: item.solution || item.step || ["当前污染类型暂无标准提取流程建议"]
+        steps: Array.isArray(item.solution) && item.solution.length > 0
+            ? item.solution
+            : Array.isArray(item.step) && item.step.length > 0
+                ? item.step
+                : ["当前污染类型暂无标准提取流程建议"]
     }));
 }
 

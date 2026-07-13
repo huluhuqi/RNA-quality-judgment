@@ -175,7 +175,7 @@ onMounted(async () => {
     await store.loadState()
     
     if(samples.length > 0){
-        store.importSamples(samples)
+        store.setSamples(samples)
         restored.value = true
     }
 })

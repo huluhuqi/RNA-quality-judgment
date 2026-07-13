@@ -11,13 +11,20 @@ const props = defineProps({
     samples: {
         type: Array,
         default: () => []
+    },
+    removingIds: {
+        type: Array,
+        default: () => []
     }
 });
 
 const emit = defineEmits(['delete', 'ignore', 'cell-change']);
 
 function rowClass({ row }) {
-    if (row.ignored) {
+    if (props.removingIds.includes(row.id)) {
+        return 'removing-row';
+    }
+    if (row.status?.ignored || row.ignored) {
         return 'ignored-row';
     }
     return 'normal-row';
@@ -29,25 +36,12 @@ function onCellChange(row) {
 }
 
 function handleDelete(row) {
-    const id = row.id;
-    const el = document.querySelector(`tr[data-row-key="${id}"]`);
-    
-    if (el) {
-        el.style.transition = 'all .3s';
-        el.style.opacity = 0;
-        el.style.transform = 'translateX(-30px)';
-    }
-    
     saveHistory(props.samples);
-    
-    setTimeout(() => {
-        emit('delete', row);
-    }, 300);
+    emit('delete', row);
 }
 
 function handleIgnore(row) {
     saveHistory(props.samples);
-    row.ignored = !row.ignored;
     emit('ignore', row);
 }
 
@@ -58,6 +52,19 @@ function getTagType(value) {
         case 'warning': return 'warning';
         case 'poor': return 'danger';
         case 'fail': return 'danger';
+        case '合格': return 'success';
+        case '需关注': return 'warning';
+        case '不合格': return 'danger';
+        case '待检测': return 'info';
+        default: return 'info';
+    }
+}
+
+function getRTTagType(status) {
+    switch (status) {
+        case '推荐': return 'success';
+        case '需要稀释': return 'warning';
+        case '浓度不足': return 'danger';
         default: return 'info';
     }
 }
@@ -75,7 +82,7 @@ function getTagType(value) {
             border
             height="600"
             stripe
-            style="min-width: 1400px"
+            style="min-width: 1600px"
         >
             <el-table-column type="expand" width="50">
                 <template #default="{ row }">
@@ -86,7 +93,7 @@ function getTagType(value) {
             <el-table-column label="模板ID" prop="templateId" fixed="left" width="180">
                 <template #default="scope">
                     <el-input
-                        v-model="scope.row.templateId"
+                        v-model="scope.row.raw.templateId"
                         size="small"
                         @change="onCellChange(scope.row)"
                     />
@@ -96,7 +103,7 @@ function getTagType(value) {
             <el-table-column label="RNA浓度" sortable prop="concentration" width="120">
                 <template #default="scope">
                     <el-input-number
-                        v-model="scope.row.concentration"
+                        v-model="scope.row.raw.concentration"
                         :controls="false"
                         @change="onCellChange(scope.row)"
                     />
@@ -106,7 +113,7 @@ function getTagType(value) {
             <el-table-column label="A260/A280" sortable prop="a260280" width="130">
                 <template #default="scope">
                     <el-input-number
-                        v-model="scope.row.a260280"
+                        v-model="scope.row.raw.a260280"
                         :controls="false"
                         @change="onCellChange(scope.row)"
                     />
@@ -116,7 +123,7 @@ function getTagType(value) {
             <el-table-column label="A260/A230" sortable prop="a260230" width="130">
                 <template #default="scope">
                     <el-input-number
-                        v-model="scope.row.a260230"
+                        v-model="scope.row.raw.a260230"
                         :controls="false"
                         @change="onCellChange(scope.row)"
                     />
@@ -127,16 +134,16 @@ function getTagType(value) {
                 <template #default="scope">
                     <div class="quality-cell">
                         <el-tag
-                            :type="getTagType(scope.row.result?.quality)"
+                            :type="getTagType(scope.row.analysis?.quality?.level || scope.row.result?.quality)"
                             size="small"
                         >
-                            {{ getQualityLabel(scope.row.result?.quality) || '无法判断' }}
+                            {{ getQualityLabel(scope.row.analysis?.quality?.level || scope.row.result?.quality) || '无法判断' }}
                         </el-tag>
                         <span
-                            v-if="scope.row.result?.qualityScore !== null"
+                            v-if="scope.row.analysis?.quality?.score !== null || scope.row.result?.qualityScore !== null"
                             class="quality-score"
                         >
-                            {{ scope.row.result.qualityScore }}分
+                            {{ scope.row.analysis?.quality?.score || scope.row.result?.qualityScore }}分
                         </span>
                     </div>
                 </template>
@@ -144,14 +151,31 @@ function getTagType(value) {
 
             <el-table-column label="污染分析" width="260">
                 <template #default="scope">
-                    <TextCell :text="scope.row.result?.pollution || ''" />
+                    <TextCell :text="scope.row.analysis?.pollution?.description || scope.row.result?.pollution || ''" />
                 </template>
             </el-table-column>
 
             <el-table-column label="建议" width="300">
                 <template #default="scope">
                     <div class="short-text">
-                        <TextCell :text="scope.row.result?.suggestion || ''" />
+                        <TextCell :text="scope.row.analysis?.advice?.experiment || scope.row.result?.suggestion || ''" />
+                    </div>
+                </template>
+            </el-table-column>
+
+            <el-table-column label="RT模板推荐" width="200">
+                <template #default="scope">
+                    <div class="rt-cell">
+                        <el-tag
+                            v-if="scope.row.analysis?.rt?.status"
+                            :type="getRTTagType(scope.row.analysis.rt.status)"
+                            size="small"
+                        >
+                            {{ scope.row.analysis.rt.status }}
+                        </el-tag>
+                        <span v-if="scope.row.analysis?.rt?.inputVolume" class="rt-volume">
+                            {{ scope.row.analysis.rt.inputVolume }} μL
+                        </span>
                     </div>
                 </template>
             </el-table-column>
@@ -163,7 +187,7 @@ function getTagType(value) {
                             size="small"
                             @click="handleIgnore(scope.row)"
                         >
-                            {{ scope.row.ignored ? '恢复' : '忽略' }}
+                            {{ (scope.row.status?.ignored || scope.row.ignored) ? '恢复' : '忽略' }}
                         </el-button>
                         <el-button
                             type="danger"
@@ -189,7 +213,7 @@ function getTagType(value) {
 }
 
 .table-wrapper .el-table{
-    min-width: 1400px;
+    min-width: 1600px;
 }
 
 .table-container{
@@ -221,18 +245,25 @@ function getTagType(value) {
     color: var(--text-secondary, #606266);
 }
 
-.el-table__body tr{
-    transition: transform .35s ease, opacity .35s ease;
+.rt-cell{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.table-row-move{
-    transition: transform .35s ease;
+.rt-volume{
+    font-size: 12px;
+    color: var(--text-main, #303133);
+}
+
+.el-table__body tr{
+    transition: transform .35s ease, opacity .35s ease;
 }
 
 :deep(.ignored-row td){
     position: relative;
     opacity: .45;
-    animation: ignoreFade .4s;
+    animation: ignoreFade .4s ease;
 }
 
 :deep(.ignored-row td::after){
@@ -243,7 +274,7 @@ function getTagType(value) {
     height: 1px;
     background: currentColor;
     width: 0;
-    animation: lineThrough .5s forwards;
+    animation: lineThrough .5s ease forwards;
 }
 
 @keyframes lineThrough{
@@ -260,20 +291,19 @@ function getTagType(value) {
     position: relative;
 }
 
-:deep(.normal-row td::after){
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    height: 1px;
-    background: currentColor;
-    width: 0;
-    animation: lineRemove .3s;
+:deep(.removing-row td){
+    animation: rowRemove .3s ease forwards;
 }
 
-@keyframes lineRemove{
-    from{ width: 100%; }
-    to{ width: 0; }
+@keyframes rowRemove{
+    from{
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to{
+        opacity: 0;
+        transform: translateX(30px);
+    }
 }
 
 </style>

@@ -13,25 +13,31 @@
  *   - qpcr:   RT-qPCR
  *   - rnaseq: RNA-seq
  *   - smallRNA: 小核酸实验
+ *
+ * 适配新 Sample 结构：从 sample.raw.a260280 读取
+ * 兼容旧结构：从 sample.a260280 读取
  */
 import { calculateRNAQuality } from "./rnaQualityScore";
 import { PENDING } from "../../config/qualityLevel";
 
+function getRaw(sample) {
+    return sample.raw || sample;
+}
 
 export function judgeQuality(sample, application) {
 
-    const a280 = parseFloat(sample.a260280);
+    const raw = getRaw(sample);
+    const a280 = parseFloat(raw.a260280);
 
     if (isNaN(a280)) {
         return PENDING.value;
     }
 
-    const result = calculateRNAQuality(sample, application);
+    const result = calculateRNAQuality(raw, application);
 
     return result.levelValue;
 
 }
-
 
 /**
  * 获取完整质量分析结果（包含评分、等级、详情、风险提示）
@@ -42,18 +48,19 @@ export function judgeQuality(sample, application) {
  */
 export function analyzeQuality(sample, application) {
 
-    const a280 = parseFloat(sample.a260280);
+    const raw = getRaw(sample);
+    const a280 = parseFloat(raw.a260280);
 
     if (isNaN(a280)) {
         return {
             quality: PENDING.value,
             score: null,
-            detail: ["未检测A260/280，无法判断"],
+            detail: ["缺少A260/A280数据，不进行RNA质量判断"],
             riskMessage: "缺少关键检测数据"
         };
     }
 
-    const result = calculateRNAQuality(sample, application);
+    const result = calculateRNAQuality(raw, application);
 
     return {
         quality: result.levelValue,

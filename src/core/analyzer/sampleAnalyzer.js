@@ -1,24 +1,3 @@
-/**
- * 统一样本分析入口
- *
- * RNA 质量分析只执行一次，结果写入 sample.result，
- * 所有组件（表格/总结/Excel/PDF）统一读取，避免重复计算。
- *
- * result 结构：
- * {
- *   quality, pollution, pollutionText, suggestion, pollutionType, diagnosis,
- *   status: { rtRecommend, qualityAnalysis, fullPollutionAnalysis, only280Analysis },
- *   advice: {
- *     pollution:    [{ type, level, text }],
- *     extraction:   [{ type, level, title, cause, step, solution }],
- *     concentration:[{ type, level, text, suggestion }]
- *   }
- * }
- * 
- * 性能优化：
- * - 使用缓存避免重复分析同一样本
- * - 支持批量分析时分片处理
- */
 import { analyzeRNA } from "../quality"
 import { generateAdvice } from "../advice"
 import { getAnalysisStatus } from "../analyze/analysisStatus"
@@ -31,49 +10,62 @@ import {
 import { handleError } from "../error/errorHandler"
 import { ErrorType } from "../error/errorType"
 
-
-/**
- * 单个样本分析（带缓存）
- *
- * @param {Object} sample  标准化样本
- * @param {Object} config  { method, application, ...rtConfig }
- * @param {boolean} useCache 是否使用缓存（默认true）
- * @returns {Object} 带有 result 字段的样本
- */
 export function analyzeSample(sample, config = {}, useCache = true){
-
-    if(sample.ignored){
+    const ignored = sample.status?.ignored || sample.ignored;
+    if(ignored){
         return {
             ...sample,
+            analysis: null,
             result: null
         };
     }
 
-    const sampleId = sample.id || sample.templateId;
+    const sampleId = sample.id || sample.raw?.templateId || sample.templateId;
     if (useCache && sampleId && hasAnalysisCache(sampleId)) {
         const cachedResult = getAnalysisCache(sampleId);
         return {
             ...sample,
+            analysis: {
+                quality: { level: cachedResult.quality, score: cachedResult.qualityScore, reason: cachedResult.diagnosis },
+                pollution: { types: [], description: cachedResult.pollution },
+                advice: { extraction: "", experiment: cachedResult.suggestion }
+            },
             result: cachedResult
         };
     }
 
     const qualityResult = analyzeRNA(
-        sample,
+        sample.raw || sample,
         config.method,
         config.application
     )
 
     const advice = generateAdvice(
-        sample,
+        sample.raw || sample,
         config.method,
         config
     )
 
     const result = {
         ...qualityResult,
-        status: getAnalysisStatus(sample),
+        status: getAnalysisStatus(sample.raw || sample),
         advice
+    };
+
+    const analysis = {
+        quality: {
+            level: qualityResult.quality,
+            score: qualityResult.qualityScore,
+            reason: qualityResult.diagnosis || ""
+        },
+        pollution: {
+            types: (advice.pollution || []).map(p => p.type),
+            description: formatPollutionText(advice.pollution)
+        },
+        advice: {
+            extraction: formatExtractionAdvice(advice.extraction),
+            experiment: qualityResult.suggestion || ""
+        }
     };
 
     if (sampleId) {
@@ -82,18 +74,38 @@ export function analyzeSample(sample, config = {}, useCache = true){
 
     return {
         ...sample,
+        analysis,
         result
     };
 
+}
+
+function formatPollutionText(pollution = []) {
+    return pollution.map(item => `${item.type}: ${item.reason || item.text}`).join("\n");
+}
+
+function formatExtractionAdvice(extraction = []) {
+    if (!extraction || extraction.length === 0) return "";
+    return extraction.map(item => {
+        const parts = [];
+        if (item.title) parts.push(item.title);
+        if (item.suggestion) parts.push(item.suggestion);
+        return parts.join(": ");
+    }).join("\n");
 }
 
 export function safeAnalyzeSample(sample, config = {}) {
     try {
         return analyzeSample(sample, config);
     } catch (e) {
-        handleError(e, ErrorType.ANALYSIS, `样本 ${sample.id || sample.templateId} 分析失败`);
+        handleError(e, ErrorType.ANALYSIS, `样本 ${sample.id || sample.raw?.templateId || sample.templateId} 分析失败`);
         return {
             ...sample,
+            analysis: {
+                quality: { level: "无法判断", score: null, reason: "数据异常" },
+                pollution: { types: [], description: "数据异常" },
+                advice: { extraction: "", experiment: "请检查输入数据" }
+            },
             result: {
                 quality: "无法判断",
                 pollution: "数据异常",
@@ -105,73 +117,31 @@ export function safeAnalyzeSample(sample, config = {}) {
     }
 }
 
-
-/**
- * 批量分析（带缓存）
- * 
- * @param {Array} samples
- * @param {Object} config  { method, application }
- * @returns {Array} 每个样本带有 result 字段
- */
 export function analyzeSamples(samples = [], config = {}){
-
     return samples.map(sample =>
         safeAnalyzeSample(sample, config)
     );
-
-
 }
 
-
-/**
- * 重新分析单个样本（清除缓存后重新分析）
- * 
- * @param {Object} sample 样本
- * @param {Object} config 配置
- * @returns {Object} 带有新 result 字段的样本
- */
 export function reanalyzeSample(sample, config = {}) {
-    const sampleId = sample.id || sample.templateId;
+    const sampleId = sample.id || sample.raw?.templateId || sample.templateId;
     if (sampleId) {
         clearAnalysisCache(sampleId);
     }
     return analyzeSample(sample, config, false);
 }
 
-
-/**
- * 批量重新分析（清除所有缓存后重新分析）
- * 
- * @param {Array} samples 样本数组
- * @param {Object} config 配置
- * @returns {Array} 带有新 result 字段的样本数组
- */
 export function reanalyzeAll(samples = [], config = {}) {
-    // 清除所有缓存
     samples.forEach(sample => {
-        const sampleId = sample.id || sample.templateId;
+        const sampleId = sample.id || sample.raw?.templateId || sample.templateId;
         if (sampleId) {
             clearAnalysisCache(sampleId);
         }
     });
     
-    // 重新分析
     return analyzeSamples(samples, config);
 }
 
-
-/**
- * 批量分析（异步分块版本）
- * 
- * 适用于大数据量场景（1000+样本）
- * 分块处理避免阻塞主线程
- * 
- * @param {Array} samples 样本数组
- * @param {Object} config 配置
- * @param {Function} onProgress 进度回调 (processed, total) => void
- * @param {number} chunkSize 每块大小（默认200）
- * @returns {Promise<Array>}
- */
 export async function analyzeSamplesAsync(samples = [], config = {}, onProgress = null, chunkSize = 200) {
     const results = [];
     const total = samples.length;
@@ -185,7 +155,6 @@ export async function analyzeSamplesAsync(samples = [], config = {}, onProgress 
             onProgress(Math.min(i + chunkSize, total), total);
         }
         
-        // 让出主线程
         await new Promise(resolve => setTimeout(resolve, 0));
     }
     

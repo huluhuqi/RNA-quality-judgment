@@ -1,230 +1,105 @@
 <template>
+    <el-card class="parameter-card">
+        <template #header>
+            <span>提取及RT参数</span>
+        </template>
 
-<el-card class="parameter-card">
+        <div class="parameter-grid">
+            <div class="parameter-item">
+                <el-form-item label="RNA提取方法">
+                    <el-select v-model="config.extraction.method" class="full-select">
+                        <el-option
+                            v-for="method in extractionMethods"
+                            :key="method.value"
+                            :label="method.label"
+                            :value="method.value"
+                        />
+                    </el-select>
+                </el-form-item>
+            </div>
 
-<template #header>
+            <div class="parameter-item">
+                <el-form-item label="下游实验用途">
+                    <el-select v-model="config.application.purpose" class="full-select">
+                        <el-option
+                            v-for="app in applications"
+                            :key="app.value"
+                            :label="app.label"
+                            :value="app.value"
+                        />
+                    </el-select>
+                </el-form-item>
+            </div>
 
-<span>
-提取及RT参数
-</span>
+            <div class="parameter-item">
+                <el-form-item label="最大RNA上样量">
+                    <div class="input-with-unit">
+                        <el-input-number
+                            v-model="config.rt.maxRNA"
+                            :min="1"
+                            class="compact-input"
+                        />
+                        <span class="unit">ng</span>
+                    </div>
+                </el-form-item>
+            </div>
 
+            <div class="parameter-item">
+                <el-form-item label="最小RNA上样量">
+                    <div class="input-with-unit">
+                        <el-input-number
+                            v-model="config.rt.minRNA"
+                            :min="1"
+                            class="compact-input"
+                        />
+                        <span class="unit">ng</span>
+                    </div>
+                </el-form-item>
+            </div>
+
+            <div class="parameter-item">
+                <el-form-item label="最大模板体积">
+                    <div class="input-with-unit">
+                        <el-input-number
+                            v-model="config.rt.maxVolume"
+                            :min="1"
+                            class="compact-input"
+                        />
+                        <span class="unit">μL</span>
+                    </div>
+                </el-form-item>
+            </div>
+        </div>
+    </el-card>
 </template>
-
-
-<div class="parameter-grid">
-
-<div class="parameter-item">
-
-<el-form-item label="RNA提取方法">
-
-<el-select
-
-v-model="config.method"
-
-class="full-select"
-
->
-
-<el-option
-
-v-for="item in methods"
-
-:key="item"
-
-:label="item"
-
-:value="item"
-
-/>
-
-</el-select>
-
-</el-form-item>
-
-</div>
-
-
-<div class="parameter-item">
-
-<el-form-item label="下游实验用途">
-
-<el-select
-
-v-model="config.application"
-
-class="full-select"
-
->
-
-<el-option
-
-v-for="item in applications"
-
-:key="item.key"
-
-:label="item.name"
-
-:value="item.key"
-
-/>
-
-</el-select>
-
-</el-form-item>
-
-</div>
-
-
-<div class="parameter-item">
-
-<el-form-item label="最大RNA上样量">
-
-<div class="input-with-unit">
-
-<el-input-number
-
-v-model="config.maxRNA"
-
-:min="1"
-
-class="compact-input"
-
-/>
-
-<span class="unit">
-ng
-</span>
-
-</div>
-
-</el-form-item>
-
-</div>
-
-
-<div class="parameter-item">
-
-<el-form-item label="最小RNA上样量">
-
-<div class="input-with-unit">
-
-<el-input-number
-
-v-model="config.minRNA"
-
-:min="1"
-
-class="compact-input"
-
-/>
-
-<span class="unit">
-ng
-</span>
-
-</div>
-
-</el-form-item>
-
-</div>
-
-
-<div class="parameter-item">
-
-<el-form-item label="最大模板体积">
-
-<div class="input-with-unit">
-
-<el-input-number
-
-v-model="config.maxVolume"
-
-:min="1"
-
-class="compact-input"
-
-/>
-
-<span class="unit">
-μL
-</span>
-
-</div>
-
-</el-form-item>
-
-</div>
-
-
-</div>
-
-
-</el-card>
-
-</template>
-
 
 <script setup>
-
 import { reactive, watch } from 'vue'
-
-import { extractionMethods } from '../config/extractionAdvice'
-
-import { downstreamApplications } from '../config/downstreamApplication'
-
-const methods = extractionMethods
-
-const applications = Object.entries(downstreamApplications).map(([key, value]) => ({
-    key,
-    name: value.name
-}))
+import { extractionMethods } from '../config/extractionMethods'
+import { applications } from '../config/applications'
 
 const config = reactive({
-
-method:'硅胶膜柱提法',
-
-application:'qPCR',
-
-maxRNA:1000,
-
-minRNA:10,
-
-maxVolume:12
-
+    extraction: {
+        method: 'column'
+    },
+    application: {
+        purpose: 'qpcr'
+    },
+    rt: {
+        maxRNA: 1000,
+        minRNA: 10,
+        maxVolume: 12
+    }
 })
 
-const emit = defineEmits([
-    'update-config'
-])
+const emit = defineEmits(['update-config'])
 
-
-watch(
-
-config,
-
-(value)=>{
-
-emit(
-
-'update-config',
-
-value
-
-)
-
-},
-
-{
-deep:true
-}
-
-)
-
+watch(config, (value) => {
+    emit('update-config', value)
+}, { deep: true })
 </script>
 
-
 <style scoped>
-
 .parameter-card{
     width:100%;
     background:
@@ -277,5 +152,4 @@ deep:true
         grid-template-columns:1fr;
     }
 }
-
 </style>

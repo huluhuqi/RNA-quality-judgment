@@ -14,7 +14,7 @@
  * @returns {Array} 有效样本数组
  */
 export function getValidSamples(samples = []) {
-    return samples.filter(item => !item.ignored);
+    return samples.filter(item => !(item.status?.ignored || item.ignored));
 }
 
 

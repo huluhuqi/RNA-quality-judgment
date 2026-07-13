@@ -18,7 +18,12 @@ app.config.errorHandler = (err, vm, info) => {
 }
 
 window.onerror = (message, source, lineno, colno, error) => {
-    handleError(error || new Error(message), 'VUE_ERROR', `${source}:${lineno}:${colno}`)
+    handleError(error || new Error(message), 'RUNTIME_ERROR', `${source}:${lineno}:${colno}`)
+    return false
 }
+
+window.addEventListener('unhandledrejection', (event) => {
+    handleError(event.reason, 'PROMISE_ERROR', 'unhandledrejection')
+})
 
 app.mount('#app')

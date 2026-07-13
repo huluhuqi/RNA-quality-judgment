@@ -1,44 +1,62 @@
 /**
- * 日志工具
+ * 统一日志输出工具
  *
- * 生产环境自动静默 console.log，仅保留 error
- * 开发环境正常输出所有日志
+ * 生产环境禁用 log/debug，保留 error/warn
+ * 开发环境全部启用
+ *
+ * 用法：
+ *   import { logger } from '@/utils/logger'
+ *   logger.log('debug info')
+ *   logger.warn('warning')
+ *   logger.error('error')
  */
 
 const isDev = import.meta.env?.DEV ?? false;
 
-/**
- * 普通日志（仅开发环境输出）
- */
-export function log(...args) {
-    if (isDev) {
-        console.log(...args);
-    }
-}
+export const logger = {
+    log(...args) {
+        if (isDev) {
+            console.log(...args);
+        }
+    },
 
-/**
- * 警告日志（仅开发环境输出）
- */
-export function warn(...args) {
-    if (isDev) {
+    debug(...args) {
+        if (isDev) {
+            console.debug(...args);
+        }
+    },
+
+    info(...args) {
+        if (isDev) {
+            console.info(...args);
+        }
+    },
+
+    warn(...args) {
         console.warn(...args);
+    },
+
+    error(...args) {
+        console.error(...args);
+    },
+
+    table(...args) {
+        if (isDev) {
+            console.table(...args);
+        }
+    },
+
+    group(label) {
+        if (isDev) {
+            console.group(label);
+        }
+    },
+
+    groupEnd() {
+        if (isDev) {
+            console.groupEnd();
+        }
     }
-}
+};
 
-/**
- * 错误日志（始终输出）
- */
-export function error(...args) {
-    console.error(...args);
-}
-
-/**
- * 调试日志（仅开发环境输出）
- */
-export function debug(...args) {
-    if (isDev) {
-        console.debug(...args);
-    }
-}
-
-export default { log, warn, error, debug };
+export default logger;

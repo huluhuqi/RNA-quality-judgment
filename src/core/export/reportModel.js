@@ -1,5 +1,6 @@
 import { getValidSamples } from "../sample/sampleUtils";
 import { getQualityLabel } from "../../config/qualityLevel";
+import { getContaminationDisplay } from "../../config/contaminationMapping";
 import {
     formatPollutionText,
     formatExtractionProblemText,
@@ -66,7 +67,10 @@ export function createReportModel(data) {
 }
 
 export function formatPollution(pollution = []) {
-    return pollution.map(item => `${item.type}: ${item.reason}`).join("\n");
+    return pollution.map(item => {
+        const displayName = getContaminationDisplay(item.type) || item.type;
+        return `${displayName}: ${item.reason || item.text || ""}`;
+    }).join("\n");
 }
 
 export function formatAdvice(advice = []) {

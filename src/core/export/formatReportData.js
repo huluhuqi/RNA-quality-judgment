@@ -6,10 +6,12 @@
  */
 
 
+import { getContaminationDisplay } from "../../config/contaminationMapping"
+
 /**
  * 格式化污染分析文本
  *
- * @param {Array} pollution 污染数组 [{ type, reason, level }]
+ * @param {Array} pollution 污染数组 [{ type, level, text }]
  * @returns {string} 格式化后的污染文本
  */
 export function formatPollutionText(pollution = []) {
@@ -18,8 +20,8 @@ export function formatPollutionText(pollution = []) {
     }
 
     return pollution.map(p => {
-        const levelLabel = getPollutionLevelLabel(p.level);
-        return `${levelLabel} ${p.type}\n${p.reason || p.text}`;
+        const displayName = getContaminationDisplay(p.type) || p.type;
+        return `${displayName}\n${p.reason || p.text || ""}`;
     }).join("\n\n");
 }
 

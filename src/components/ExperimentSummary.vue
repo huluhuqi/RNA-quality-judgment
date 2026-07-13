@@ -109,6 +109,7 @@
 <script setup>
 
 import { ref, computed, defineExpose } from 'vue';
+import { useSampleStore } from '../store/sampleStore';
 import { generateBatchSummary } from '../core/summary/batchSummary';
 
 import OverviewCard from './summary/OverviewCard.vue';
@@ -123,6 +124,8 @@ import QualityDistribution from './summary/QualityDistribution.vue';
 import ExtractionSummary from './summary/ExtractionSummary.vue';
 import RTSummary from './summary/RTSummary.vue';
 
+const store = useSampleStore();
+
 const qualityChartRef = ref(null);
 const pollutionChartRef = ref(null);
 const extractionChartRef = ref(null);
@@ -131,15 +134,11 @@ const props = defineProps({
     summary: {
         type: Object,
         default: () => ({})
-    },
-    samples: {
-        type: Array,
-        default: () => []
     }
 });
 
 const batchSummary = computed(() => {
-    return generateBatchSummary(props.samples);
+    return generateBatchSummary(store.validSamples);
 });
 
 const conclusionType = computed(() => {

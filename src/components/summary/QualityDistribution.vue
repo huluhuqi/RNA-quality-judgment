@@ -1,8 +1,14 @@
 <script setup>
 
-import { ref, onMounted, watch, onUnmounted } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import * as echarts from 'echarts';
 import { getChartTheme, isDarkMode } from '@/utils/chartTheme';
+import { useSampleStore } from '@/store/sampleStore';
+
+const store = useSampleStore();
+
+const chartRef = ref(null);
+let chartInstance = null;
 
 const props = defineProps({
     data: {
@@ -10,9 +16,6 @@ const props = defineProps({
         default: () => ({})
     }
 });
-
-const chartRef = ref(null);
-let chartInstance = null;
 
 function initChart() {
     if (!chartRef.value) return;
@@ -98,6 +101,10 @@ onMounted(() => {
 watch(() => props.data, () => {
     updateChart();
 }, { deep: true });
+
+watch(() => store.dirty, () => {
+    updateChart();
+});
 
 onUnmounted(() => {
     window.removeEventListener('resize', handleResize);

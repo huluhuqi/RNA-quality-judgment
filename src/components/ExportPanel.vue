@@ -13,33 +13,20 @@
 </template>
 
 
-
 <el-button
-
 type="success"
-
 @click="excel"
-
 >
-
 导出Excel
-
 </el-button>
-
 
 
 <el-button
-
 type="primary"
-
 @click="pdf"
-
 >
-
 导出PDF
-
 </el-button>
-
 
 
 </el-card>
@@ -48,88 +35,52 @@ type="primary"
 </template>
 
 
-
-
 <script setup>
 
+import { useSampleStore } from '../store/sampleStore';
+import {exportExcel} from '../utils/export';
+import {exportPDF} from '../utils/export';
 
-import {exportExcel}
+const store = useSampleStore();
 
-from '../utils/export'
-
-
-import {exportPDF}
-
-from '../utils/export'
-
-
-
-
-const props =
-defineProps({
-
-summary:{
-type:Object,
-default:()=>({})
-},
-
-data:{
-type:Array,
-default:()=>[]
-},
-
-settings:{
-type:Object,
-default:()=>({})
-},
-
-summaryRef:{
-type:Object,
-default:null
-}
-
-})
-
-
-
-
+const props = defineProps({
+    summary:{
+        type:Object,
+        default:()=>({})
+    },
+    settings:{
+        type:Object,
+        default:()=>({})
+    },
+    summaryRef:{
+        type:Object,
+        default:null
+    }
+});
 
 
 async function excel(){
 
+    let charts = {quality:null, pollution:null, extraction:null}
 
-let charts = {quality:null, pollution:null, extraction:null}
+    if(props.summaryRef?.getCharts){
+        charts = await props.summaryRef.getCharts()
+    }
 
-if(props.summaryRef?.getCharts){
-    charts = await props.summaryRef.getCharts()
-}
-
-
-await exportExcel({
-
-samples:props.data,
-
-summary:props.summary,
-
-settings:props.settings
-
-}, charts)
-
+    await exportExcel({
+        samples:store.samples,
+        summary:props.summary,
+        settings:props.settings
+    }, charts)
 
 }
-
-
 
 
 function pdf(){
 
-
-exportPDF(
-
-"pdf-report"
-
-)
-
+    exportPDF(
+        "pdf-report"
+    )
 
 }
 
@@ -141,17 +92,12 @@ exportPDF(
 
 .export-card{
 
-background:
-
-linear-gradient(
-
-135deg,
-
-#f7fff5,
-
-#ffffff
-
-);
+    background:
+        linear-gradient(
+            135deg,
+            #f7fff5,
+            #ffffff
+        );
 
 }
 

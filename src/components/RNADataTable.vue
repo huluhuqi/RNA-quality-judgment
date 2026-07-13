@@ -1,8 +1,6 @@
 <template>
 
-
 <el-card>
-
 
 <template #header>
 
@@ -11,7 +9,6 @@
 <span>
 RNA样本数据
 </span>
-
 
 <el-button
 type="primary"
@@ -25,18 +22,15 @@ type="primary"
 </template>
 
 
-
 <!-- 四窗格粘贴输入区 -->
 
 <div class="rna-input-grid">
-
 
 <div
 v-for="(column,index) in inputColumns"
 :key="index"
 class="input-box"
 >
-
 
 <div class="input-box-header">
 
@@ -46,50 +40,33 @@ size="small"
 class="field-select"
 >
 
-
 <el-option
-
 v-for="item in getAvailableFields(
 column.field,
 selectedFields
 )"
-
 :key="item.value"
-
 :label="item.label"
-
 :value="item.value"
-
 />
-
 
 </el-select>
 
 </div>
 
-
 <el-input
-
 v-model="column.text"
-
 type="textarea"
-
 :rows="8"
-
 :placeholder="'请粘贴Excel单列数据'"
-
 />
 
-
 </div>
 
-
 </div>
-
 
 
 <div class="btn-area button-group">
-
 
 <el-button
 type="success"
@@ -98,13 +75,11 @@ type="success"
 导入数据
 </el-button>
 
-
 <el-button
 @click="clearPasteData"
 >
 清空输入
 </el-button>
-
 
 <el-button
 type="danger"
@@ -113,32 +88,26 @@ type="danger"
 清空数据
 </el-button>
 
-
 </div>
 
 
-
-
 <RNATable
-:samples="tableData"
+:samples="store.samples"
 @delete="handleTableDelete"
 @ignore="handleTableIgnore"
 @cell-change="onCellChange"
 />
 
 
-
 </el-card>
 
-
 </template>
-
-
 
 
 <script setup>
 
 import {ref, computed} from 'vue'
+import { useSampleStore } from '../store/sampleStore'
 
 import {
 getAvailableFields
@@ -177,6 +146,7 @@ from './rna/RNATable.vue'
 
 import {ElMessage} from 'element-plus'
 
+const store = useSampleStore()
 
 /**
  * 四窗格输入列
@@ -218,14 +188,6 @@ const selectedFields = computed(() => {
     );
 
 });
-
-
-const tableData = ref([])
-
-
-const emit = defineEmits([
-    'update-data'
-])
 
 
 /**
@@ -300,16 +262,12 @@ function generateSamples(){
 
 
 function saveSnapshot(){
-    saveHistory(tableData.value)
+    saveHistory(store.samples)
 }
 
 
 function onCellChange(row){
     saveSnapshot()
-    emit(
-        'update-data',
-        tableData.value
-    )
 }
 
 
@@ -360,14 +318,10 @@ function importData(){
 
     saveSnapshot()
 
-    tableData.value.push(
-        ...normalizeSamples(mapped)
-    )
-
-    emit(
-        'update-data',
-        tableData.value
-    )
+    const newSamples = normalizeSamples(mapped)
+    newSamples.forEach(sample => {
+        store.addSample(sample)
+    })
 
     clearPasteData()
 
@@ -396,40 +350,34 @@ function addRow(){
 
     saveSnapshot()
 
-    tableData.value.push(
-        createSample({})
-    )
-
-    emit(
-        'update-data',
-        tableData.value
-    )
+    store.addSample({
+        templateId: "",
+        concentration: "",
+        a260280: "",
+        a260230: ""
+    })
 
 }
 
 
 function clearData(){
 
-    if(tableData.value.length === 0) return
+    if(store.samples.length === 0) return
 
     saveSnapshot()
 
-    tableData.value=[]
-
-    emit(
-        'update-data',
-        []
-    )
+    store.clearSamples()
 
     ElMessage.success('已清空数据')
 
 }
 
+
 function addSamples(list){
     if(!list || list.length === 0) return
 
     const duplicates = list.filter(item =>
-        tableData.value.some(old => old.id === item.id)
+        store.samples.some(old => old.id === item.id)
     )
 
     if(duplicates.length > 0){
@@ -437,7 +385,7 @@ function addSamples(list){
     }
 
     const unique = list.filter(item =>
-        !tableData.value.some(old => old.id === item.id)
+        !store.samples.some(old => old.id === item.id)
     )
 
     if(unique.length === 0){
@@ -447,9 +395,9 @@ function addSamples(list){
 
     saveSnapshot()
 
-    tableData.value.push(...unique)
-
-    emit('update-data', tableData.value)
+    unique.forEach(sample => {
+        store.addSample(sample)
+    })
 
     ElMessage.success(`成功导入${unique.length}个样本`)
 }
@@ -459,8 +407,7 @@ function handleUndo(){
     if(canUndo()){
         const old = undo()
         if(old){
-            tableData.value = old
-            emit('update-data', tableData.value)
+            store.importSamples(old)
             ElMessage.success('已撤销')
         }
     } else {
@@ -482,15 +429,11 @@ if(typeof window !== 'undefined'){
 
 
 function handleTableDelete(row){
-    const index = tableData.value.findIndex(item => item.id === row.id)
-    if(index !== -1){
-        tableData.value.splice(index, 1)
-        emit('update-data', tableData.value)
-    }
+    store.removeSample(row.id)
 }
 
 function handleTableIgnore(row){
-    emit('update-data', tableData.value)
+    store.ignoreSample(row.id)
 }
 
 defineExpose({
@@ -503,22 +446,16 @@ defineExpose({
 </script>
 
 
-
-
 <style scoped>
 
 
 .table-header{
 
-
     display:flex;
-
 
     justify-content:space-between;
 
-
     align-items:center;
-
 
 }
 

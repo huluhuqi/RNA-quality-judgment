@@ -20,20 +20,12 @@ class="chart"
 
 
 import {
-
 ref,
-
 onMounted,
-
 watch,
-
 onBeforeUnmount
-
 }
-
 from 'vue'
-
-
 
 import * as echarts from 'echarts/core'
 import { BarChart } from 'echarts/charts'
@@ -54,14 +46,13 @@ getChartGridColor
 }
 from '../theme/chartTheme'
 
+import { useSampleStore } from '../store/sampleStore'
 
+const store = useSampleStore()
 
 const props=
-
 defineProps({
-
 data:Object
-
 })
 
 
@@ -262,20 +253,18 @@ handleThemeChange
 
 
 watch(
-
 ()=>props.data,
-
 ()=>{
-
 render()
-
 },
-
 {
 deep:true
 }
-
 )
+
+watch(() => store.dirty, () => {
+render()
+})
 
 
 

@@ -4,7 +4,7 @@
 
     <Header />
 
-    <div class="experiment-status" v-if="samples.length > 0">
+    <div class="experiment-status" v-if="store.samples.length > 0">
         <span class="status-item">
             <span class="status-label">有效样本</span>
             <span class="status-value">{{ summary.validCount }}</span>
@@ -29,21 +29,18 @@
         <ExperimentSummary
             ref="summaryRef"
             :summary="summary"
-            :samples="samples"
         />
     </CollapseCard>
 
     <CollapseCard title="RNA样本数据" :defaultOpen="true">
         <RNADataTable
             ref="rnaTableRef"
-            @update-data="updateData"
         />
     </CollapseCard>
 
     <CollapseCard title="实验建议" :defaultOpen="false">
         <ExportPanel
             :summary="summary"
-            :data="samples"
             :settings="rtConfig"
             :summaryRef="summaryRef"
         />
@@ -64,6 +61,7 @@ import { initTheme } from './theme/theme'
 initTheme()
 
 import { ref, watch, onMounted } from 'vue'
+import { useSampleStore } from './store/sampleStore'
 
 import Header from './components/Header.vue'
 import RTParameter from './components/RTParameter.vue'
@@ -82,6 +80,8 @@ import { saveExperiment, loadExperiment, clearExperiment } from './utils/storage
 import { getValidSamples } from './core/sample/sampleUtils'
 
 import { uiState, setLoading } from './store/uiState'
+
+const store = useSampleStore()
 
 const summary = ref({
     totalCount:0,
@@ -113,7 +113,6 @@ const summary = ref({
     partialPollutionCount:0
 })
 
-const samples = ref([])
 const rnaTableRef = ref(null)
 const summaryRef = ref(null)
 
@@ -124,16 +123,11 @@ const rtConfig = ref({
     maxVolume:12
 })
 
-function updateData(data){
-    samples.value = data
-    refreshAnalysis()
-}
-
 function refreshAnalysis(){
     setLoading(true, "正在分析RNA数据...")
     setTimeout(() => {
         try {
-            const data = samples.value
+            const data = store.samples
             const analyzed = analyzeSamples(data, rtConfig.value)
             data.forEach((item, i) => {
                 item.result = analyzed[i].result
@@ -158,12 +152,15 @@ function updateRTConfig(config){
 }
 
 function handleClear(){
-    samples.value = []
+    store.clearSamples()
     clearExperiment()
-    updateData([])
 }
 
-watch(samples, (value) => {
+watch(() => store.dirty, () => {
+    refreshAnalysis()
+})
+
+watch(() => store.samples, (value) => {
     saveExperiment({
         samples: value,
         rtConfig: rtConfig.value
@@ -173,13 +170,12 @@ watch(samples, (value) => {
 onMounted(() => {
     const saved = loadExperiment()
     if(saved){
-        samples.value = saved.samples || []
+        store.importSamples(saved.samples || [])
         rtConfig.value = saved.rtConfig || {
             maxRNA:1000,
             minRNA:10,
             maxVolume:12
         }
-        updateData(samples.value)
     }
 })
 

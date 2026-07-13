@@ -6,13 +6,15 @@ import { useEchart } from "@/charts/useEchart";
 import { getChartTheme, getChartTextColor } from "@/charts/chartTheme";
 import { getPollutionColor } from "@/charts/pollutionChart";
 import { pollutionSummary } from "@/utils/pollutionSummary";
+import { getChartSamples } from "@/analysis/chart/chartDataAdapter";
 
 const store = useSampleStore();
 const theme = useThemeStore();
 const chartRef = ref(null);
 
 const option = computed(() => {
-    const data = pollutionSummary(store.samples);
+    const chartSamples = getChartSamples(store.samples);
+    const data = pollutionSummary(chartSamples);
     const entries = Object.entries(data).filter(([_, value]) => value > 0);
     
     const labels = entries.map(([name]) => name);

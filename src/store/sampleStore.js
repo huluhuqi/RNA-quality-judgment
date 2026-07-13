@@ -3,6 +3,7 @@ import { shallowRef, computed } from "vue";
 import { saveSamples, loadSamples, clearSamplesStorage } from "@/storage/sampleStorage";
 import { createSample } from "@/models/SampleModel";
 import { analyzeSample } from "@/analysis/analysisEngine";
+import { getActiveSamples } from "@/utils/sampleFilter";
 
 export const useSampleStore = defineStore("sample", () => {
     const samples = shallowRef([]);
@@ -117,7 +118,7 @@ export const useSampleStore = defineStore("sample", () => {
     }
 
     const validSamples = computed(() => {
-        return samples.value.filter((item) => !(item.status?.ignored || item.ignored));
+        return getActiveSamples(samples.value);
     });
 
     async function update() {

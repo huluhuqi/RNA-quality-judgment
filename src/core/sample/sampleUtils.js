@@ -3,7 +3,11 @@
  *
  * 所有样本过滤、数量统计、数值转换等通用逻辑统一在此处定义。
  * 避免在各个模块重复实现，确保修改一处全局生效。
+ *
+ * 注意：样本忽略判断已统一至 src/utils/sampleFilter.js，
+ *      本模块的 getValidSamples 已委托至 sampleFilter.getActiveSamples。
  */
+import { isIgnored, getActiveSamples } from "../../utils/sampleFilter";
 
 
 /**
@@ -14,7 +18,7 @@
  * @returns {Array} 有效样本数组
  */
 export function getValidSamples(samples = []) {
-    return samples.filter(item => !(item.status?.ignored || item.ignored));
+    return getActiveSamples(samples);
 }
 
 

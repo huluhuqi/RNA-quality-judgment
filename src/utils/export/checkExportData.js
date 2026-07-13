@@ -5,6 +5,8 @@
  * 仅用于开发期警告，不阻断导出流程。
  */
 
+import { isIgnored } from "../sampleFilter";
+
 /**
  * 检查样本是否全部完成分析
  *
@@ -15,7 +17,7 @@ export function checkExportData(samples = []){
 
 
     return samples
-        .filter(item => !(item.status?.ignored === true || item.ignored === true))
+        .filter(item => !isIgnored(item))
         .every(item => {
             return item.result && item.result.quality;
         });

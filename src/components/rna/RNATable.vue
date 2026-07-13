@@ -6,6 +6,8 @@ import TextCell from '../TextCell.vue';
 import SampleAdviceDetail from '../SampleAdviceDetail.vue';
 import { getQualityLabel } from '@/config/qualityLevel';
 import { saveHistory } from '@/utils/historyManager';
+import { isIgnored } from '@/utils/sampleFilter';
+import { calculateTemplateVolume } from '@/analysis/rt/templateVolumeCalculator';
 
 const props = defineProps({
     samples: {
@@ -24,7 +26,7 @@ function rowClass({ row }) {
     if (props.removingIds.includes(row.id)) {
         return 'removing-row';
     }
-    if (row.status?.ignored || row.ignored) {
+    if (isIgnored(row)) {
         return 'ignored-row';
     }
     return 'normal-row';
@@ -70,15 +72,20 @@ function getRTTagType(status) {
 }
 
 function getTemplateVolume(sample) {
+    if (sample.rt?.templateVolume !== null && sample.rt?.templateVolume !== undefined) {
+        return sample.rt.templateVolume + " μL";
+    }
+
+    // 兜底计算
     const concentration = sample.raw?.concentration ?? sample.concentration;
     const targetRNA = sample.rt?.recommendedRNA || 100;
+    const result = calculateTemplateVolume(concentration, targetRNA);
 
-    if (!concentration || concentration <= 0) {
+    if (result.value === null) {
         return "无法计算";
     }
 
-    const volume = targetRNA / concentration;
-    return volume.toFixed(2) + " μL";
+    return result.value + " μL";
 }
 
 </script>
@@ -188,7 +195,7 @@ function getTemplateVolume(sample) {
                             size="small"
                             @click="handleIgnore(scope.row)"
                         >
-                            {{ (scope.row.status?.ignored || scope.row.ignored) ? '恢复' : '忽略' }}
+                            {{ isIgnored(scope.row) ? '恢复' : '忽略' }}
                         </el-button>
                         <el-button
                             type="danger"

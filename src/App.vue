@@ -85,7 +85,8 @@ import { calculateBatch } from './core/BatchStatistics'
 import { analyzeSamples } from './core/analyzer/sampleAnalyzer'
 import { calculateRT, checkConcentrationDistribution } from './core/RTRecommendation'
 import { QUALITY_LEVEL, PENDING } from './config/qualityLevel'
-import { getValidSamples } from './core/sample/sampleUtils'
+import { getActiveSamples } from './utils/sampleFilter'
+import { calculateTemplateVolume } from './analysis/rt/templateVolumeCalculator'
 
 import { uiState, setLoading } from './store/uiState'
 
@@ -144,10 +145,23 @@ function refreshAnalysis(){
             })
 
             const batch = calculateBatch(data, rtConfig.value.method, rtConfig.value.application)
-            const validSamples = getValidSamples(data)
+            const validSamples = getActiveSamples(data)
 
             batch.rt = calculateRT(validSamples, rtConfig.value)
             batch.rtWarning = checkConcentrationDistribution(validSamples)
+
+            // 为每个有效样本计算模板建议体积
+            const targetRNA = batch.rt?.recommendedRNA || 100
+            validSamples.forEach(sample => {
+                const conc = sample.raw?.concentration ?? sample.concentration
+                const result = calculateTemplateVolume(conc, targetRNA)
+                sample.rt = {
+                    templateVolume: result.value,
+                    status: result.status,
+                    reason: result.reason,
+                    recommendedRNA: targetRNA
+                }
+            })
 
             summary.value = batch
         } finally {

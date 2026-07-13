@@ -6,24 +6,22 @@
  *   - 各质量等级数量（优秀/良好/一般/较差/待检测）
  *   - 浓度统计（平均/最小/最大）
  *   - 分析完整度统计（缺少A260/280、缺少浓度）
+ *
+ * 所有统计只基于有效样本（activeSamples），被忽略的样本不参与任何计算。
  */
 import { analyzeRNA } from "../quality";
 import { getAnalysisStatus } from "../analyze/analysisStatus";
 import { QUALITY_LEVEL, PENDING } from "../../config/qualityLevel";
+import { createStatisticsContext } from "@/analysis/statisticsContext";
 
 
 export function getSampleStatistics(samples, extractionMethod, application){
 
+    const ctx = createStatisticsContext(samples);
+    const activeSamples = ctx.activeSamples;
 
-    const totalCount = samples.length;
-
-    const ignoredSamples = samples.filter(
-        item => item.status?.ignored === true || item.ignored === true
-    );
-    const activeSamples = samples.filter(
-        item => !(item.status?.ignored === true || item.ignored === true)
-    );
-    const ignoredCount = ignoredSamples.length;
+    const totalCount = ctx.totalSamples;
+    const ignoredCount = ctx.ignoredCount;
 
 
     // 分析每个有效样本

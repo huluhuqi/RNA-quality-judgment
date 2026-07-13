@@ -4,6 +4,7 @@ import { useSampleStore } from "@/store/sampleStore";
 import { useThemeStore } from "@/store/theme";
 import { useEchart } from "@/charts/useEchart";
 import { getChartTheme, getChartTextColor } from "@/charts/chartTheme";
+import { getChartSamples } from "@/analysis/chart/chartDataAdapter";
 
 const store = useSampleStore();
 const theme = useThemeStore();
@@ -17,6 +18,8 @@ const qualityColors = {
 };
 
 const option = computed(() => {
+    const chartSamples = getChartSamples(store.samples);
+
     const count = {
         "合格": 0,
         "需关注": 0,
@@ -24,7 +27,7 @@ const option = computed(() => {
         "待检测": 0
     };
 
-    store.samples.forEach(s => {
+    chartSamples.forEach(s => {
         const level = s.analysis?.quality?.level;
         if (level && count.hasOwnProperty(level)) {
             count[level]++;

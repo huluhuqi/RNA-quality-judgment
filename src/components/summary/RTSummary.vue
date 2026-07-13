@@ -1,6 +1,7 @@
 <script setup>
+import { computed } from 'vue';
 
-defineProps({
+const props = defineProps({
     data: {
         type: Object,
         default: () => ({})
@@ -15,6 +16,12 @@ defineProps({
     }
 });
 
+const volumeRange = computed(() => {
+    if (props.data.minVolume && props.data.maxVolume) {
+        return `${props.data.minVolume} ~ ${props.data.maxVolume} μL`;
+    }
+    return '-';
+});
 </script>
 
 <template>
@@ -24,12 +31,12 @@ defineProps({
     
     <div class="rt-stats">
         <div class="stat-item">
-            <span class="stat-label">可推荐</span>
+            <span class="stat-label">可计算</span>
             <span class="stat-value success">{{ recommend }}</span>
             <span class="stat-unit">个</span>
         </div>
         <div class="stat-item">
-            <span class="stat-label">无法推荐</span>
+            <span class="stat-label">无法计算</span>
             <span class="stat-value warning">{{ cannot }}</span>
             <span class="stat-unit">个</span>
         </div>
@@ -42,7 +49,7 @@ defineProps({
         </div>
         <div class="detail-item">
             <span class="detail-label">模板体积范围</span>
-            <span class="detail-value">{{ data.minVolume || 0 }} ~ {{ data.maxVolume || 0 }} μL</span>
+            <span class="detail-value">{{ volumeRange }}</span>
         </div>
         <div class="detail-item">
             <span class="detail-label">浓度状态</span>

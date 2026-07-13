@@ -43,6 +43,11 @@ export const useSampleStore = defineStore("sample", () => {
         update();
     }
 
+    function appendSamples(list) {
+        samples.value = [...samples.value, ...list.map(item => createSample(item))];
+        update();
+    }
+
     function setSamples(list) {
         samples.value = list.map(item => createSample(item));
         update();

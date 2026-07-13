@@ -1,3 +1,20 @@
+export function normalizeSample(data) {
+    return {
+        id: data.id || crypto.randomUUID(),
+        raw: {
+            templateId: data.raw?.templateId || data.templateId || "",
+            concentration: data.raw?.concentration ?? data.concentration ?? null,
+            a260280: data.raw?.a260280 ?? data.a260280 ?? null,
+            a260230: data.raw?.a260230 ?? data.a260230 ?? null
+        },
+        status: {
+            ignored: false
+        },
+        analysis: null,
+        rt: null
+    };
+}
+
 export function createSample(data = {}) {
     return {
         id: data.id || crypto.randomUUID(),

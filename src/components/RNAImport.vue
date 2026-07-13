@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed } from "vue";
 import { ElMessage } from "element-plus";
-import { createSample } from "@/models/SampleModel";
+import { normalizeSample } from "@/models/SampleModel";
+import { checkDuplicateTemplateId } from "@/utils/sampleValidator";
 
 const emit = defineEmits(["import"]);
 
@@ -61,7 +62,7 @@ function importData() {
             raw[field] = parsedLines[index][i] || null;
         });
 
-        const sample = createSample({
+        const sample = normalizeSample({
             raw: {
                 templateId: raw.templateId || generateID(i),
                 concentration: raw.concentration !== null && raw.concentration !== "" ? Number(raw.concentration) : null,
@@ -71,6 +72,11 @@ function importData() {
         });
 
         result.push(sample);
+    }
+
+    const duplicates = checkDuplicateTemplateId(result);
+    if (duplicates.length > 0) {
+        ElMessage.warning(`检测到重复模板ID: ${duplicates.join(', ')}`);
     }
 
     emit("import", result);

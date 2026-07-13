@@ -1,6 +1,11 @@
+import { getActiveSamples } from "@/utils/sampleFilter";
+
 export function createExportData(samples, experiment) {
+    const activeSamples = getActiveSamples(samples);
+
     return {
-        samples: samples.map(sample => ({
+        allSamples: samples,
+        samples: activeSamples.map(sample => ({
             id: sample.id,
             templateId: sample.raw.templateId,
             concentration: sample.raw.concentration,
@@ -11,6 +16,11 @@ export function createExportData(samples, experiment) {
             advice: sample.analysis?.advice,
             rt: sample.rt
         })),
+        summary: {
+            total: samples.length,
+            active: activeSamples.length,
+            ignored: samples.length - activeSamples.length
+        },
         experiment
     };
 }

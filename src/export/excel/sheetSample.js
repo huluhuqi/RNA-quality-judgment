@@ -10,8 +10,6 @@ export function createSampleSheet(samples) {
         污染类型: s.pollution?.types?.join(";") || "",
         提取建议: s.advice?.extraction ? JSON.stringify(s.advice.extraction) : "",
         下游实验建议: s.advice?.experiment || "",
-        RT状态: s.rt?.status || "",
-        RT模板量: s.rt?.inputVolume || "",
-        RT建议: s.rt?.recommendation || ""
+        模板建议体积: s.rt?.templateVolume ? s.rt.templateVolume + " μL" : "无法计算"
     }));
 }

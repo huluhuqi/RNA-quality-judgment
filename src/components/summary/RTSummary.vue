@@ -22,17 +22,26 @@ const volumeRange = computed(() => {
     }
     return '-';
 });
+
+const overVolumeCount = computed(() => {
+    return props.data.overVolumeCount || 0;
+});
 </script>
 
 <template>
 
 <div class="rt-summary">
     <h4 class="summary-title">RT体系配置</h4>
-    
+
     <div class="rt-stats">
         <div class="stat-item">
-            <span class="stat-label">可计算</span>
+            <span class="stat-label">可正常RT</span>
             <span class="stat-value success">{{ recommend }}</span>
+            <span class="stat-unit">个</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">超体积限制</span>
+            <span class="stat-value danger">{{ overVolumeCount }}</span>
             <span class="stat-unit">个</span>
         </div>
         <div class="stat-item">
@@ -62,7 +71,7 @@ const volumeRange = computed(() => {
     </div>
 
     <p v-if="data.message" class="rt-message">{{ data.message }}</p>
-    <p v-if="data.warning" class="rt-warning">{{ data.warning }}</p>
+    <p v-if="data.warning" class="rt-warning-text">{{ data.warning }}</p>
 </div>
 
 </template>
@@ -114,6 +123,10 @@ const volumeRange = computed(() => {
     color: #e6a23c;
 }
 
+.stat-value.danger{
+    color: #f56c6c;
+}
+
 .stat-unit{
     font-size: 12px;
     color: var(--text-light, #909399);
@@ -153,7 +166,7 @@ const volumeRange = computed(() => {
     color: var(--text-color, #303133);
 }
 
-.rt-warning{
+.rt-warning-text{
     margin: 0;
     padding: 10px;
     background: rgba(245, 108, 108, 0.1);

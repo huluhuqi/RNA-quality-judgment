@@ -87,7 +87,6 @@ import { calculateRT, checkConcentrationDistribution } from './core/RTRecommenda
 import { QUALITY_LEVEL, PENDING } from './config/qualityLevel'
 import { getActiveSamples } from './utils/sampleFilter'
 import { calculateTemplateVolume } from './analysis/rt/templateVolumeCalculator'
-import { calculateWaterVolume } from './analysis/rt/waterVolumeCalculator'
 
 import { uiState, setLoading } from './store/uiState'
 
@@ -156,14 +155,16 @@ function refreshAnalysis(){
             const maxTemplateVolume = rtConfig.value.maxVolume || 12
             validSamples.forEach(sample => {
                 const conc = sample.raw?.concentration ?? sample.concentration
-                const templateResult = calculateTemplateVolume(conc, targetRNA)
-                const waterResult = calculateWaterVolume(templateResult.templateVolume, maxTemplateVolume)
+                const result = calculateTemplateVolume(conc, targetRNA, maxTemplateVolume)
                 sample.rt = {
                     targetRNA,
-                    templateVolume: templateResult.templateVolume,
+                    templateVolume: result.templateVolume,
                     maxTemplateVolume,
-                    waterVolume: waterResult.waterVolume,
-                    status: waterResult.status
+                    waterVolume: result.waterVolume,
+                    statusCode: result.statusCode,
+                    statusText: result.statusText,
+                    suggestion: result.suggestion,
+                    requiredConcentration: result.requiredConcentration
                 }
             })
 

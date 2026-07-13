@@ -38,7 +38,7 @@ ng
 :type="rtLevelType"
 size="small"
 >
-{{summary.rt?.level || '无法判断'}}
+{{rtLevelText}}
 </el-tag>
 </p>
 
@@ -91,6 +91,11 @@ const rtLevelType = computed(()=>{
         case '浓度不足': return 'danger';
         default: return 'info';
     }
+});
+
+const rtLevelText = computed(()=>{
+    const level = props.summary?.rt?.level;
+    return level || '无法判断';
 });
 
 </script>

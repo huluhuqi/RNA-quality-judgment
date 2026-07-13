@@ -6,7 +6,7 @@
  * 此函数用于数据校验与结构化，便于后续扩展（如直接绘制PDF）。
  */
 
-import { getValidSamples } from "../../../core/sample/sampleUtils";
+import { getActiveSamples } from "../../../utils/sampleFilter";
 
 /**
  * 整理 PDF 导出数据
@@ -21,7 +21,7 @@ export function createPDFData(data = {}){
         title: "RNA质量检测实验报告",
         experiment: data.settings || {},
         summary: data.summary || {},
-        samples: getValidSamples(data.samples || [])
+        samples: getActiveSamples(data.samples || [])
     };
 
 }

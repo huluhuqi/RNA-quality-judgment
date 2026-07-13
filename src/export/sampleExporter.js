@@ -8,8 +8,12 @@ export function exportSampleRows(samples) {
         污染分析: sample.analysis?.pollution?.description || sample.result?.pollution || "",
         提取建议: (sample.analysis?.advice?.extraction || []).join("; ") || "",
         下游实验建议: (sample.analysis?.advice?.experiment || []).join("; ") || sample.result?.suggestion || "",
-        RT状态: sample.analysis?.rt?.status || "",
-        RT模板加入体积: sample.analysis?.rt?.inputVolume || "",
-        RT建议: sample.analysis?.rt?.recommendation || ""
+        推荐RNA量: sample.rt?.targetRNA || "",
+        RNA模板体积: sample.rt?.templateVolume !== null && sample.rt?.templateVolume !== undefined ? sample.rt.templateVolume + " μL" : "无法计算",
+        最大模板体积: (sample.rt?.maxTemplateVolume ?? 12) + " μL",
+        RT补水体积: sample.rt?.waterVolume !== null && sample.rt?.waterVolume !== undefined ? sample.rt.waterVolume + " μL" : "无法配置",
+        RT状态: sample.rt?.statusText || "",
+        RT建议: sample.rt?.suggestion || "",
+        最低推荐浓度: sample.rt?.requiredConcentration !== null && sample.rt?.requiredConcentration !== undefined ? sample.rt.requiredConcentration + " ng/μL" : ""
     }));
 }

@@ -1,7 +1,7 @@
 <script setup>
 
 import { computed } from 'vue'
-import { getTemplateVolumeDisplay, getRTStatus, getTargetRNA } from '@/utils/rtHelper'
+import { getTemplateVolumeDisplay, getTargetRNA } from '@/utils/rtHelper'
 
 const props = defineProps({
   sample: {
@@ -31,7 +31,8 @@ const experimentAdvice = computed(() => {
 
 // RT数据只从 sample.rt 读取（唯一数据源），禁止从 analysis.rt 读取
 const rtTemplateVolume = computed(() => getTemplateVolumeDisplay(props.sample))
-const rtStatus = computed(() => getRTStatus(props.sample))
+const rtStatusText = computed(() => props.sample?.rt?.statusText || '无法计算')
+const rtStatusCode = computed(() => props.sample?.rt?.statusCode || '')
 const rtTargetRNA = computed(() => getTargetRNA(props.sample))
 const rtMaxTemplateVolume = computed(() => props.sample?.rt?.maxTemplateVolume ?? 12)
 const rtWaterVolume = computed(() => {
@@ -39,8 +40,10 @@ const rtWaterVolume = computed(() => {
     if (wv !== null && wv !== undefined) {
         return wv + " μL";
     }
-    return "无法计算";
+    return "无法配置";
 })
+const rtSuggestion = computed(() => props.sample?.rt?.suggestion || '')
+const rtRequiredConcentration = computed(() => props.sample?.rt?.requiredConcentration)
 
 function getPollutionTagType(type) {
   if (type.includes('严重') || type.includes('异常')) {
@@ -52,13 +55,13 @@ function getPollutionTagType(type) {
   return 'info'
 }
 
-function getRTStatusType(status) {
-  switch (status) {
-    case '正常': return 'success'
-    case '超过最大模板体积': return 'warning'
-    case '无法计算': return 'info'
-    default: return 'info'
-  }
+function getRTStatusType(statusCode) {
+    switch (statusCode) {
+        case 'OK': return 'success'
+        case 'OVER_VOLUME': return 'warning'
+        case 'NO_CONCENTRATION': return 'info'
+        default: return 'info'
+    }
 }
 
 </script>
@@ -126,7 +129,7 @@ function getRTStatusType(status) {
         </div>
         <div class="rt-item">
           <span>RNA模板体积</span>
-          <b>{{ rtTemplateVolume }}</b>
+          <b :class="{ 'warning-value': rtStatusCode === 'OVER_VOLUME' }">{{ rtTemplateVolume }}</b>
         </div>
         <div class="rt-item">
           <span>最大模板体积</span>
@@ -134,12 +137,19 @@ function getRTStatusType(status) {
         </div>
         <div class="rt-item">
           <span>RT补水体积</span>
-          <b :class="{ 'warning-value': props.sample?.rt?.waterVolume !== null && props.sample?.rt?.waterVolume < 0 }">{{ rtWaterVolume }}</b>
+          <b :class="{ 'warning-value': rtStatusCode === 'NO_CONCENTRATION' }">{{ rtWaterVolume }}</b>
         </div>
         <div class="rt-item">
           <span>状态</span>
-          <el-tag :type="getRTStatusType(rtStatus)" size="small">{{ rtStatus }}</el-tag>
+          <el-tag :type="getRTStatusType(rtStatusCode)" size="small">{{ rtStatusText }}</el-tag>
         </div>
+        <div v-if="rtRequiredConcentration" class="rt-item">
+          <span>最低需要浓度</span>
+          <b>≥ {{ rtRequiredConcentration }} ng/μL</b>
+        </div>
+      </div>
+      <div v-if="rtSuggestion && rtStatusCode !== 'OK'" class="rt-suggestion">
+        <el-alert :title="rtSuggestion" type="warning" :closable="false" show-icon />
       </div>
     </div>
   </div>
@@ -277,6 +287,10 @@ function getRTStatusType(status) {
 
 .warning-value{
   color: var(--danger-color, #f56c6c) !important;
+}
+
+.rt-suggestion{
+  margin-top: 10px;
 }
 
 .rt-status{

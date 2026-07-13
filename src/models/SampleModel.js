@@ -49,7 +49,10 @@ export function createSample(data = {}) {
             templateVolume: data.rt?.templateVolume || null,
             maxTemplateVolume: data.rt?.maxTemplateVolume || 12,
             waterVolume: data.rt?.waterVolume || null,
-            recommendation: data.rt?.recommendation || ""
+            statusCode: data.rt?.statusCode || "",
+            statusText: data.rt?.statusText || "",
+            suggestion: data.rt?.suggestion || "",
+            requiredConcentration: data.rt?.requiredConcentration || null
         },
         status: {
             ignored: data.status?.ignored || data.ignored || false,

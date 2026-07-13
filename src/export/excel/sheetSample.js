@@ -13,7 +13,9 @@ export function createSampleSheet(samples) {
         推荐RNA量: s.rt?.targetRNA || "",
         RNA模板体积: s.rt?.templateVolume !== null && s.rt?.templateVolume !== undefined ? s.rt.templateVolume + " μL" : "无法计算",
         最大模板体积: (s.rt?.maxTemplateVolume ?? 12) + " μL",
-        RT补水体积: s.rt?.waterVolume !== null && s.rt?.waterVolume !== undefined ? s.rt.waterVolume + " μL" : "无法计算",
-        RT状态: s.rt?.status || ""
+        RT补水体积: s.rt?.waterVolume !== null && s.rt?.waterVolume !== undefined ? s.rt.waterVolume + " μL" : "无法配置",
+        RT状态: s.rt?.statusText || "",
+        RT建议: s.rt?.suggestion || "",
+        最低推荐浓度: s.rt?.requiredConcentration !== null && s.rt?.requiredConcentration !== undefined ? s.rt.requiredConcentration + " ng/μL" : ""
     }));
 }

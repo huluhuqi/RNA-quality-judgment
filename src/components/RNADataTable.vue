@@ -106,6 +106,14 @@ type="success"
 </el-button>
 
 
+<el-button
+type="danger"
+@click="clearData"
+>
+清空数据
+</el-button>
+
+
 </div>
 
 

@@ -21,18 +21,6 @@
         </span>
     </div>
 
-    <div class="action-bar">
-        <div class="action-left">
-            <button class="app-btn primary" @click="handleImport">导入数据</button>
-            <button class="app-btn info" @click="handleAddSample">新增样本</button>
-        </div>
-        <div class="action-right">
-            <button class="app-btn success" @click="handleExportExcel">导出Excel</button>
-            <button class="app-btn info" @click="handleExportPDF">导出PDF</button>
-            <button class="app-btn danger" @click="handleClear">清空数据</button>
-        </div>
-    </div>
-
     <CollapseCard title="实验参数" :defaultOpen="true">
         <RTParameter @update-config="updateRTConfig" />
     </CollapseCard>
@@ -46,15 +34,7 @@
     </CollapseCard>
 
     <CollapseCard title="RNA样本数据" :defaultOpen="true">
-        <EmptyState
-            v-if="samples.length === 0"
-            title="暂无RNA样本数据"
-            subtitle="请导入或新增RNA样本数据开始分析"
-            button-text="导入RNA数据"
-            @action="handleImport"
-        />
         <RNADataTable
-            v-else
             ref="rnaTableRef"
             @update-data="updateData"
         />
@@ -79,7 +59,6 @@
 
 import './assets/style.css'
 import './assets/theme.css'
-import './styles/theme.css'
 
 import { initTheme } from './theme/theme'
 initTheme()
@@ -93,7 +72,6 @@ import RNADataTable from './components/RNADataTable.vue'
 import ExportPanel from './components/ExportPanel.vue'
 
 import CollapseCard from './components/common/CollapseCard.vue'
-import EmptyState from './components/common/EmptyState.vue'
 import LoadingOverlay from './components/common/LoadingOverlay.vue'
 
 import { calculateBatch } from './core/BatchStatistics'
@@ -177,42 +155,6 @@ function refreshAnalysis(){
 function updateRTConfig(config){
     rtConfig.value = config
     refreshAnalysis()
-}
-
-function handleImport(){
-    if(rnaTableRef.value){
-        rnaTableRef.value.$el.querySelector('.rna-input-grid textarea')?.focus()
-    }
-}
-
-function handleAddSample(){
-    if(rnaTableRef.value){
-        rnaTableRef.value.addRow()
-    }
-}
-
-function handleExportExcel(){
-    setLoading(true, "正在生成Excel报告...")
-    setTimeout(() => {
-        try {
-            const event = new CustomEvent('export-excel')
-            window.dispatchEvent(event)
-        } finally {
-            setLoading(false)
-        }
-    }, 100)
-}
-
-function handleExportPDF(){
-    setLoading(true, "正在生成PDF报告...")
-    setTimeout(() => {
-        try {
-            const event = new CustomEvent('export-pdf')
-            window.dispatchEvent(event)
-        } finally {
-            setLoading(false)
-        }
-    }, 100)
 }
 
 function handleClear(){
@@ -299,33 +241,6 @@ onMounted(() => {
 
 .status-divider{
     color: var(--border-color);
-}
-
-.action-bar{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.action-left,
-.action-right{
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-@media(max-width: 768px){
-    .action-bar{
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .action-left,
-    .action-right{
-        justify-content: center;
-    }
 }
 
 </style>

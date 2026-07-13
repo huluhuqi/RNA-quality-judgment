@@ -4,6 +4,7 @@ import { saveSamples, loadSamples, clearSamplesStorage } from "@/storage/sampleS
 import { createSample } from "@/models/SampleModel";
 import { analyzeSample } from "@/analysis/analysisEngine";
 import { getActiveSamples } from "@/utils/sampleFilter";
+import { calculateSampleRT } from "@/services/rtService";
 
 export const useSampleStore = defineStore("sample", () => {
     const samples = shallowRef([]);
@@ -99,10 +100,15 @@ export const useSampleStore = defineStore("sample", () => {
     }
 
     function analyzeAll() {
-        samples.value = samples.value.map(sample => ({
-            ...sample,
-            analysis: analyzeSample(sample)
-        }));
+        samples.value = samples.value.map(sample => {
+            const analysis = analyzeSample(sample);
+            const rt = calculateSampleRT(sample, 100, 12);
+            return {
+                ...sample,
+                analysis,
+                rt
+            };
+        });
         update();
     }
 

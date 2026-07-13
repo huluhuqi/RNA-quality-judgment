@@ -87,6 +87,7 @@ import { calculateRT, checkConcentrationDistribution } from './core/RTRecommenda
 import { QUALITY_LEVEL, PENDING } from './config/qualityLevel'
 import { getActiveSamples } from './utils/sampleFilter'
 import { calculateTemplateVolume } from './analysis/rt/templateVolumeCalculator'
+import { logRTConsistency } from './utils/dataCheck'
 
 import { uiState, setLoading } from './store/uiState'
 
@@ -169,6 +170,10 @@ function refreshAnalysis(){
             })
 
             store.samples = [...data]
+
+            if (import.meta.env.DEV) {
+                logRTConsistency(store.samples);
+            }
 
             summary.value = batch
         } finally {

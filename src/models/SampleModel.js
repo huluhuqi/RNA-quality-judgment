@@ -1,3 +1,5 @@
+import { createRTResult } from "./rtModel";
+
 export function normalizeSample(data) {
     return {
         id: data.id || crypto.randomUUID(),
@@ -11,7 +13,7 @@ export function normalizeSample(data) {
             ignored: false
         },
         analysis: null,
-        rt: null
+        rt: createRTResult()
     };
 }
 

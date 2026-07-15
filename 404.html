@@ -4,15 +4,23 @@
     <meta charset="utf-8">
     <title>RNA质量判断</title>
     <script>
-        // GitHub Pages SPA 404 回退
-        // 将 404 页面重定向回首页，保留路径信息
+        // SPA 404 回退（兼容 GitHub Pages 和 EdgeOne Pages）
+        // GitHub Pages 项目位于 /RNA-quality-judgment/ 子路径下
+        // EdgeOne Pages 项目位于 / 根路径下
         (function () {
-            var base = '/RNA-quality-judgment/';
-            var path = location.pathname.replace(base, '');
-            if (path && path !== '/') {
-                location.replace(base + '#/' + path);
-            } else {
-                location.replace(base);
+            var pathname = location.pathname;
+            var ghPagesBase = '/RNA-quality-judgment/';
+
+            // GitHub Pages 环境：路径以项目子路径开头
+            if (pathname.indexOf(ghPagesBase) === 0) {
+                var subPath = pathname.substring(ghPagesBase.length);
+                // 子路径非空且不是 index.html，重定向回项目根路径
+                if (subPath && subPath !== '/' && subPath !== 'index.html') {
+                    location.replace(ghPagesBase);
+                }
+            } else if (pathname !== '/' && pathname !== '/index.html') {
+                // EdgeOne Pages 或其他根路径环境，重定向到根路径
+                location.replace('/');
             }
         })();
     </script>

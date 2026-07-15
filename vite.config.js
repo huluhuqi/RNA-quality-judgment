@@ -6,20 +6,19 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import path from 'path'
 
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
+
 export default defineConfig({
 
   // 使用相对路径，同时兼容 GitHub Pages（/RNA-quality-judgment/）和 EdgeOne Pages（/）
   base: './',
 
-  plugins: [
-    vue(),
-    AutoImport({
-      resolvers: [ElementPlusResolver()]
-    }),
-    Components({
-      resolvers: [ElementPlusResolver()]
-    })
-  ],
+  plugins: [vue(), AutoImport({
+    resolvers: [ElementPlusResolver()]
+  }), Components({
+    resolvers: [ElementPlusResolver()]
+  }), cloudflare()],
 
   resolve: {
     alias: {

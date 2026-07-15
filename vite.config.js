@@ -8,7 +8,8 @@ import path from 'path'
 
 export default defineConfig({
 
-  base: '/RNA-quality-judgment/',
+  // 使用相对路径，同时兼容 GitHub Pages（/RNA-quality-judgment/）和 EdgeOne Pages（/）
+  base: './',
 
   plugins: [
     vue(),

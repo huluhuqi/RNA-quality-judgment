@@ -27,7 +27,16 @@ jobs:
 
       - run: npm run build
 
-      - uses: peaceiris/actions-gh-pages@v4
+      # 部署到 GitHub Pages（国外备用访问）
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+
+      # 部署到 EdgeOne Pages（国内正式访问）
+      - name: Install EdgeOne CLI
+        run: npm install -g edgeone
+
+      - name: Deploy to EdgeOne Pages
+        run: edgeone pages deploy ./dist -n ${{ secrets.EDGEONE_PROJECT_NAME }} -t ${{ secrets.EDGEONE_API_TOKEN }}

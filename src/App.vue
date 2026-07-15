@@ -212,6 +212,23 @@ onMounted(() => {
         }
         restored.value = true;
     }
+
+    const removeDemoBanner = () => {
+        const banners = document.querySelectorAll('body > div');
+        banners.forEach(div => {
+            const text = div.textContent || '';
+            if (text.includes('demonstration') || text.includes('testing purposes') || text.includes('sensitive data')) {
+                div.remove();
+            }
+            if (div.style.position === 'fixed' && div.style.top === '0px' && !div.querySelector('#app')) {
+                div.remove();
+            }
+        });
+    };
+
+    removeDemoBanner();
+    setTimeout(removeDemoBanner, 100);
+    setTimeout(removeDemoBanner, 500);
 })
 
 </script>
